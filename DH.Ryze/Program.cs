@@ -47,12 +47,12 @@ namespace DH.Ryze
             E = new Spell(SpellSlot.E, 615f);
             R = new Spell(SpellSlot.R, 1750f);
             Q.SetSkillshot(0.25f, 55f, 700f, true, SkillshotType.Line);
-            E.SetTargetted(0.5f, 700f);
 
             Config = new Menu(ChampionName, "[DH]" + ChampionName, true);
 
             #region Combo
             Menu combo = new Menu("Combo", "Combo");
+            combo.Add(new MenuBool("UseQOutRangeEW", "Use Q out range EW", false));
             combo.Add(new MenuBool("UseQCombo", "Use Q", true));
             combo.Add(new MenuBool("UseWCombo", "Use W"));
             combo.Add(new MenuBool("UseECombo", "Use E"));
@@ -114,6 +114,7 @@ namespace DH.Ryze
             Game.OnUpdate += Game_OnGameUpdate;
             Game.OnWndProc += Game_OnWndProc;
             Drawing.OnDraw += Drawing_OnDraw;
+            //AIHeroClient.OnProcessSpellCast += AIBaseClientProcessSpellCast;
             Gapcloser.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
 
             Chat.PrintChat("<font color=\"#FF9900\"><b>DH.Ryze</b></font> Author Sayuto");
@@ -126,6 +127,19 @@ namespace DH.Ryze
 
             Config["Farm"].GetValue<MenuBool>("EnabledFarm").Enabled = !Config["Farm"].GetValue<MenuBool>("EnabledFarm").Enabled;
         }
+
+        //static void AIBaseClientProcessSpellCast(AIBaseClient s, AIBaseClientProcessSpellCastEventArgs a)
+        //{
+        //    if (Config["Combo"].GetValue<MenuList>("ComboPriority").SelectedValue == "W(Max stun)")
+        //    {
+        //        return;
+        //    }
+        //    if(s == Player)
+        //    {
+        //        Chat.PrintChat("Total Time" + a.TotalTime);
+        //        Chat.PrintChat("msspeed" + a.SData.MissileSpeed);
+        //    }
+        //}
 
         private static void AntiGapcloser_OnEnemyGapcloser(AIHeroClient sender, Gapcloser.GapcloserArgs args)
         {
@@ -261,6 +275,10 @@ namespace DH.Ryze
         static void Combo()
         {
             var target = TargetSelector.GetTarget(E.Range);
+            if (Config["Combo"].GetValue<MenuBool>("UseQOutRangeEW"))
+            {
+                target = TargetSelector.GetTarget(Q.Range);
+            }
             if (target == null)
             {
                 return;
@@ -287,7 +305,6 @@ namespace DH.Ryze
                         if (useW && W.IsReady() && !Q.IsReady() && !E.IsReady())
                         {
                             if (target.HasBuff("ryzee"))
-                                return;
                             W.Cast(target, true);
                         }
                     }
@@ -328,13 +345,16 @@ namespace DH.Ryze
                         {
                             W.Cast(target, true);
                         }
+                        if (useE && E.IsReady())
+                        {
+                            E.Cast(target, true);
+                            DelayAction.Add((int)(target.Distance(Player.Position) / 3.5f + Game.Ping), () => {
+                                W.Cast(target, true);
+                            });
+                        }
                         if (useQ && Q.IsReady() && (!target.HasBuff("ryzee") || !W.IsReady()))
                         {
                             Q.Cast(target, true);
-                        }
-                        if (useE && E.IsReady() && !Q.IsReady())
-                        {
-                            E.Cast(target, true);
                         }
 
                     }
