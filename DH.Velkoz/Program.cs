@@ -60,7 +60,7 @@ namespace DH.Velkoz
             IgniteSlot = Player.GetSpellSlot("SummonerDot");
 
 
-            Q.SetSkillshot(0.25f, 50f, 1300f, true, SkillshotType.Line);
+            Q.SetSkillshot(0.25f, 55f, 1300f, true, SkillshotType.Line);
             QSplit.SetSkillshot(0.25f, 55f, 2100, true, SkillshotType.Line);
             QDummy.SetSkillshot(0.25f, 55f, float.MaxValue, false, SkillshotType.Line);
             W.SetSkillshot(0.25f, 85f, 1700f, false, SkillshotType.Line);
@@ -242,7 +242,7 @@ namespace DH.Velkoz
                 QDummy.Delay = Q.Delay + Q.Range / Q.Speed * 1000 + QSplit.Range / QSplit.Speed * 1000;
 
                 var predictedPos = QDummy.GetPrediction(qDummyTarget);
-                if (predictedPos.Hitchance >= HitChance.Medium)
+                if (predictedPos.Hitchance >= HitChance.High)
                 {
                     for (var i = -1; i < 1; i = i + 2)
                     {
@@ -410,7 +410,7 @@ namespace DH.Velkoz
                     var prediction = QSplit.GetPrediction(enemy);
                     var d1 = prediction.UnitPosition.ToVector2().Distance(qMissilePosition, lineSegment1End, true);
                     var d2 = prediction.UnitPosition.ToVector2().Distance(qMissilePosition, lineSegment2End, true);
-                    if (prediction.Hitchance >= HitChance.Medium &&
+                    if (prediction.Hitchance >= HitChance.High &&
                         (d1 < QSplit.Width + enemy.BoundingRadius || d2 < QSplit.Width + enemy.BoundingRadius))
                     {
                         Q.Cast();
