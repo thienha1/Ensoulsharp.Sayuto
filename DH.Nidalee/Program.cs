@@ -154,16 +154,16 @@ namespace DH_Nidalee
 
             var nidaKeys = new Menu("keybindongs", "Nidalee: Keys");
 
-            nidaKeys.Add(usecombo);
-            nidaKeys.Add(useharass);
-            nidaKeys.Add(usejungle);
-            nidaKeys.Add(useclear);
-            nidaKeys.Add(uselasthit);
+            nidaKeys.Add(usecombo).Permashow();
+            nidaKeys.Add(useharass).Permashow();
+            nidaKeys.Add(usejungle).Permashow();
+            nidaKeys.Add(useclear).Permashow();
+            nidaKeys.Add(uselasthit).Permashow();
             //nidaKeys.Add(useflee);
             _mainMenu.Add(nidaKeys);
 
             var nidaSpells = new Menu("spells", "Nidalee: Combo");
-            nidaSpells.Add(seth);
+            nidaSpells.Add(seth).Permashow();
             nidaSpells.Add(usehumanq);
             nidaSpells.Add(usehumanw);
             nidaSpells.Add(usecougarq);
@@ -227,7 +227,7 @@ namespace DH_Nidalee
             nidaD.Add(new MenuBool("drawW", "Draw W"));//.SetValue(new Circle(true, Color.FromArgb(150, Color.White)));
             nidaD.Add(new MenuBool("drawE", "Draw E"));//.SetValue(new Circle(true, Color.FromArgb(150, Color.White)));
             nidaD.Add(new MenuBool("drawline", "Draw Target"));//.SetValue(true);
-            nidaD.Add(new MenuBool("drawcds", "Draw Cooldowns"));//.SetValue(true);
+            //nidaD.Add(new MenuBool("drawcds", "Draw Cooldowns"));//.SetValue(true);
             _mainMenu.Add(nidaD);
 
             var nidaM = new Menu("misc", "Nidalee: Misc");
@@ -828,10 +828,9 @@ namespace DH_Nidalee
                         Takedown.CastOnUnit(Me);
                 }
 
-                if ((CW != 0 || !Pounce.IsReady() || NotLearned(Pounce)) &&
-                    (CQ != 0 || NotLearned(Takedown)) &&
-                    (CE != 0 || NotLearned(Primalsurge)))
+                if (!Pounce.IsReady() && !Takedown.IsReady() && !Primalsurge.IsReady())
                 {
+                    Chat.PrintChat("Will heal");
                     if ((HQ == 0 || HE == 0 && Me.Health / Me.MaxHealth * 100 <=
                          _mainMenu["hengine"].GetValue<MenuSlider>("healpct" + Me.CharacterName).Value &&
                          _mainMenu["jungleclear"].GetValue<MenuBool>("jgheal")) && Aspectofcougar.IsReady() &&
@@ -1033,54 +1032,54 @@ namespace DH_Nidalee
                     Render.Circle.DrawCircle(Me.Position, spell.Range, Color.FromArgb(48, 120, 252), 2);
             }
 
-            if (!_mainMenu["drawings"].GetValue<MenuBool>("drawcds")) return;
+            //if (!_mainMenu["drawings"].GetValue<MenuBool>("drawcds")) return;
 
-            var wts = Drawing.WorldToScreen(Me.Position);
+            //var wts = Drawing.WorldToScreen(Me.Position);
 
-            if (!_cougarForm) // lets show cooldown timers for the opposite form :)
-            {
-                if (NotLearned(Javelin))
-                    Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Null");
-                else if (CQ == 0)
-                    Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Ready");
-                else
-                    Drawing.DrawText(wts[0] - 80, wts[1], Color.Orange, "Q: " + CQ.ToString("0.0"));
-                if (NotLearned(Bushwack))
-                    Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Null");
-                else if ((CW == 0 || Pounce.IsReady()))
-                    Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Ready");
-                else
-                    Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.Orange, "W: " + CW.ToString("0.0"));
-                if (NotLearned(Primalsurge))
-                    Drawing.DrawText(wts[0], wts[1], Color.White, "E: Null");
-                else if (CE == 0)
-                    Drawing.DrawText(wts[0], wts[1], Color.White, "E: Ready");
-                else
-                    Drawing.DrawText(wts[0], wts[1], Color.Orange, "E: " + CE.ToString("0.0"));
+            //if (!_cougarForm) // lets show cooldown timers for the opposite form :)
+            //{
+            //    if (NotLearned(Javelin))
+            //        Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Null");
+            //    else if (CQ == 0)
+            //        Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Ready");
+            //    else
+            //        Drawing.DrawText(wts[0] - 80, wts[1], Color.Orange, "Q: " + CQ.ToString("0.0"));
+            //    if (NotLearned(Bushwack))
+            //        Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Null");
+            //    else if ((CW == 0 || Pounce.IsReady()))
+            //        Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Ready");
+            //    else
+            //        Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.Orange, "W: " + CW.ToString("0.0"));
+            //    if (NotLearned(Primalsurge))
+            //        Drawing.DrawText(wts[0], wts[1], Color.White, "E: Null");
+            //    else if (CE == 0)
+            //        Drawing.DrawText(wts[0], wts[1], Color.White, "E: Ready");
+            //    else
+            //        Drawing.DrawText(wts[0], wts[1], Color.Orange, "E: " + CE.ToString("0.0"));
 
-            }
-            else
-            {
-                if (NotLearned(Takedown))
-                    Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Null");
-                else if (HQ == 0)
-                    Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Ready");
-                else
-                    Drawing.DrawText(wts[0] - 80, wts[1], Color.Orange, "Q: " + HQ.ToString("0.0"));
-                if (NotLearned(Pounce))
-                    Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Null");
-                else if (HW == 0)
-                    Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Ready");
-                else
-                    Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.Orange, "W: " + HW.ToString("0.0"));
-                if (NotLearned(Swipe))
-                    Drawing.DrawText(wts[0], wts[1], Color.White, "E: Null");
-                else if (HE == 0)
-                    Drawing.DrawText(wts[0], wts[1], Color.White, "E: Ready");
-                else
-                    Drawing.DrawText(wts[0], wts[1], Color.Orange, "E: " + HE.ToString("0.0"));
+            //}
+            //else
+            //{
+            //    if (NotLearned(Takedown))
+            //        Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Null");
+            //    else if (HQ == 0)
+            //        Drawing.DrawText(wts[0] - 80, wts[1], Color.White, "Q: Ready");
+            //    else
+            //        Drawing.DrawText(wts[0] - 80, wts[1], Color.Orange, "Q: " + HQ.ToString("0.0"));
+            //    if (NotLearned(Pounce))
+            //        Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Null");
+            //    else if (HW == 0)
+            //        Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.White, "W: Ready");
+            //    else
+            //        Drawing.DrawText(wts[0] - 30, wts[1] + 30, Color.Orange, "W: " + HW.ToString("0.0"));
+            //    if (NotLearned(Swipe))
+            //        Drawing.DrawText(wts[0], wts[1], Color.White, "E: Null");
+            //    else if (HE == 0)
+            //        Drawing.DrawText(wts[0], wts[1], Color.White, "E: Ready");
+            //    else
+            //        Drawing.DrawText(wts[0], wts[1], Color.Orange, "E: " + HE.ToString("0.0"));
 
-            }
+            //}
         }
 
         #endregion

@@ -52,12 +52,12 @@ namespace DH.Ryze
 
             #region Combo
             Menu combo = new Menu("Combo", "Combo");
-            combo.Add(new MenuBool("UseQOutRangeEW", "Use Q out range EW", false));
+            combo.Add(new MenuBool("UseQOutRangeEW", "Use Q out range EW", false)).Permashow();
             combo.Add(new MenuBool("UseQCombo", "Use Q", true));
             combo.Add(new MenuBool("UseWCombo", "Use W"));
             combo.Add(new MenuBool("UseECombo", "Use E"));
-            combo.Add(new MenuList("ComboPriority", "Combo Priority", new[] { "Q(Max Damage)", "W(Max stun)" }));
-            combo.Add(new MenuKeyBind("ComboActive", "Combo!", Keys.Space, KeyBindType.Press));
+            combo.Add(new MenuList("ComboPriority", "Combo Priority", new[] { "Q(Max Damage)", "W(Max stun)" })).Permashow();
+            combo.Add(new MenuKeyBind("ComboActive", "Combo!", Keys.Space, KeyBindType.Press)).Permashow();
             Config.Add(combo);
             #endregion
 
@@ -73,21 +73,21 @@ namespace DH.Ryze
             Harass.Add(new MenuBool("UseWHarass", "Use W", false));
             Harass.Add(new MenuBool("UseEHarass", "Use E", false));
             Harass.Add(new MenuSlider("HarassManaCheck", "Don't harass if mana < %", 0, 0, 100));
-            Harass.Add(new MenuKeyBind("HarassActive", "Harass!", Keys.C, KeyBindType.Press));
-            Harass.Add(new MenuKeyBind("HarassActiveT", "Harass (toggle)!", Keys.Y, KeyBindType.Toggle));
+            Harass.Add(new MenuKeyBind("HarassActive", "Harass!", Keys.C, KeyBindType.Press)).Permashow();
+            Harass.Add(new MenuKeyBind("HarassActiveT", "Harass (toggle)!", Keys.Y, KeyBindType.Toggle)).Permashow();
             Config.Add(Harass);
             #endregion
 
             #region Farming
             Menu Farm = new Menu("Farm", "Farm");
-            Farm.Add(new MenuBool("EnabledFarm", "Enable! (On/Off: Mouse Scroll)"));
+            Farm.Add(new MenuBool("EnabledFarm", "Enable! (On/Off: Mouse Scroll)")).Permashow();
             Farm.Add(new MenuList("UseQFarm", "Use Q", new[] { "LastHit", "LaneClear", "Both", "No" }, 2));
             Farm.Add(new MenuList("UseWFarm", "Use W", new[] { "LastHit", "LaneClear", "Both", "No" }, 1));
             Farm.Add(new MenuList("UseEFarm", "Use E", new[] { "LastHit", "LaneClear", "Both", "No" }, 1));
             Farm.Add(new MenuSlider("LaneClearManaCheck", "Don't LaneClear if mana < %", 0, 0, 100));
 
-            Farm.Add(new MenuKeyBind("LastHitActive", "LastHit!", Keys.X, KeyBindType.Press));
-            Farm.Add(new MenuKeyBind("LaneClearActive", "LaneClear!", Keys.S, KeyBindType.Press));
+            Farm.Add(new MenuKeyBind("LastHitActive", "LastHit!", Keys.X, KeyBindType.Press)).Permashow();
+            Farm.Add(new MenuKeyBind("LaneClearActive", "LaneClear!", Keys.S, KeyBindType.Press)).Permashow();
             Config.Add(Farm);
 
             //JungleFarm menu:
@@ -95,7 +95,7 @@ namespace DH.Ryze
             JungleFarm.Add(new MenuBool("UseQJFarm", "Use Q"));
             JungleFarm.Add(new MenuBool("UseWJFarm", "Use W"));
             JungleFarm.Add(new MenuBool("UseEJFarm", "Use E"));
-            JungleFarm.Add(new MenuKeyBind("JungleFarmActive", "JungleFarm!", Keys.S, KeyBindType.Press));
+            JungleFarm.Add(new MenuKeyBind("JungleFarmActive", "JungleFarm!", Keys.S, KeyBindType.Press)).Permashow();
             Config.Add(JungleFarm);
             #endregion
 
