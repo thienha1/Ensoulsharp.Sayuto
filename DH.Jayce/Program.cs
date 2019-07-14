@@ -203,7 +203,7 @@ namespace DH.Jayce
             }
 
             if (Config["draw"].GetValue<MenuBool>("drawFull"))
-                foreach (var enemy in ObjectManager.Get<AIHeroClient>().Where(ene => !ene.IsDead && ene.IsEnemy && ene.IsVisible))
+                foreach (var enemy in GameObjects.EnemyHeroes.Where(ene => !ene.IsDead && ene.IsVisible))
                 {
                     hpi.unit = enemy;
                     hpi.drawDmg(getJayceFullComoDmg(enemy), Color.Yellow);
@@ -470,7 +470,7 @@ namespace DH.Jayce
 
                     if (!E2.IsReady() && !Q2.IsReady())
                         R2.Cast();
-                    AIBaseClient tower = ObjectManager.Get<AITurretClient>().Where(tur => tur.IsAlly && tur.Health > 0).OrderBy(tur => Player.Distance(tur)).FirstOrDefault();
+                    AIBaseClient tower = GameObjects.AllyTurrets.Where(tur => tur.Health > 0).OrderBy(tur => Player.Distance(tur)).FirstOrDefault();
                     var pos = getBestPosToHammer(target.Position);
                     if (tower!= null && pos != null && Player.Distance(pos) < 400 && tower.Distance(target) < 1500)
                     {
@@ -530,7 +530,7 @@ namespace DH.Jayce
             {
                 if (rangQCDRem == 0 && rangECDRem == 0 && gotManaFor(true, false, true))
                 {
-                    List<AIHeroClient> deadEnes = ObjectManager.Get<AIHeroClient>().Where(ene => getJayceEQDmg(ene) > ene.Health && ene.IsEnemy && ene.IsValid && ene.Distance(Player.Position) < 1800).ToList();
+                    List<AIHeroClient> deadEnes = GameObjects.EnemyHeroes.Where(ene => getJayceEQDmg(ene) > ene.Health && ene.IsValid && ene.Distance(Player.Position) < 1800).ToList();
                     foreach (var enem in deadEnes)
                     {
                         if (Player.Distance(enem) < 300)
@@ -547,7 +547,7 @@ namespace DH.Jayce
                 }
                 else if (rangQCDRem == 0 && gotManaFor(true))
                 {
-                    List<AIHeroClient> deadEnes = ObjectManager.Get<AIHeroClient>().Where(ene => getJayceQDmg(ene) > ene.Health && ene.IsEnemy && ene.IsValid && ene.Distance(Player.Position) < 1200).ToList();
+                    List<AIHeroClient> deadEnes = GameObjects.EnemyHeroes.Where(ene => getJayceQDmg(ene) > ene.Health && ene.IsValid && ene.Distance(Player.Position) < 1200).ToList();
                     foreach (var enem in deadEnes)
                     {
                         if (Q1.GetPrediction(enem).Hitchance >= HitChance.Medium)
@@ -601,8 +601,8 @@ namespace DH.Jayce
             PredictionOutput po = Q1.GetPrediction(target);
             if (po.Hitchance == HitChance.Collision && Program.Config["extra"].GetValue<MenuBool>("useMunions"))
             {
-                AIBaseClient fistCol = po.CollisionObjects.OrderBy(unit => unit.Distance(Player.Position)).First();
-                if (fistCol.Distance(po.UnitPosition) < (180 - fistCol.BoundingRadius / 2) && fistCol.Distance(target.Position) < (100 - fistCol.BoundingRadius / 2))
+                AIBaseClient fistCol = po.CollisionObjects.OrderBy(unit => unit.Distance(Player.Position)).FirstOrDefault();
+                if (fistCol!= null && fistCol.Distance(po.UnitPosition) < (180 - fistCol.BoundingRadius / 2) && fistCol.Distance(target.Position) < (100 - fistCol.BoundingRadius / 2))
                 {
                     if (Q1.Cast(po.CastPosition))
                         castedQon = target;
@@ -617,7 +617,7 @@ namespace DH.Jayce
 
         public static Vector3 getBestPosToHammer(Vector3 target)
         {
-            AIBaseClient tower = ObjectManager.Get<AITurretClient>().Where(tur => tur.IsAlly && tur.Health > 0).OrderBy(tur => Player.Distance(tur)).First();
+            AIBaseClient tower = GameObjects.Turrets.Where(tur => tur.IsAlly && tur.Health > 0).OrderBy(tur => Player.Distance(tur)).First();
             return target + Vector3.Normalize(tower.Position - target) * (-120);
         }
 
@@ -628,7 +628,7 @@ namespace DH.Jayce
 
         public static AIHeroClient getClosestEnem()
         {
-            return ObjectManager.Get<AIHeroClient>().Where(ene => ene.IsEnemy && ene.IsValidTarget()).OrderBy(ene => Player.Distance(ene)).First();
+            return GameObjects.Heroes.Where(ene => ene.IsEnemy && ene.IsValidTarget()).OrderBy(ene => Player.Distance(ene)).First();
         }
 
         public static float getBestRange()
@@ -752,7 +752,7 @@ namespace DH.Jayce
 
         public static bool inMyTowerRange(Vector3 pos)
         {
-            return ObjectManager.Get<AITurretClient>().Where(tur => tur.IsAlly && tur.Health > 0).Any(tur => pos.Distance(tur.Position) < (850 + Player.BoundingRadius));
+            return GameObjects.AllyTurrets.Where(tur => tur.Health > 0).Any(tur => pos.Distance(tur.Position) < (850 + Player.BoundingRadius));
         }
 
         public static void castEonSpell(GameObject mis)
