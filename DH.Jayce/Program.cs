@@ -140,6 +140,9 @@ namespace DH.Jayce
                 Interrupter.OnInterrupterSpell += InterrupterSpellHandler;
                 //SmoothMouse.start();
 
+                Chat.PrintChat("<font color=\"#05FAAC\"><b>DH.Jayce:</b></font> Feedback send to facebook yts.1996 Sayuto");
+                Chat.PrintChat("<font color=\"#FF9900\"><b>Credits: Detuks</b></font>");
+                Chat.PrintChat("<font color=\"#FA053D\"><b>Notice: This script not include Farm/JungClear</b></font>");
             }
             catch (Exception ex)
             {
