@@ -80,8 +80,7 @@ namespace DH.Renekton
                 if (
                     ((Orbwalker.ActiveMode == OrbwalkerMode.Combo &&
                         checkFuryMode(SpellSlot.W, (AIBaseClient)args.Target)) ||
-                        Orbwalker.ActiveMode == OrbwalkerMode.Harass ||
-                        Orbwalker.ActiveMode == OrbwalkerMode.LaneClear))
+                        Orbwalker.ActiveMode == OrbwalkerMode.Harass))
                 {
                     //var time = Game.Time - W.Instance.CooldownExpires;
                     //if (W.Instance.Cooldown - Math.Abs(time) < 1 || time < -6 || player.HealthPercent < 50)
@@ -89,7 +88,7 @@ namespace DH.Renekton
                         castHydra(args.Target);
                     //}
                 }
-                if (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear || args.Target is AIHeroClient && Orbwalker.ActiveMode == OrbwalkerMode.Combo &&
+                if (args.Target is AIHeroClient && Orbwalker.ActiveMode == OrbwalkerMode.Combo &&
                     config["csettings"].GetValue<MenuBool>("usew") && checkFuryMode(SpellSlot.W, (AIBaseClient)args.Target))
                 {
                     if(W.Cast())
