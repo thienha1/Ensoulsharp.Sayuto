@@ -92,8 +92,8 @@ namespace DH.Renekton
                 if (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear || args.Target is AIHeroClient && Orbwalker.ActiveMode == OrbwalkerMode.Combo &&
                     config["csettings"].GetValue<MenuBool>("usew") && checkFuryMode(SpellSlot.W, (AIBaseClient)args.Target))
                 {
-                    W.Cast();
-                    Orbwalker.ResetAutoAttackTimer();
+                    if(W.Cast())
+                        Orbwalker.ResetAutoAttackTimer();
                     return;
                 }
                 if (args.Target is AIHeroClient && Orbwalker.ActiveMode == OrbwalkerMode.Harass &&
@@ -101,8 +101,8 @@ namespace DH.Renekton
                 {
                     if (W.IsReady())
                     {
-                        W.Cast();
-                        Orbwalker.ResetAutoAttackTimer();
+                        if (W.Cast())
+                            Orbwalker.ResetAutoAttackTimer();
                         return;
                     }
                     if (Q.IsReady())
