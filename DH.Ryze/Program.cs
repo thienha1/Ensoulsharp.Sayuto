@@ -117,8 +117,8 @@ namespace DH.Ryze
             //AIHeroClient.OnProcessSpellCast += AIBaseClientProcessSpellCast;
             Gapcloser.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
 
-            Chat.PrintChat("<font color=\"#FF9900\"><b>DH.Ryze</b></font> Author Sayuto");
-            Chat.PrintChat("<font color=\"#FF9900\"><b>Feedback send to facebook yts.1996 </b></font>");
+            Chat.Print("<font color=\"#FF9900\"><b>DH.Ryze</b></font> Author Sayuto");
+            Chat.Print("<font color=\"#FF9900\"><b>Feedback send to facebook yts.1996 </b></font>");
         }
         private static void Game_OnWndProc(WndEventArgs args)
         {
@@ -136,8 +136,8 @@ namespace DH.Ryze
         //    }
         //    if(s == Player)
         //    {
-        //        Chat.PrintChat("Total Time" + a.TotalTime);
-        //        Chat.PrintChat("msspeed" + a.SData.MissileSpeed);
+        //        Chat.Print("Total Time" + a.TotalTime);
+        //        Chat.Print("msspeed" + a.SData.MissileSpeed);
         //    }
         //}
 
@@ -228,7 +228,7 @@ namespace DH.Ryze
                 var minionsWE = GameObjects.EnemyMinions.Where(x => x.IsValidTarget(E.Range)).OrderBy(m => m.Health).Cast<AIBaseClient>().ToList();
 
                 if (useQ && Q.IsReady())
-                {                        
+                {
                     var minionsCanKill = minionsWE.Where(m => Q.GetDamage(m) >= m.Health).Cast<AIBaseClient>().ToList().FirstOrDefault();
                     if (minionsCanKill != null)
                         Q.Cast(minionsCanKill, true);
@@ -383,7 +383,7 @@ namespace DH.Ryze
         {
             if (Player.ManaPercent < Config["Harass"].GetValue<MenuSlider>("HarassManaCheck").Value)
                 return;
-            
+
             var targetQ = TargetSelector.GetTargets(Q.Range).Where(t => t.IsValidTarget(Q.Range)).OrderBy(x => 1/x.Health).FirstOrDefault();
             var targetE = TargetSelector.GetTarget(E.Range);
             if (targetQ != null || targetE != null)
@@ -414,7 +414,7 @@ namespace DH.Ryze
 
 
             //var autoWminTargets = Config["Misc"].GetValue<MenuBool>("AutoW");
-           
+
 
             if (Config["Combo"].GetValue<MenuKeyBind>("ComboActive").Active)
             {

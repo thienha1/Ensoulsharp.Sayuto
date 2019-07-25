@@ -21,9 +21,9 @@ namespace DH.Renekton
 
         private static Array ItemIds = new[]
         {
-            3077, //Tiamat = 
-            3074, //Hydra = 
-            3748 //Titanic = 
+            3077, //Tiamat =
+            3074, //Hydra =
+            3748 //Titanic =
         };
         private static void Main(string[] args)
         {
@@ -35,8 +35,8 @@ namespace DH.Renekton
             InitRenekton();
             InitMenu();
 
-            Chat.PrintChat("<font color=\"#05FAAC\"><b>DH.Renekton:</b></font> Feedback send to facebook yts.1996 Sayuto");
-            Chat.PrintChat("<font color=\"#FF9900\"><b>Credits: Soresu and Exory</b></font>");
+            Chat.Print("<font color=\"#05FAAC\"><b>DH.Renekton:</b></font> Feedback send to facebook yts.1996 Sayuto");
+            Chat.Print("<font color=\"#FF9900\"><b>Credits: Soresu and Exory</b></font>");
             Game.OnUpdate += Game_OnGameUpdate;
             Orbwalker.OnAction += OnActionDelegate;
             Drawing.OnDraw += Game_OnDraw;
@@ -139,8 +139,8 @@ namespace DH.Renekton
                 }
             }
 
-            
-            
+
+
         }
 
 

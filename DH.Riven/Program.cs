@@ -36,9 +36,9 @@ namespace DH.Riven
         private static readonly HpBarIndicator Indicator = new HpBarIndicator();
         private static Array ItemIds = new[]
 {
-            3077, //Tiamat = 
-            3074, //Hydra = 
-            3748 //Titanic = 
+            3077, //Tiamat =
+            3074, //Hydra =
+            3748 //Titanic =
         };
         private static bool Dind => Menu["Draw"].GetValue<MenuBool>("Dind");
         private static bool DrawCB => Menu["Draw"].GetValue<MenuBool>("DrawCB");
@@ -118,8 +118,8 @@ namespace DH.Riven
             AIBaseClient.OnProcessSpellCast += OnCasting;
             Interrupter.OnInterrupterSpell += Interrupt;
 
-            Chat.PrintChat("<font color=\"#05FAAC\"><b>DH.Riven:</b></font> Feedback send to facebook yts.1996 Sayuto");
-            Chat.PrintChat("<font color=\"#FF9900\"><b>Credits: Hoola</b></font>");
+            Chat.Print("<font color=\"#05FAAC\"><b>DH.Riven:</b></font> Feedback send to facebook yts.1996 Sayuto");
+            Chat.Print("<font color=\"#FF9900\"><b>Credits: Hoola</b></font>");
         }
 
         private static bool HasTitan() => (Items.HasItem(Player, 3748) && Items.CanUseItem(Player, 3748));
