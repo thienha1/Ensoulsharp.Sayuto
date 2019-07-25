@@ -77,7 +77,7 @@ namespace DH.Yasuo
                             if (skillshot.Evade(SpellSlot.W)
                                 && skillshot.SpellData.DangerValue >= Helper.GetSliderInt("Evade", "Evade.MinDangerLevelWW"))
                             {
-                                var castpos = Helper.Yasuo.Position.Extend(skillshot.MissilePosition.To3D(), randDist);
+                                var castpos = Helper.Yasuo.Position.Extend(skillshot.MissilePosition.ToVector3(), randDist);
                                 var delay = Helper.GetSliderInt("Evade", "Evade.Delay");
                                 if (Helper.TickCount - skillshot.StartTick >=
                                     skillshot.SpellData.setdelay +
