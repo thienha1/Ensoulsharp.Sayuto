@@ -27,7 +27,8 @@ namespace DH.Yasuo
             if (Helper.GetBool("Misc", "Misc.SafeE"))
             {
                 var point = Helper.GetDashPos(unit);
-                if (!Evade.Program.IsSafe(point).IsSafe)
+                if(SpellBlocking.EvadeManager.IsSafe(point).IsSafe)
+                //if (!SpellBlocking.EvadeManager.IsSafe(point).IsSafe)
                 {
                     return false;
                 }
@@ -47,7 +48,7 @@ namespace DH.Yasuo
             if (Helper.GetBool("Misc", "Misc.SafeE"))
             {
                 var point = Helper.GetDashPos(unit);
-                if (!Evade.Program.IsSafe(point).IsSafe)
+                if (!SpellBlocking.EvadeManager.IsSafe(point).IsSafe)
                 {
                     return false;
                 }

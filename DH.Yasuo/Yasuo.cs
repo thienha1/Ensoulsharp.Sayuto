@@ -35,7 +35,6 @@ namespace DH.Yasuo
             InitItems();
             InitSpells();
             YasuoMenu.Init(this);
-            Program.Init();
             if (GetBool("Misc", "Misc.Walljump") && Game.MapId == GameMapId.SummonersRift)
             {
                 WallJump.Initialize();
