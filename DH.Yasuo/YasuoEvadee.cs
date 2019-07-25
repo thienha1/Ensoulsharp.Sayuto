@@ -27,7 +27,7 @@ namespace DH.Yasuo
                 return;
             }
 
-            var skillshots = Program.DetectedSkillshots.Where(x => !x.Dodged).OrderBy(x => x.SpellData.DangerValue);
+            var skillshots = SpellBlocking.EvadeManager.DetectedSkillshots.Where(x => !x.Dodged).OrderBy(x => x.SpellData.DangerValue);
 
             foreach (var skillshot in skillshots)
             {

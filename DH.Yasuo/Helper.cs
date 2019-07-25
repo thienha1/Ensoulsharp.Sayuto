@@ -377,7 +377,7 @@ namespace DH.Yasuo
         internal bool SafetyCheck(AIBaseClient unit, bool isCombo = false)
         {
             var pos = GetDashPos(unit);
-            return ((isCombo && Helper.GetBool("Combo", "Combo.ETower") && (!GetBool("Combo", "Combo.AvoidDanger") || Evade.Program.IsSafe(pos).IsSafe)) || Helper.GetKeyBind("Misc", "Misc.TowerDive") ||
+            return ((isCombo && Helper.GetBool("Combo", "Combo.ETower") && (!GetBool("Combo", "Combo.AvoidDanger") || SpellBlocking.EvadeManager.IsSafe(pos).IsSafe)) || Helper.GetKeyBind("Misc", "Misc.TowerDive") ||
                    !pos.IsUnderEnemyTurret());
         }
 

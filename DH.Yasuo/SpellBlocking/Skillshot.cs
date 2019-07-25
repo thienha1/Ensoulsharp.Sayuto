@@ -28,6 +28,7 @@ namespace SpellBlocking
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using DH.Yasuo;
 
     #endregion
 
@@ -82,7 +83,7 @@ namespace SpellBlocking
             {
                 bestAllies = GameObjects.AllyHeroes
                     .Where(t =>
-                        t.Distance(ObjectManager.Player) < SupportAIO.Common.Champion.E.Range)
+                        t.Distance(ObjectManager.Player) < Helper.Spells[Helper.E].Range)
                     .OrderBy(x => x.Health);
             }
             if (ObjectManager.Player.CharacterName == "Lux" ||
@@ -92,7 +93,7 @@ namespace SpellBlocking
             {
                 bestAllies = GameObjects.AllyHeroes
                     .Where(t =>
-                        t.Distance(ObjectManager.Player) < SupportAIO.Common.Champion.W.Range)
+                        t.Distance(ObjectManager.Player) < Helper.Spells[Helper.W].Range)
                     .OrderBy(x => x.Health);
             }
             foreach (var ally in bestAllies)
@@ -147,7 +148,7 @@ namespace SpellBlocking
                     {
                         bestAllies = GameObjects.AllyHeroes
                             .Where(t =>
-                                t.Distance(ObjectManager.Player) < SupportAIO.Common.Champion.E.Range)
+                                t.Distance(ObjectManager.Player) < Helper.Spells[Helper.E].Range)
                             .OrderBy(x => x.Health);
                     }
                     if (ObjectManager.Player.CharacterName == "Lux" || ObjectManager.Player.CharacterName == "Sona" ||
@@ -156,7 +157,7 @@ namespace SpellBlocking
                     {
                         bestAllies = GameObjects.AllyHeroes
                             .Where(t =>
-                                t.Distance(ObjectManager.Player) < SupportAIO.Common.Champion.W.Range)
+                                t.Distance(ObjectManager.Player) < Helper.Spells[Helper.W].Range)
                             .OrderBy(x => x.Health);
                     }
                     foreach (var ally in bestAllies)
@@ -353,7 +354,7 @@ namespace SpellBlocking
                 {
                     bestAllies = GameObjects.AllyHeroes
                         .Where(t =>
-                            t.Distance(ObjectManager.Player) < SupportAIO.Common.Champion.E.Range)
+                            t.Distance(ObjectManager.Player) < Helper.Spells[Helper.E].Range)
                         .OrderBy(x => x.Health);
                 }
                 if (ObjectManager.Player.CharacterName == "Lux" || ObjectManager.Player.CharacterName == "Sona" ||
@@ -362,7 +363,7 @@ namespace SpellBlocking
                 {
                     bestAllies = GameObjects.AllyHeroes
                         .Where(t =>
-                            t.Distance(ObjectManager.Player) < SupportAIO.Common.Champion.W.Range)
+                            t.Distance(ObjectManager.Player) < Helper.Spells[Helper.W].Range)
                         .OrderBy(x => x.Health);
                 }
                 foreach (var ally in bestAllies)
