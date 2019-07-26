@@ -11,7 +11,6 @@
     using System.Linq;
 
     #endregion
-    using SupportAIO;
     internal class EvadeOthers
     {
         public static Menu Menu;
@@ -34,7 +33,7 @@
                 foreach (
                var hero in
                GameObjects.EnemyHeroes.Where(
-                   i => BlockSpellDataBase.Spells.Any(a => a.ChampionName == i.CharacterName)))
+                   i => BlockSpellDataBase.Spells.Any(a => a.CharacterName == i.CharacterName)))
                 {
                     foreach (
             var spell in
@@ -42,14 +41,14 @@
                 x =>
                     ObjectManager.Get<AIHeroClient>().Any(
                         a => a.IsEnemy &&
-                             string.Equals(a.CharacterName, x.ChampionName,
+                             string.Equals(a.CharacterName, x.CharacterName,
                                  StringComparison.CurrentCultureIgnoreCase))))
                     {
 
-                        if (String.Equals(spell.ChampionName, hero.CharacterName, StringComparison.InvariantCultureIgnoreCase))
+                        if (String.Equals(spell.CharacterName, hero.CharacterName, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            var heroMenu = new Menu("Block" + spell.ChampionName.ToLower(), spell.ChampionName);
-                            heroMenu.Add(new MenuBool("BlockSpell" + spell.SpellSlot, spell.ChampionName + " " + spell.SpellSlot));
+                            var heroMenu = new Menu("Block" + spell.CharacterName.ToLower(), spell.CharacterName);
+                            heroMenu.Add(new MenuBool("BlockSpell" + spell.SpellSlot, spell.CharacterName + " " + spell.SpellSlot));
                             Menu.Add(heroMenu);
 
                         }

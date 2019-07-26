@@ -115,11 +115,11 @@ namespace Evade
 
         public static void Init()
         {
-            PlayerChampionName = ObjectManager.Player.ChampionName;
+            PlayerChampionName = ObjectManager.Player.CharacterName;
 
             //Add the game events.
             Game.OnUpdate += Game_OnOnGameUpdate;
-            //Obj_AI_Hero.OnIssueOrder += ObjAiHeroOnOnIssueOrder;
+            //AIHeroClient.OnIssueOrder += ObjAiHeroOnOnIssueOrder;
             //Spellbook.OnCastSpell += Spellbook_OnCastSpell;
             //Set up the OnDetectSkillshot Event.
             SkillshotDetector.OnDetectSkillshot += OnDetectSkillshot;
@@ -148,7 +148,7 @@ namespace Evade
 
             if (Config.PrintSpellData)
             {
-                foreach (var hero in ObjectManager.Get<Obj_AI_Hero>())
+                foreach (var hero in ObjectManager.Get<AIHeroClient>())
                 {
                     foreach (var spell in hero.Spellbook.Spells)
                     {
@@ -486,11 +486,11 @@ namespace Evade
             }
 
             //Shield allies.
-            foreach (var ally in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (var ally in ObjectManager.Get<AIHeroClient>())
             {
                 if (ally.IsValidTarget(1000, false))
                 {
-                    var shieldAlly = Config.Menu.Item("shield" + ally.ChampionName);
+                    var shieldAlly = Config.Menu.Item("shield" + ally.CharacterName);
                     if (shieldAlly != null && shieldAlly.GetValue<bool>())
                     {
                         var allySafeResult = IsSafe(ally.ServerPosition.To2D());
@@ -650,7 +650,7 @@ namespace Evade
         /// Used to block the movement to avoid entering in dangerous areas.
         /// </summary>
         /// 
-        private static void ObjAiHeroOnOnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
+        private static void ObjAiHeroOnOnIssueOrder(AIBaseClient sender, GameObjectIssueOrderEventArgs args)
         {
             if (!sender.IsMe)
             {
@@ -747,10 +747,10 @@ namespace Evade
             if (!safePath.IsSafe && args.Order == GameObjectOrder.AttackUnit)
             {
                 var target = args.Target;
-                if (target != null && target.IsValid<Obj_AI_Base>() && target.IsVisible)
+                if (target != null && target.IsValid<AIBaseClient>() && target.IsVisible)
                 {
                     //Out of attack range.
-                    if (PlayerPosition.Distance(((Obj_AI_Base)target).ServerPosition) >
+                    if (PlayerPosition.Distance(((AIBaseClient)target).ServerPosition) >
                         ObjectManager.Player.AttackRange + ObjectManager.Player.BoundingRadius +
                         target.BoundingRadius)
                     {
@@ -764,7 +764,7 @@ namespace Evade
             }
         }
 
-        private static void UnitOnOnDash(Obj_AI_Base sender, Dash.DashItem args)
+        private static void UnitOnOnDash(AIBaseClient sender, Dash.DashItem args)
         {
             if (sender.IsMe)
             {
@@ -808,7 +808,7 @@ namespace Evade
             int timeOffset,
             int speed = -1,
             int delay = 0,
-            Obj_AI_Base unit = null)
+            AIBaseClient unit = null)
         {
             var IsSafe = true;
             var intersections = new List<FoundIntersection>();
@@ -859,7 +859,7 @@ namespace Evade
         /// <summary>
         /// Returns true if some detected skillshot is about to hit the unit.
         /// </summary>
-        public static bool IsAboutToHit(Obj_AI_Base unit, int time)
+        public static bool IsAboutToHit(AIBaseClient unit, int time)
         {
             time += 150;
             foreach (var skillshot in DetectedSkillshots)

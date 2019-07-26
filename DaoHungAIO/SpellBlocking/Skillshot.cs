@@ -28,7 +28,6 @@ namespace SpellBlocking
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using DH.Yasuo;
 
     #endregion
 
@@ -76,26 +75,26 @@ namespace SpellBlocking
            Direction = (Vector2)(end - start).ToVector3().Normalized();
 
             Unit = unit;
-            if (ObjectManager.Player.CharacterName == "Janna" ||
-                ObjectManager.Player.CharacterName == "Rakan" || ObjectManager.Player.CharacterName == "Ivern" ||
-                ObjectManager.Player.CharacterName == "Lulu" ||
-                ObjectManager.Player.CharacterName == "Karma")
-            {
-                bestAllies = GameObjects.AllyHeroes
-                    .Where(t =>
-                        t.Distance(ObjectManager.Player) < Helper.Spells[Helper.E].Range)
-                    .OrderBy(x => x.Health);
-            }
-            if (ObjectManager.Player.CharacterName == "Lux" ||
-                ObjectManager.Player.CharacterName == "Sona" ||
-                ObjectManager.Player.CharacterName == "Taric")
+            //if (ObjectManager.Player.CharacterName == "Janna" ||
+            //    ObjectManager.Player.CharacterName == "Rakan" || ObjectManager.Player.CharacterName == "Ivern" ||
+            //    ObjectManager.Player.CharacterName == "Lulu" ||
+            //    ObjectManager.Player.CharacterName == "Karma")
+            //{
+            //    bestAllies = GameObjects.AllyHeroes
+            //        .Where(t =>
+            //            t.Distance(ObjectManager.Player) < Helper.Spells[Helper.E].Range)
+            //        .OrderBy(x => x.Health);
+            //}
+            //if (ObjectManager.Player.CharacterName == "Lux" ||
+            //    ObjectManager.Player.CharacterName == "Sona" ||
+            //    ObjectManager.Player.CharacterName == "Taric")
 
-            {
-                bestAllies = GameObjects.AllyHeroes
-                    .Where(t =>
-                        t.Distance(ObjectManager.Player) < Helper.Spells[Helper.W].Range)
-                    .OrderBy(x => x.Health);
-            }
+            //{
+            //    bestAllies = GameObjects.AllyHeroes
+            //        .Where(t =>
+            //            t.Distance(ObjectManager.Player) < Helper.Spells[Helper.W].Range)
+            //        .OrderBy(x => x.Health);
+            //}
             foreach (var ally in bestAllies)
             {
 
@@ -141,25 +140,25 @@ namespace SpellBlocking
 
                 if (IsGlobal)
                 {
-                    if (ObjectManager.Player.CharacterName == "Janna" ||
-                        ObjectManager.Player.CharacterName == "Rakan" ||
-                        ObjectManager.Player.CharacterName == "Lulu" || ObjectManager.Player.CharacterName == "Ivern" ||
-                        ObjectManager.Player.CharacterName == "Karma")
-                    {
-                        bestAllies = GameObjects.AllyHeroes
-                            .Where(t =>
-                                t.Distance(ObjectManager.Player) < Helper.Spells[Helper.E].Range)
-                            .OrderBy(x => x.Health);
-                    }
-                    if (ObjectManager.Player.CharacterName == "Lux" || ObjectManager.Player.CharacterName == "Sona" ||
-                        ObjectManager.Player.CharacterName == "Taric")
+                    //if (ObjectManager.Player.CharacterName == "Janna" ||
+                    //    ObjectManager.Player.CharacterName == "Rakan" ||
+                    //    ObjectManager.Player.CharacterName == "Lulu" || ObjectManager.Player.CharacterName == "Ivern" ||
+                    //    ObjectManager.Player.CharacterName == "Karma")
+                    //{
+                    //    bestAllies = GameObjects.AllyHeroes
+                    //        .Where(t =>
+                    //            t.Distance(ObjectManager.Player) < Helper.Spells[Helper.E].Range)
+                    //        .OrderBy(x => x.Health);
+                    //}
+                    //if (ObjectManager.Player.CharacterName == "Lux" || ObjectManager.Player.CharacterName == "Sona" ||
+                    //    ObjectManager.Player.CharacterName == "Taric")
 
-                    {
-                        bestAllies = GameObjects.AllyHeroes
-                            .Where(t =>
-                                t.Distance(ObjectManager.Player) < Helper.Spells[Helper.W].Range)
-                            .OrderBy(x => x.Health);
-                    }
+                    //{
+                    //    bestAllies = GameObjects.AllyHeroes
+                    //        .Where(t =>
+                    //            t.Distance(ObjectManager.Player) < Helper.Spells[Helper.W].Range)
+                    //        .OrderBy(x => x.Health);
+                    //}
                     foreach (var ally in bestAllies)
                     {
 
@@ -347,25 +346,25 @@ namespace SpellBlocking
         {
             
                 var Distance = 0f;
-                if (ObjectManager.Player.CharacterName == "Janna" ||
-                    ObjectManager.Player.CharacterName == "Rakan" || ObjectManager.Player.CharacterName == "Ivern" ||
-                    ObjectManager.Player.CharacterName == "Lulu" ||
-                    ObjectManager.Player.CharacterName == "Karma")
-                {
-                    bestAllies = GameObjects.AllyHeroes
-                        .Where(t =>
-                            t.Distance(ObjectManager.Player) < Helper.Spells[Helper.E].Range)
-                        .OrderBy(x => x.Health);
-                }
-                if (ObjectManager.Player.CharacterName == "Lux" || ObjectManager.Player.CharacterName == "Sona" ||
-                    ObjectManager.Player.CharacterName == "Taric")
+                //if (ObjectManager.Player.CharacterName == "Janna" ||
+                //    ObjectManager.Player.CharacterName == "Rakan" || ObjectManager.Player.CharacterName == "Ivern" ||
+                //    ObjectManager.Player.CharacterName == "Lulu" ||
+                //    ObjectManager.Player.CharacterName == "Karma")
+                //{
+                //    bestAllies = GameObjects.AllyHeroes
+                //        .Where(t =>
+                //            t.Distance(ObjectManager.Player) < Helper.Spells[Helper.E].Range)
+                //        .OrderBy(x => x.Health);
+                //}
+                //if (ObjectManager.Player.CharacterName == "Lux" || ObjectManager.Player.CharacterName == "Sona" ||
+                //    ObjectManager.Player.CharacterName == "Taric")
 
-                {
-                    bestAllies = GameObjects.AllyHeroes
-                        .Where(t =>
-                            t.Distance(ObjectManager.Player) < Helper.Spells[Helper.W].Range)
-                        .OrderBy(x => x.Health);
-                }
+                //{
+                //    bestAllies = GameObjects.AllyHeroes
+                //        .Where(t =>
+                //            t.Distance(ObjectManager.Player) < Helper.Spells[Helper.W].Range)
+                //        .OrderBy(x => x.Health);
+                //}
                 foreach (var ally in bestAllies)
                 {
 
