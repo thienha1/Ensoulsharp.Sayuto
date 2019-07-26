@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DaoHungAIO.Champions;
 using DaoHungAIO.Helpers;
 using EnsoulSharp;
 using EnsoulSharp.SDK;
@@ -18,7 +19,7 @@ namespace DaoHungAIO
     {
         public static AIHeroClient player;
         public static string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-        public static IncomingDamage IncDamages;
+        //public static IncomingDamage IncDamages;
         public static Menu SPredictionMenu;
 
         public static bool IsSPrediction
@@ -37,22 +38,32 @@ namespace DaoHungAIO
             {
                 player = ObjectManager.Player;
                 SPredictionMenu = SPrediction.Prediction.Initialize(); //new Menu("SPREDX", "SPrediction");
-                SPredictionMenu.Add(new MenuList("PREDICTONLIST", "PREDICTONLIST", new[] { "SPrediction", "Common Predicion" }, 1));
+                SPredictionMenu.Add(new MenuList("PREDICTONLIST2", "PREDICTONLIST2", new[] { "SPrediction", "Common Predicion" }, 1));
                 //set default to common prediction
-                var type = Type.GetType("DaoHungAIO.Champions." + player.CharacterName);
-                if (type != null)
+                //var type = Type.GetType("DaoHungAIO.Champions." + player.CharacterName);
+                //Chat.Print("Loading1");
+                //if (type != null)
+                //{
+                //    Chat.Print("Loading");
+                //    Helpers.DynamicInitializer.NewInstance(type);
+                //}
+                //else
+                //{
+                //    Chat.Print("Loading2");
+                //    var common = Type.GetType("DaoHungAIO.Champions." + "Other");
+                //    if (common != null)
+                //    {
+                //        Chat.Print("Loading3");
+                //        Helpers.DynamicInitializer.NewInstance(common);
+                //    }
+                //}
+                //IncDamages = new IncomingDamage();
+                switch (player.CharacterName)
                 {
-                    Helpers.DynamicInitializer.NewInstance(type);
+                    case "Jax":
+                        new Jax();
+                        break;
                 }
-                else
-                {
-                    var common = Type.GetType("DaoHungAIO.Champions." + "Other");
-                    if (common != null)
-                    {
-                        Helpers.DynamicInitializer.NewInstance(common);
-                    }
-                }
-                IncDamages = new IncomingDamage();
             }
             catch (Exception e)
             {
