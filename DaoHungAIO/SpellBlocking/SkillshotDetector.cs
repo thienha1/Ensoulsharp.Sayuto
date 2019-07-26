@@ -59,7 +59,7 @@ namespace SpellBlocking
                 return;
             }
 
-            if (EvadeManager.SkillShotMenu["Evade" + spellData.ChampionName.ToLower()][
+            if (EvadeManager.SkillShotMenu["Evade" + spellData.CharacterName.ToLower()][
                     "Enabled" + spellData.MenuItemName] == null)
             {
                 return;

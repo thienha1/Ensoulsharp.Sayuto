@@ -5008,7 +5008,7 @@ namespace SpellBlocking
         {
             foreach (var spellData in Spells)
             {
-                if (spellData.ChampionName == ChampionName && spellData.MissileSpeed == speed &&
+                if (spellData.CharacterName == ChampionName && spellData.MissileSpeed == speed &&
                     (spellData.Id == -1 || id == spellData.Id))
                 {
                     return spellData;

@@ -69,15 +69,15 @@ namespace SpellBlocking
                     foreach (
                         var hero in
                         GameObjects.EnemyHeroes.Where(
-                            i => SpellDatabase.Spells.Any(a => a.ChampionName == i.CharacterName)))
+                            i => SpellDatabase.Spells.Any(a => a.CharacterName == i.CharacterName)))
                     {
                         foreach (
                       var spell in
                       SpellDatabase.Spells.Where(
-                          i => GameObjects.EnemyHeroes.Any(a => a.CharacterName == i.ChampionName)))
+                          i => GameObjects.EnemyHeroes.Any(a => a.CharacterName == i.CharacterName)))
                         {
 
-                            if (String.Equals(spell.ChampionName, hero.CharacterName, StringComparison.InvariantCultureIgnoreCase))
+                            if (String.Equals(spell.CharacterName, hero.CharacterName, StringComparison.InvariantCultureIgnoreCase))
                             {
                                 var heroMenu = new Menu("Evade" + hero.CharacterName.ToLower(), hero.CharacterName);
 
