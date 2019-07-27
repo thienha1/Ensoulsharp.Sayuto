@@ -19,7 +19,7 @@ namespace Skins_Change
 
         #region
 
-        private static readonly MenuSlider skinsMenu = new MenuSlider("Skins", "nothing", 0, 0, 20);
+        private static readonly MenuSlider skinsMenu = new MenuSlider("Skins", "nothing", 0, 0, 50);
 
         #endregion
 
