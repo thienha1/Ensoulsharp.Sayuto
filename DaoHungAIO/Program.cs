@@ -68,6 +68,9 @@ namespace DaoHungAIO
                     case "Fizz":
                         new Fizz();
                         break;
+                    case "Garen":
+                        new Garen();
+                        break;
                     case "Jax":
                         new Jax();
                         break;
