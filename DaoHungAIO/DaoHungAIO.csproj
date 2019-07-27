@@ -64,7 +64,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Champions\Azir.cs" />
+    <Compile Include="Champions\Fizz.cs" />
     <Compile Include="Champions\Jax.cs" />
+    <Compile Include="Champions\Tristana.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

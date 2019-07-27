@@ -27,6 +27,8 @@ namespace DaoHungAIO
             get { return SPredictionMenu["SPREDX"].GetValue<MenuList>("PREDICTONLIST").SelectedValue == "SPrediction"; }
         }
 
+        public static object Player { get; internal set; }
+
         private static void Main(string[] args)
         {
             GameEvent.OnGameLoad += OnGameLoad;
@@ -60,8 +62,17 @@ namespace DaoHungAIO
                 //IncDamages = new IncomingDamage();
                 switch (player.CharacterName)
                 {
+                    case "Azir":
+                        new Azir();
+                        break;
+                    case "Fizz":
+                        new Fizz();
+                        break;
                     case "Jax":
                         new Jax();
+                        break;
+                    case "Tristana":
+                        new Tristana();
                         break;
                 }
             }

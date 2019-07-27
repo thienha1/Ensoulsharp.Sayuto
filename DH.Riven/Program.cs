@@ -12,6 +12,7 @@ using EnsoulSharp.SDK.Prediction;
 using SharpDX;
 using EnsoulSharp.SDK.Utility;
 using Color = System.Drawing.Color;
+using SPrediction;
 
 namespace DH.Riven
 {
@@ -340,7 +341,7 @@ namespace DH.Riven
             Misc.Add(new MenuBool("youmu", "Use Youmus When E")).SetValue(false);
             Misc.Add(new MenuBool("FirstHydra", "Flash Burst Hydra Cast before W")).SetValue(false);
             Misc.Add(new MenuBool("Qstrange", "Strange Q For Speed")).SetValue(false);
-            Misc.Add(new MenuBool("Winterrupt", "W interrupt"));
+            Misc.Add(new MenuBool("WInterrupt", "W interrupt"));
             Misc.Add(new MenuSlider("AutoW", "Auto W When x Enemy", 5, 0, 5));
             Misc.Add(new MenuBool("RMaxDam", "Use Second R Max Damage"));
             Misc.Add(new MenuBool("killstealw", "Killsteal W"));
@@ -716,7 +717,8 @@ namespace DH.Riven
 
         private static void ForceSkill()
         {
-            if (Player.GetBuffCount("rivenpassiveaaboost") < 3 && forceQ && QTarget != null && QTarget.IsValidTarget(E.Range + Player.BoundingRadius + 70) && Q.IsReady()) Q.Cast(QTarget.Position);
+            if (Player.GetBuffCount("rivenpassiveaaboost") < 3 && forceQ && QTarget != null && QTarget.IsValidTarget(E.Range + Player.BoundingRadius + 70) && Q.IsReady())
+                Q.Cast(Prediction.GetFastUnitPosition((AIBaseClient)QTarget, 0.1f));
             if (forceW) W.Cast();
             if (forceR && R.Instance.Name == IsFirstR) R.Cast();
             if (forceItem && Items.CanUseItem(Player, Item) && Items.HasItem(Player, Item) && Item != 0) Items.UseItem(Player, Item);

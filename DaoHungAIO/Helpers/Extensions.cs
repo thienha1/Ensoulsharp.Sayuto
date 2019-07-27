@@ -1,4 +1,5 @@
-﻿using EnsoulSharp;
+﻿using DaoHungAIO.Champions;
+using EnsoulSharp;
 using EnsoulSharp.SDK;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,11 @@ using System.Threading.Tasks;
 
 namespace DaoHungAIO.Helpers
 {
-    public  class Extensions
+    public static class Extensions
     {
         private static AIHeroClient Player = ObjectManager.Player;
+        private const int _soldierAARange = 250;
+
         public static IDictionary<string, SpellSlot> BuffsList = new Dictionary<string, SpellSlot>()
         {
             {"deadlyvenom", SpellSlot.Unknown},
@@ -42,5 +45,6 @@ namespace DaoHungAIO.Helpers
 
             return dmg > i.Health;
         }
+
     }
 }
