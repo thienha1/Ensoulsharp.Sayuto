@@ -75,7 +75,7 @@ namespace DH.Velkoz
 
             //Create the menu
             Config = new Menu(ChampionName, "DH.Velkoz", true);
-            
+
             //Combo menu:
             var Combo = new Menu("Combo", "Combo");
             Combo.Add(new MenuBool("UseQCombo", "Use Q"));
@@ -141,8 +141,8 @@ namespace DH.Velkoz
             Interrupter.OnInterrupterSpell += InterrupterSpellHandler;
             GameObject.OnCreate += Obj_SpellMissile_OnCreate;
             Spellbook.OnUpdateChargeableSpell += SpellbookUpdateChargeableSpell;
-            Chat.PrintChat("<font color=\"#FF9900\"><b>DH.Velkoz:</b></font> Feedback send to facebook yts.1996 Sayuto");
-            Chat.PrintChat("<font color=\"#FF9900\"><b>Credits: Kortatu</b></font>");
+            Chat.Print("<font color=\"#FF9900\"><b>DH.Velkoz:</b></font> Feedback send to facebook yts.1996 Sayuto");
+            Chat.Print("<font color=\"#FF9900\"><b>Credits: Kortatu</b></font>");
         }
 
         static void InterrupterSpellHandler (AIHeroClient sender, Interrupter.InterruptSpellArgs args)
@@ -373,7 +373,7 @@ namespace DH.Velkoz
                 return;
             }
 
-            
+
             if (QMissile != null && QMissile.IsValid && Q.Instance.ToggleState == 1)
             {
                 var qMissilePosition = QMissile.Position.ToVector2();

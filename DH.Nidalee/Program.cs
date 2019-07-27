@@ -242,8 +242,8 @@ namespace DH_Nidalee
 
 
             _mainMenu.Attach();
-            Chat.PrintChat("<font color=\"#FF9900\"><b>DH.Nidalee:</b></font> Anything feedback send to facebook yts.1996 Sayuto");
-			Chat.PrintChat("<font color=\"#FF9900\"><b>Credits: Kurisu</b></font>");
+            Chat.Print("<font color=\"#FF9900\"><b>DH.Nidalee:</b></font> Anything feedback send to facebook yts.1996 Sayuto");
+			Chat.Print("<font color=\"#FF9900\"><b>Credits: Kurisu</b></font>");
 		}
 
         #endregion
@@ -830,7 +830,7 @@ namespace DH_Nidalee
 
                 if (!Pounce.IsReady() && !Takedown.IsReady() && !Primalsurge.IsReady())
                 {
-                    Chat.PrintChat("Will heal");
+                    Chat.Print("Will heal");
                     if ((HQ == 0 || HE == 0 && Me.Health / Me.MaxHealth * 100 <=
                          _mainMenu["hengine"].GetValue<MenuSlider>("healpct" + Me.CharacterName).Value &&
                          _mainMenu["jungleclear"].GetValue<MenuBool>("jgheal")) && Aspectofcougar.IsReady() &&

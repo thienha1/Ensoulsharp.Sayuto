@@ -190,8 +190,8 @@ namespace DH.Syndra
             Interrupter.OnInterrupterSpell += InterrupterSpellHandler;
 
             Drawing.OnDraw += Drawing_OnDraw;
-            Chat.PrintChat("<font color=\"#FF9900\"><b>DH.Syndra:</b></font> Feedback send to facebook yts.1996 Sayuto");
-            Chat.PrintChat("<font color=\"#FF9900\"><b>Credits: Kortatu</b></font>");
+            Chat.Print("<font color=\"#FF9900\"><b>DH.Syndra:</b></font> Feedback send to facebook yts.1996 Sayuto");
+            Chat.Print("<font color=\"#FF9900\"><b>Credits: Kortatu</b></font>");
         }
 
         private static void Game_OnWndProc(WndEventArgs args)
@@ -378,7 +378,7 @@ namespace DH.Syndra
                 }
                 else if (wTarget != null && Player.Spellbook.GetSpell(SpellSlot.W).ToggleState != 0 && W.IsReady())
                 {
-                    
+
                         W.Cast(wTarget, true);
                 }
             }
