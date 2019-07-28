@@ -26,9 +26,7 @@ namespace DaoHungAIO.Champions
         private static readonly AIHeroClient player = ObjectManager.Player;
 
         public Tristana()
-        {           
-
-            Notifications.Add(new Notification("DaoHungAIO", "Tristana Loaded!"));
+        {
 
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 585);
@@ -134,15 +132,31 @@ namespace DaoHungAIO.Champions
             Drawing.OnDraw += OnDraw;
             //AIBaseClient.OnLevelUp += TristRange;
             Game.OnUpdate += Game_OnGameUpdate;
-            Drawing.OnEndScene += OnEndScene;
             Interrupter.OnInterrupterSpell += Interrupter_OnInterruptableTarget;
             Gapcloser.OnGapcloser += AntiGapCloser_OnEnemyGapcloser;
             GameObject.OnCreate += GameObject_OnCreate;
+            AIHeroClient.OnLevelUp += OnLevelUp;
+            Spellbook.OnStopCast += SpellbookStopCast;
 
 
 
         }
 
+        private static void SpellbookStopCast(AIBaseClient sender, SpellbookStopCastEventArgs args)
+        {
+            if (sender != null)
+                return;
+            Chat.Print("DestroyMissile " + args.DestroyMissile.ToString());
+            Chat.Print("HasBeenCast " + args.HasBeenCast.ToString());
+            Chat.Print("KeepAnimationPlaying " + args.KeepAnimationPlaying.ToString());
+            Chat.Print("MissileToDestroy " + args.MissileToDestroy.ToString());
+            Chat.Print("SpellCastID " + args.SpellCastID.ToString());
+            Chat.Print("SpellStopCancelled " + args.SpellStopCancelled.ToString());
+        }
+        private static void OnLevelUp(AIHeroClient sender, AIHeroClientLevelUpEventArgs args)
+        {
+            TristRange();
+        }
         private static void TristRange()
         {
             var lvl = (7 * (player.Level - 1));
@@ -182,33 +196,6 @@ namespace DaoHungAIO.Champions
         {
             if (R.IsReady() && sender.IsValidTarget(E.Range) && Config["Misc"].GetValue<MenuBool>("antigap"))
                 R.CastOnUnit(sender);
-        }
-
-        private static void OnEndScene(EventArgs args)
-        {
-            //if (Config.Item("disable.dmg"))
-            //{
-            //    EnsoulSharp.SDK.Utility.HpBarDamageIndicator.Enabled = false;
-            //    return;
-            //}
-            //int mode = Config.Item("dmgdrawer", true).GetValue<StringList>().SelectedValue;
-            //if (mode == 0)
-            //{
-            //    foreach (var enemy in
-            //        ObjectManager.Get<AIHeroClient>().Where(ene => !ene.IsDead && ene.IsEnemy && ene.IsVisible))
-            //    {
-            //        Hpi.unit = enemy;
-            //        Hpi.drawDmg(CalcDamage(enemy), Color.Green);
-            //        Utility.HpBarDamageIndicator.Enabled = false;
-            //    }
-            //}
-            //if (mode == 1)
-            //{
-            //    Utility.HpBarDamageIndicator.DamageToUnit = CalcDamage;
-            //    Utility.HpBarDamageIndicator.Color = Color.Aqua;
-            //    Utility.HpBarDamageIndicator.Enabled = true;
-
-            //}
         }
 
         private static void combo()
@@ -416,7 +403,6 @@ namespace DaoHungAIO.Champions
         //}
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            TristRange();
             switch (Orbwalker.ActiveMode)
             {
                 case OrbwalkerMode.Combo:
