@@ -718,7 +718,7 @@ namespace DH.Riven
         private static void ForceSkill()
         {
             if (Player.GetBuffCount("rivenpassiveaaboost") < 3 && forceQ && QTarget != null && QTarget.IsValidTarget(E.Range + Player.BoundingRadius + 70) && Q.IsReady())
-                Q.Cast(Prediction.GetFastUnitPosition((AIBaseClient)QTarget, 0.1f));
+                Q.Cast((AIBaseClient)QTarget);
             if (forceW) W.Cast();
             if (forceR && R.Instance.Name == IsFirstR) R.Cast();
             if (forceItem && Items.CanUseItem(Player, Item) && Items.HasItem(Player, Item) && Item != 0) Items.UseItem(Player, Item);

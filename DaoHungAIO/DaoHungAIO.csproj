@@ -63,16 +63,16 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="EnsoulSharp.SDK">
-      <HintPath>..\..\Ensoul Core\EnsoulSharp.SDK.dll</HintPath>
+      <HintPath>C:\Users\dao hung\Desktop\EnsoulSharp.Dependencies-master\Loader\EnsoulSharp\System\EnsoulSharp.SDK.dll</HintPath>
     </Reference>
     <Reference Include="EnsoulSharp.Wrapper">
-      <HintPath>..\..\Ensoul Core\EnsoulSharp.Wrapper.dll</HintPath>
+      <HintPath>C:\Users\dao hung\Desktop\EnsoulSharp.Dependencies-master\Loader\EnsoulSharp\System\EnsoulSharp.Wrapper.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\..\Ensoul Core\SharpDX.dll</HintPath>
+      <HintPath>C:\Users\dao hung\Desktop\EnsoulSharp.Dependencies-master\Loader\EnsoulSharp\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SPrediction">
-      <HintPath>Resources\SPrediction.dll</HintPath>
+      <HintPath>C:\Users\dao hung\Desktop\EnsoulSharp.Dependencies-master\Loader\EnsoulSharp\System\SPrediction.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

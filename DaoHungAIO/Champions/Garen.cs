@@ -4,6 +4,7 @@ using System.Linq;
 using EnsoulSharp;
 using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI;
+using EnsoulSharp.SDK.MenuUI.Values;
 using EnsoulSharp.SDK.Utility;
 
 namespace DaoHungAIO.Champions
@@ -22,7 +23,7 @@ namespace DaoHungAIO.Champions
             Game.OnUpdate += Game_OnGameUpdate;
             Orbwalker.OnAction += AfterAttack;
             Drawing.OnDraw += Game_OnDraw;
-            Jungle.setSmiteSlot();
+            //Jungle.setSmiteSlot();
         }
 
         private void Game_OnGameUpdate(EventArgs args)
@@ -60,21 +61,22 @@ namespace DaoHungAIO.Champions
 
         private void Clear()
         {
-            if (config.Item("useeLC", true).GetValue<bool>() && E.IsReady() && !GarenE &&
-                Environment.Minion.countMinionsInrange(player.Position, E.Range) > 2)
+            if (config["LaneClear"].GetValue<MenuBool>("useeLC") && E.IsReady() && !GarenE &&
+                GameObjects.AttackableUnits.Where(x => x.IsValidTarget(E.Range) && x.IsEnemy).Count() > 2)
             {
                 E.Cast();
             }
         }
 
-        private void AfterAttack(AttackableUnit unit, AttackableUnit target)
+        private void AfterAttack(Object sender, OrbwalkerActionArgs args)
         {
-            if (unit.IsMe && Q.IsReady() && config.Item("useqAAA", true).GetValue<bool>() && !GarenE && target.IsEnemy &&
-                target is AIHeroClient)
-            {
-                Q.Cast();
-                player.IssueOrder(GameObjectOrder.AttackUnit, target);
-            }
+            if(args.Type == OrbwalkerType.AfterAttack)
+                if (args.Sender.IsMe && Q.IsReady() && config["Misc"].GetValue<MenuBool>("userQAfterAA") && !GarenE && args.Target.IsEnemy &&
+                    args.Target is AIHeroClient)
+                {
+                    Q.Cast();
+                    player.IssueOrder(GameObjectOrder.AttackUnit, args.Target);
+                }
         }
 
         private static bool GarenE
@@ -94,27 +96,21 @@ namespace DaoHungAIO.Champions
             {
                 return;
             }
-            var combodamage = ComboDamage(target);
-            if (config.Item("useItems").GetValue<bool>() && !GarenQ)
-            {
-                ItemHandler.UseItems(target, config, combodamage);
-            }
             bool hasIgnite = player.Spellbook.CanUseSpell(player.GetSpellSlot("SummonerDot")) == SpellState.Ready;
             var ignitedmg = (float)player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
-            if (config.Item("useIgnite").GetValue<bool>() && hasIgnite &&
+            if (config["Combo"].GetValue<MenuBool>("useIgnite") && hasIgnite &&
                 ((R.IsReady() && ignitedmg + R.GetDamage(target) > target.Health) || ignitedmg > target.Health) &&
                 (target.Distance(player) > E.Range || player.HealthPercent < 20))
             {
                 player.Spellbook.CastSpell(player.GetSpellSlot("SummonerDot"), target);
             }
-            if (config.Item("useq", true).GetValue<bool>() && Q.IsReady() &&
+            if (config["Combo"].GetValue<MenuBool>("useq") && Q.IsReady() &&
                 player.Distance(target) > player.AttackRange && !GarenE && !GarenQ &&
-                player.Distance(target) > player.GetRealAutoAttackRange(target) &&
-                CombatHelper.IsPossibleToReachHim(target, 0.30f, new float[5] { 1.5f, 2f, 2.5f, 3f, 3.5f }[Q.Level - 1]))
+                player.Distance(target) > player.GetRealAutoAttackRange(target))
             {
                 Q.Cast();
             }
-            if (config.Item("useq", true).GetValue<bool>() && Q.IsReady() && !GarenQ &&
+            if (config["Combo"].GetValue<MenuBool>("useq") && Q.IsReady() && !GarenQ &&
                 (!GarenE || (Q.IsReady() && Damage.GetSpellDamage(player, target, SpellSlot.Q) > target.Health)))
             {
                 if (GarenE)
@@ -122,64 +118,40 @@ namespace DaoHungAIO.Champions
                     E.Cast();
                 }
                 Q.Cast();
-                player.IssueOrder(GameObjectOrder.AutoAttack, target);
+                player.IssueOrder(GameObjectOrder.AttackUnit, target);
             }
-            if (config.Item("usee", true).GetValue<bool>() && E.IsReady() && !Q.IsReady() && !GarenQ && !GarenE &&
+            if (config["Combo"].GetValue<MenuBool>("usee") && E.IsReady() && !Q.IsReady() && !GarenQ && !GarenE &&
                 !Orbwalker.CanAttack() && !player.IsWindingUp && player.CountEnemyHeroesInRange(E.Range) > 0)
             {
                 E.Cast();
             }
-            var targHP = target.Health + 20 - CombatHelper.IgniteDamage(target);
-            var rLogic = config.Item("user", true).GetValue<bool>() && R.IsReady() && target.IsValidTarget() &&
-                         (!config.Item("ult" + target.SkinName, true).GetValue<bool>() ||
-                          player.CountEnemiesInRange(1500) == 1) && getRDamage(target) > targHP && targHP > 0;
-            if (rLogic && target.Distance(player) < R.Range)
-            {
-                if (!(GarenE && target.Health < getEDamage(target, true) && target.Distance(player) < E.Range))
+            var targHP = target.Health + 20 - player.GetSummonerSpellDamage(target, SummonerSpell.Ignite);
+                var rLogic = config["Combo"].GetValue<MenuBool>("user") && R.IsReady() && target.IsValidTarget() &&
+                             (!config["Misc"]["dontult"].GetValue<MenuBool>("ult" + target.CharacterName) ||
+                              player.CountEnemyHeroesInRange(1500) == 1) && getRDamage(target) > targHP && targHP > 0;
+                if (rLogic && target.Distance(player) < R.Range)
                 {
-                    if (GarenE)
+                    if (!(GarenE && target.Health < getEDamage(target, true) && target.Distance(player) < E.Range))
                     {
-                        E.Cast();
-                    }
-                    else
-                    {
-                        R.Cast(target);
+                        if (GarenE)
+                        {
+                            E.Cast();
+                        }
+                        else if (target.Health < getRDamage(target))
+                        {
+                            R.Cast(target);
+                        }
                     }
                 }
-            }
-            var data = Program.IncDamages.GetAllyData(player.NetworkId);
-            if (config.Item("usew", true).GetValue<bool>() && W.IsReady() && target.IsFacing(player) &&
-                data.DamageTaken > 40)
+            if (config["Combo"].GetValue<MenuBool>("usew") && W.IsReady() && player.IsFacing(target))
             {
                 W.Cast();
-            }
-            bool hasFlash = player.Spellbook.CanUseSpell(player.GetSpellSlot("SummonerFlash")) == SpellState.Ready;
-            if (config.Item("useFlash", true).GetValue<bool>() && hasFlash && rLogic &&
-                target.Distance(player) < R.Range + 425 && target.Distance(player) > R.Range + 250 && !Q.IsReady() &&
-                !player.IsFacing(target) && !GarenQ)
-            {
-                if (target.Distance(player) < R.Range + 300 && player.MoveSpeed > target.MoveSpeed)
-                {
-                    return;
-                }
-                if (GarenE)
-                {
-                    E.Cast();
-                }
-                else if (!player.Position.Extend(target.Position, 425f).IsWall()) { }
-                {
-                    player.Spellbook.CastSpell(
-                        player.GetSpellSlot("SummonerFlash"), player.Position.Extend(target.Position, 425f));
-                }
-            }
+            }            
         }
 
         private void Game_OnDraw(EventArgs args)
         {
-            DrawHelper.DrawCircle(config.Item("drawaa", true).GetValue<Circle>(), player.AttackRange);
-            DrawHelper.DrawCircle(config.Item("drawee", true).GetValue<Circle>(), E.Range);
-            DrawHelper.DrawCircle(config.Item("drawrr", true).GetValue<Circle>(), R.Range);
-            if (R.IsReady() && config.Item("drawrkillable", true).GetValue<bool>())
+            if (R.IsReady() && config["Drawings"].GetValue<MenuBool>("drawrkillable"))
             {
                 foreach (var e in GameObjects.EnemyHeroes.Where(e => e.IsValid && e.IsHPBarRendered))
                 {
@@ -198,13 +170,13 @@ namespace DaoHungAIO.Champions
             {
                 damage += getRDamage(hero);
             }
-            damage += ItemHandler.GetItemsDamage(hero);
+            //damage += ItemHandler.GetItemsDamage(hero);
 
-            if ((Items.HasItem(ItemHandler.Bft.Id) && Items.CanUseItem(ItemHandler.Bft.Id)) ||
-                (Items.HasItem(ItemHandler.Dfg.Id) && Items.CanUseItem(ItemHandler.Dfg.Id)))
-            {
-                damage = (float)(damage * 1.2);
-            }
+            //if ((Items.HasItem(ItemHandler.Bft.Id) && Items.CanUseItem(ItemHandler.Bft.Id)) ||
+            //    (Items.HasItem(ItemHandler.Dfg.Id) && Items.CanUseItem(ItemHandler.Dfg.Id)))
+            //{
+            //    damage = (float)(damage * 1.2);
+            //}
             if (Q.IsReady() && !GarenQ)
             {
                 damage += Damage.GetSpellDamage(player, hero, SpellSlot.Q);
@@ -217,7 +189,7 @@ namespace DaoHungAIO.Champions
             {
                 damage += getEDamage(hero, true);
             }
-            var ignitedmg = player.GetSummonerSpellDamage(hero, Damage.SummonerSpell.Ignite);
+            var ignitedmg = player.GetSummonerSpellDamage(hero, SummonerSpell.Ignite);
             if (player.Spellbook.CanUseSpell(player.GetSpellSlot("summonerdot")) == SpellState.Ready &&
                 hero.Health < damage + ignitedmg)
             {
@@ -249,7 +221,7 @@ namespace DaoHungAIO.Champions
             var spins = 0d;
             if (bufftime)
             {
-                spins = CombatHelper.GetBuffTime(player.GetBuff("GarenE")) * GetSpins() / 3;
+                spins = player.GetBuff("GarenE").EndTime * GetSpins() / 3;
             }
             else
             {
@@ -307,57 +279,38 @@ namespace DaoHungAIO.Champions
 
         private void InitMenu()
         {
-            config = new Menu("Garen", "Garen", true);
-            // Target Selector
-            Menu menuTS = new Menu("Selector", "tselect");
-            TargetSelector.AddToMenu(menuTS);
-            config.AddSubMenu(menuTS);
-
-            // Orbwalker
-            Menu menuOrb = new Menu("Orbwalker", "Orbwalker");
-            Orbwalker = new Orbwalker.Orbwalker(menuOrb);
-            config.AddSubMenu(menuOrb);
+            config = new Menu("Garen", "DH.Garen", true);
 
             // Draw settings
-            Menu menuD = new Menu("Drawings ", "dsettings");
-            menuD.AddItem(new MenuItem("drawaa", "Draw AA range", true))
-                .SetValue(new Circle(false, Color.FromArgb(180, 109, 111, 126)));
-            menuD.AddItem(new MenuItem("drawee", "Draw E range", true))
-                .SetValue(new Circle(false, Color.FromArgb(180, 109, 111, 126)));
-            menuD.AddItem(new MenuItem("drawrr", "Draw R range", true))
-                .SetValue(new Circle(false, Color.FromArgb(180, 109, 111, 126)));
-            menuD.AddItem(new MenuItem("drawcombo", "Draw combo damage")).SetValue(true);
-            menuD.AddItem(new MenuItem("drawrkillable", "Show if killable with R", true)).SetValue(true);
-            config.AddSubMenu(menuD);
+            Menu menuD = new Menu("Drawings", "Drawings");
+            menuD.Add(new MenuBool("drawrkillable", "Show if killable with R")).SetValue(true);
+            config.Add(menuD);
             // Combo Settings
-            Menu menuC = new Menu("Combo ", "csettings");
-            menuC.AddItem(new MenuItem("useq", "Use Q", true)).SetValue(true);
-            menuC.AddItem(new MenuItem("usew", "Use W", true)).SetValue(true);
-            menuC.AddItem(new MenuItem("usee", "Use E", true)).SetValue(true);
-            menuC.AddItem(new MenuItem("user", "Use R", true)).SetValue(true);
-            menuC.AddItem(new MenuItem("useFlash", "   Use Flash", true)).SetValue(true);
-            menuC.AddItem(new MenuItem("useIgnite", "Use Ignite")).SetValue(true);
-            menuC = ItemHandler.addItemOptons(menuC);
-            config.AddSubMenu(menuC);
+            Menu menuC = new Menu("Combo", "Combo");
+            menuC.Add(new MenuBool("useq", "Use Q")).SetValue(true);
+            menuC.Add(new MenuBool("usew", "Use W")).SetValue(true);
+            menuC.Add(new MenuBool("usee", "Use E")).SetValue(true);
+            menuC.Add(new MenuBool("user", "Use R")).SetValue(true);
+            menuC.Add(new MenuBool("useIgnite", "Use Ignite")).SetValue(true);
+            config.Add(menuC);
             // LaneClear Settings
-            Menu menuLC = new Menu("LaneClear ", "Lcsettings");
-            menuLC.AddItem(new MenuItem("useeLC", "Use E", true)).SetValue(true);
-            config.AddSubMenu(menuLC);
+            Menu menuLC = new Menu("LaneClear", "LaneClear");
+            menuLC.Add(new MenuBool("useeLC", "Use E")).SetValue(true);
+            config.Add(menuLC);
             // Misc Settings
-            Menu menuM = new Menu("Misc ", "Msettings");
-            menuM.AddItem(new MenuItem("useqAAA", "Use Q after AA", true)).SetValue(true);
-            menuM = DrawHelper.AddMisc(menuM);
+            Menu menuM = new Menu("Misc", "Misc");
+            menuM.Add(new MenuBool("userQAfterAA", "Use Q after AA"));
+            //menuM = DrawHelper.AddMisc(menuM);
+                var sulti = new Menu("dontult", "TeamFight Ult block");
+                foreach (var hero in ObjectManager.Get<AIHeroClient>().Where(hero => hero.IsEnemy))
+                {
+                    sulti.Add(new MenuBool("ult" + hero.CharacterName, hero.CharacterName)).SetValue(false);
+                }
 
-            config.AddSubMenu(menuM);
-            var sulti = new Menu("TeamFight Ult block", "dontult");
-            foreach (var hero in ObjectManager.Get<AIHeroClient>().Where(hero => hero.IsEnemy))
-            {
-                sulti.AddItem(new MenuItem("ult" + hero.SkinName, hero.SkinName, true)).SetValue(false);
-            }
-            config.AddSubMenu(sulti);
-
-            config.AddItem(new MenuItem("UnderratedAIO", "by Soresu v" + Program.version.ToString().Replace(",", ".")));
-            config.AddToMainMenu();
+            menuM.Add(sulti);
+            config.Add(menuM);
+            config.Add(new MenuBool("Credit", "Creadit: Soresu"));
+            config.Attach();
         }
     }
 }
