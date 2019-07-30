@@ -75,11 +75,14 @@ namespace DaoHungAIO
                     case "Garen":
                         new Garen();
                         break;
+                    case "Jax":
+                        new Jax();
+                        break;
                     case "Kennen":
                         new Kennen();
                         break;
-                    case "Jax":
-                        new Jax();
+                    case "Lucian":
+                        new Lucian();
                         break;
                     case "Tristana":
                         new Tristana();

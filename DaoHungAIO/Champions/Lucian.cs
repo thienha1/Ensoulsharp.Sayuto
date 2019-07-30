@@ -49,6 +49,7 @@ namespace DaoHungAIO.Champions
         private static int Humanizer => Menu["Misc"].GetValue<MenuSlider>("Humanizer").Value;
         static bool ForceR => Menu["Combo"].GetValue<MenuKeyBind>("ForceR").Active;
         static bool LT => Menu["LaneClear"].GetValue<MenuKeyBind>("LT").Active;
+        static bool SP => Menu["Misc"].GetValue<MenuBool>("SkipPassive");
 
         public Lucian()
         {
@@ -72,11 +73,33 @@ namespace DaoHungAIO.Champions
             AIBaseClient.OnDoCast += OnDoCast;
             Drawing.OnDraw += OnDraw;
             AIBaseClient.OnDoCast += OnDoCastLC;
+            AIBaseClient.OnBuffGain += OnBuffGain;
+            AIBaseClient.OnBuffLose += OnBuffGain;
+            //Orbwalker.OnAction += OnActionDelegate;
+            //AIBaseClient.OnBasicAttack += OnBasicAttack;
         }
+
+        //private static void OnActionDelegate(Object sender, OrbwalkerActionArgs args)
+        //{
+        //    if (args.Type == OrbwalkerType.AfterAttack)
+        //    {
+        //        AAPassive = Player.HasBuff("LucianPassiveBuff");
+        //        return;
+        //    }
+        //}
+
+        //private static void OnBasicAttack(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
+        //{
+        //    if (sender.IsMe)
+        //    {
+        //        AAPassive = false;
+        //        return;
+        //    }
+        //}
         private static void OnMenuLoad()
         {
             Menu = new Menu("Lucian", "DH.Lucian", true);
-
+            Notifications.Add(new Notification("Dao Hung AIO", "Lucian credit Hoola"));
             var Combo = new Menu("Combo", "Combo");
             Combo.Add(new MenuBool("CQ", "Use Q"));
             Combo.Add(new MenuBool("CW", "Use W"));
@@ -85,8 +108,9 @@ namespace DaoHungAIO.Champions
             Menu.Add(Combo);
 
             var Misc = new Menu("Misc", "Misc");
-            Misc.Add(new MenuSlider("Humanizer", "Humanizer Delay", 5, 5, 300));
+            Misc.Add(new MenuSlider("Humanizer", "Humanizer Delay", 5, 0, 300));
             Misc.Add(new MenuBool("Nocolision", "Nocolision W"));
+            Misc.Add(new MenuBool("SkipPassive", "Fast combo skip some passive?")).Permashow();
             Menu.Add(Misc);
 
 
@@ -131,9 +155,25 @@ namespace DaoHungAIO.Champions
             killsteal.Add(new MenuBool("KillstealQ", "Killsteal Q"));
             Menu.Add(killsteal);
 
+            Menu.Add(new Menu("Creadit", "Creadit: Hoola"));
+
             Menu.Attach();
         }
 
+        private static void OnBuffGain(AIBaseClient sender, AIBaseClientBuffGainEventArgs args)
+        {
+            if (sender.IsMe)
+            {
+                AAPassive = Player.HasBuff("LucianPassiveBuff");
+            }
+        }
+        private static void OnBuffGain(AIBaseClient sender, AIBaseClientBuffLoseEventArgs args)
+        {
+            if (sender.IsMe)
+            {
+                AAPassive = Player.HasBuff("LucianPassiveBuff");
+            }
+        }
         private static void OnDoCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
         {
             var spellName = args.SData.Name;
@@ -142,10 +182,6 @@ namespace DaoHungAIO.Champions
             if (args.Target is AIHeroClient)
             {
                 var target = (AIBaseClient)args.Target;
-                if (Orbwalker.ActiveMode == OrbwalkerMode.Combo && target.IsValid)
-                {
-                    Utility.DelayAction.Add(Humanizer, () => OnDoCastDelayed(args));
-                }
                 if (Orbwalker.ActiveMode == OrbwalkerMode.Harass && target.IsValid)
                 {
                     Utility.DelayAction.Add(Humanizer, () => OnDoCastDelayed(args));
@@ -187,7 +223,14 @@ namespace DaoHungAIO.Champions
         }
         private static void OnDoCastDelayedLC(AIBaseClientProcessSpellCastEventArgs args)
         {
-            AAPassive = false;
+            if (SP)
+            {
+                AAPassive = false;
+            }
+            else
+            {
+                AAPassive = Player.HasBuff("LucianPassiveBuff");
+            }
             if (args.Target is AIMinionClient && args.Target.IsValid)
             {
                 if (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear && Player.ManaPercent > LMinMana)
@@ -229,19 +272,18 @@ namespace DaoHungAIO.Champions
         }
         private static void OnDoCastDelayed(AIBaseClientProcessSpellCastEventArgs args)
         {
-            AAPassive = false;
-            if (args.Target is AIHeroClient)
-            {// E menuList "Side", "Cursor", "Enemy", "Never" 
+
+            if (SP)
+            {
+                AAPassive = false;
+            }
+            else
+            {
+                AAPassive = Player.HasBuff("LucianPassiveBuff");
+            }
+            if(args.Target is AIHeroClient)
+            {
                 var target = (AIBaseClient)args.Target;
-                if (Orbwalker.ActiveMode == OrbwalkerMode.Combo && target.IsValid)
-                {
-                    if (Player.CanUseItem((int)ItemId.Youmuus_Ghostblade)) Player.UseItem((int)ItemId.Youmuus_Ghostblade);
-                    if (E.IsReady() && !AAPassive && CE == "Side") E.Cast((Deviation(Player.Position.ToVector2(), target.Position.ToVector2(), 65).ToVector3()));
-                    if (E.IsReady() && !AAPassive && CE == "Cursor") E.Cast(Game.CursorPosRaw);
-                    if (E.IsReady() && !AAPassive && CE == "Enemy") E.Cast(Player.Position.Extend(target.Position, 50));
-                    if (Q.IsReady() && (!E.IsReady() || (E.IsReady() && CE == "Never")) && CQ && !AAPassive) Q.Cast(target);
-                    if ((!E.IsReady() || (E.IsReady() && CE == "Never")) && (!Q.IsReady() || (Q.IsReady() && !CQ)) && CW && W.IsReady() && !AAPassive) W.Cast(target.Position);
-                }
                 if (Orbwalker.ActiveMode == OrbwalkerMode.Harass && target.IsValid)
                 {
                     if (Player.ManaPercent < HHMinMana) return;
@@ -330,15 +372,63 @@ namespace DaoHungAIO.Champions
         static void UseRTarget()
         {
             var target = TargetSelector.GetTarget(R.Range);
-            if (ForceR && R.IsReady() && target.IsValid && target is AIHeroClient && !Player.HasBuff("LucianR")) R.Cast(target.Position);
+            if (target != null && ForceR && R.IsReady() && target.IsValid && target is AIHeroClient && !Player.HasBuff("LucianR")) R.Cast(target.Position);
+        }
+
+        static void Combo()
+        {
+            if (SP)
+            {
+                AAPassive = false;
+            } else
+            {
+                AAPassive = Player.HasBuff("LucianPassiveBuff");
+            }
+            var target = Orbwalker.GetTarget();
+
+            if (target is AIHeroClient)
+            {// E menuList "Side", "Cursor", "Enemy", "Never" 
+                target = (AIBaseClient)target;
+                if (Orbwalker.ActiveMode == OrbwalkerMode.Combo && target.IsValid)
+                {
+                    if (Player.CanUseItem((int)ItemId.Youmuus_Ghostblade)) Player.UseItem((int)ItemId.Youmuus_Ghostblade);
+                    if (E.IsReady() && !AAPassive)
+                    {
+                        if (CE == "Side")
+                            Utility.DelayAction.Add((int)Math.Ceiling(Player.AttackCastDelay * 1500), () => {
+                                E.Cast((Deviation(Player.Position.ToVector2(), target.Position.ToVector2(), 65).ToVector3()));
+                            }
+                            );
+                        if (CE == "Cursor")
+                            Utility.DelayAction.Add((int)Math.Ceiling(Player.AttackCastDelay * 1000), () => {
+                                E.Cast(Game.CursorPosRaw);
+                            });
+                        if (CE == "Enemy")
+                            Utility.DelayAction.Add((int)Math.Ceiling(Player.AttackCastDelay * 1000), () => {
+                                E.Cast(Player.Position.Extend(target.Position, 50));
+                            });
+                        return;
+                    }
+                    if (Q.IsReady() && (!E.IsReady() || (E.IsReady() && CE == "Never")) && CQ && !AAPassive)
+                    {
+                        Q.Cast((AIBaseClient)target);
+                        return;
+                    }
+                    if ((!E.IsReady() || (E.IsReady() && CE == "Never")) && (!Q.IsReady() || (Q.IsReady() && !CQ)) && CW && W.IsReady() && !AAPassive)
+                    {
+                        W.Cast(target.Position);
+                        return;
+                    }
+                }
+            }
         }
         static void Game_OnUpdate(EventArgs args)
         {
             W.Collision = Menu["Misc"].GetValue<MenuBool>("Nocolision");
             AutoUseQ();
-
             if (ForceR) UseRTarget();
             killsteal();
+            if (Orbwalker.ActiveMode == OrbwalkerMode.Combo) Combo();
             if (Orbwalker.ActiveMode == OrbwalkerMode.Harass) Harass();
             if (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear) LaneClear();
         }
