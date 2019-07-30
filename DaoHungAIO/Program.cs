@@ -25,7 +25,7 @@ namespace DaoHungAIO
 
         public static bool IsSPrediction
         {
-            get { return SPredictionMenu["SPREDX"].GetValue<MenuList>("PREDICTONLIST").SelectedValue == "SPrediction"; }
+            get { return SPredictionMenu.GetValue<MenuList>("PREDICTONLIST").SelectedValue == "SPrediction"; }
         }
 
         public static object Player { get; internal set; }
@@ -40,8 +40,10 @@ namespace DaoHungAIO
             try
             {
                 player = ObjectManager.Player;
+                //pred = new Menu("spred", "Prediction settings");
+                //SPrediction.Prediction.Initialize(pred);
                 SPredictionMenu = SPrediction.Prediction.Initialize(); //new Menu("SPREDX", "SPrediction");
-                SPredictionMenu.Add(new MenuList("PREDICTONLIST2", "PREDICTONLIST2", new[] { "SPrediction", "Common Predicion" }, 1));
+                //SPredictionMenu.Attach();
                 //set default to common prediction
                 //var type = Type.GetType("DaoHungAIO.Champions." + player.CharacterName);
                 //Chat.Print("Loading1");
@@ -72,6 +74,9 @@ namespace DaoHungAIO
                         break;
                     case "Garen":
                         new Garen();
+                        break;
+                    case "Kennen":
+                        new Kennen();
                         break;
                     case "Jax":
                         new Jax();

@@ -152,7 +152,8 @@ namespace DH.Riven
         private static void OnDoCastLC(AIBaseClient Sender, AIBaseClientProcessSpellCastEventArgs args)
         {
             if (!Sender.IsMe || !Orbwalker.IsAutoAttack((args.SData.Name))) return;
-            QTarget = (AIBaseClient)args.Target;
+            if(LaneQ)
+                QTarget = (AIBaseClient)args.Target;
             if (args.Target is AIMinionClient)
             {
                 if (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear)
@@ -718,7 +719,10 @@ namespace DH.Riven
         private static void ForceSkill()
         {
             if (Player.GetBuffCount("rivenpassiveaaboost") < 3 && forceQ && QTarget != null && QTarget.IsValidTarget(E.Range + Player.BoundingRadius + 70) && Q.IsReady())
+            {
                 Q.Cast((AIBaseClient)QTarget);
+
+            }
             if (forceW) W.Cast();
             if (forceR && R.Instance.Name == IsFirstR) R.Cast();
             if (forceItem && Items.CanUseItem(Player, Item) && Items.HasItem(Player, Item) && Item != 0) Items.UseItem(Player, Item);
