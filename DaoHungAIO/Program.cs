@@ -81,6 +81,9 @@ namespace DaoHungAIO
                     case "Kennen":
                         new Kennen();
                         break;
+                    case "Khazix":
+                        new Khazix();
+                        break;
                     case "Lucian":
                         new Lucian();
                         break;
