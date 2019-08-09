@@ -65,8 +65,8 @@ namespace DaoHungAIO
                 //}
                 //IncDamages = new IncomingDamage();
                 new Activator();
-                Game.OnUpdate += DelayTime;
-                Game.OnUpdate += TrashTalk;
+                //Game.OnUpdate += DelayTime;
+                //Game.OnUpdate += TrashTalk;
                 switch (player.CharacterName)
                 {
                     case "Azir":

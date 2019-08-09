@@ -217,7 +217,7 @@ namespace DaoHungAIO.Champions
                 LogicW();
 
             Combo = Orbwalker.ActiveMode == OrbwalkerMode.Combo;
-            Farm = (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear && Config.GetValue<MenuBool>("harassLaneclear")) || Orbwalker.ActiveMode == OrbwalkerMode.Harass;
+            Farm = (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear ) || Orbwalker.ActiveMode == OrbwalkerMode.Harass;
             None = Orbwalker.ActiveMode == OrbwalkerMode.None;
             LaneClear = Orbwalker.ActiveMode == OrbwalkerMode.LaneClear;
             tickIndex++;
@@ -317,7 +317,7 @@ namespace DaoHungAIO.Champions
                     }
                 }
             }
-            if (LaneClear && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value && Config["Farm"].GetValue<MenuSlider>("farmW") && Player.Mana > RMANA + WMANA)
+            if (LaneClear && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value && Config["Farm"].GetValue<MenuBool>("farmW") && Player.Mana > RMANA + WMANA)
             {
                 var minionList = MinionManager.GetMinions(Player.Position, W.Range);
                 var farmPosition = W.GetLineFarmLocation(minionList, W.Width);
@@ -348,7 +348,7 @@ namespace DaoHungAIO.Champions
             {
                 if (Combo && !Player.Spellbook.IsAutoAttack)
                 {
-                    if (Config["EConfig"].GetValue<MenuList>("MenuList").SelectedValue == "run - cheese")
+                    if (Config["EConfig"].GetValue<MenuList>("EmodeCombo").SelectedValue == "run - cheese")
                     {
                         if (E.GetPrediction(t).CastPosition.Distance(t.Position) > 100)
                         {
