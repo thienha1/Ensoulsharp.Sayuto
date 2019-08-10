@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Champions\Azir.cs" />
+    <Compile Include="Champions\Draven.cs" />
     <Compile Include="Champions\Fizz.cs" />
     <Compile Include="Champions\Jax.cs" />
     <Compile Include="Champions\Jayce.cs" />

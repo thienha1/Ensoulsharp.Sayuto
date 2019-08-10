@@ -823,7 +823,7 @@ namespace DaoHungAIO.Champions
 
                 if (!Pounce.IsReady() && !Takedown.IsReady() && !Primalsurge.IsReady())
                 {
-                    Chat.Print("Will heal");
+                    //Chat.Print("Will heal");
                     if ((HQ == 0 || HE == 0 && Me.Health / Me.MaxHealth * 100 <=
                          _mainMenu["hengine"].GetValue<MenuSlider>("healpct" + Me.CharacterName).Value &&
                          _mainMenu["jungleclear"].GetValue<MenuBool>("jgheal")) && Aspectofcougar.IsReady() &&

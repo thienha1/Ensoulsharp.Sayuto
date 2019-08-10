@@ -52,9 +52,9 @@ namespace DaoHungAIO.Champions
             WConfig.Add(new MenuBool("harasW", "Harass W on max range", true));
 
             RConfig.Add(new MenuBool("autoR", "Auto R", true));
-            RConfig.Add(new MenuSlider("RmaxHp", "Target max % HP", 50, 100, 0));
-            RConfig.Add(new MenuSlider("comboStack", "Max combo stack R", 2, 10, 0));
-            RConfig.Add(new MenuSlider("harasStack", "Max haras stack R", 1, 10, 0));
+            RConfig.Add(new MenuSlider("RmaxHp", "Target max % HP", 50, 0, 100));
+            RConfig.Add(new MenuSlider("comboStack", "Max combo stack R", 2, 0, 10));
+            RConfig.Add(new MenuSlider("harasStack", "Max haras stack R", 1, 0, 10));
             RConfig.Add(new MenuBool("Rcc", "R cc", true));
             RConfig.Add(new MenuBool("Rslow", "R slow", true));
             RConfig.Add(new MenuBool("Raoe", "R aoe", true));
@@ -74,8 +74,8 @@ namespace DaoHungAIO.Champions
 
             Farm.Add(new MenuBool("farmW", "LaneClear W", true));
             Farm.Add(new MenuBool("farmE", "LaneClear E", true));
-            Farm.Add(new MenuSlider("LCminions", "LaneClear minimum minions", 2, 10, 0));
-            Farm.Add(new MenuSlider("Mana", "LaneClear  Mana", 80, 100, 0));
+            Farm.Add(new MenuSlider("LCminions", "LaneClear minimum minions", 2,0, 10));
+            Farm.Add(new MenuSlider("Mana", "LaneClear  Mana", 80, 0, 100));
             Farm.Add(new MenuBool("jungleW", "Jungle clear W", true));
             Farm.Add(new MenuBool("jungleE", "Jungle clear E", true));
 
@@ -227,7 +227,7 @@ namespace DaoHungAIO.Champions
 
         private void LogicW()
         {
-            if (Player.CountEnemyHeroesInRange(W.Range) > 0 && Sheen())
+            if (Player.CountEnemyHeroesInRange(W.Range) > 0)
             {
                 if (Program.Combo)
                     W.Cast();

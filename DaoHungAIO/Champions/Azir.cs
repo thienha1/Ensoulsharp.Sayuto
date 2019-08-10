@@ -73,7 +73,7 @@ namespace DaoHungAIO.Champions
             Menu LaneClear = new Menu("LaneClear", "LaneClear");
             LaneClear.Add(new MenuBool("UseQLC", "Use Q"));
             LaneClear.Add(new MenuBool("UseWLC", "Use W"));
-            LaneClear.Add(new MenuKeyBind("LaneClearActive", "LaneClear!", System.Windows.Forms.Keys.A, KeyBindType.Press)).Permashow();
+            LaneClear.Add(new MenuKeyBind("LaneClearActive", "LaneClear!", System.Windows.Forms.Keys.S, KeyBindType.Press)).Permashow();
             Menu.Add(LaneClear);
 
             Menu Misc = new Menu("Misc", "Misc");
@@ -323,7 +323,6 @@ namespace DaoHungAIO.Champions
 
             damage += SoldiersManager.ActiveSoldiers.Count * Player.GetSpellDamage(target, SpellSlot.W);
 
-            Chat.Print(damage);
             return (float)damage;
         }
 
@@ -426,6 +425,7 @@ namespace DaoHungAIO.Champions
                 {
                     Q.UpdateSourcePosition(soldier.Position, ObjectManager.Player.Position);
                     Q.Cast(qTarget);
+                    return;
                 }
             }
 
@@ -433,6 +433,7 @@ namespace DaoHungAIO.Champions
             {
                 var p = Player.Distance(qTarget) > W.Range ? Player.Position.ToVector2().Extend(qTarget.Position.ToVector2(), W.Range) : qTarget.Position.ToVector2();
                 W.Cast(p);
+                return;
             }
 
             if (useE && ((Variables.TickCount - _allinT) < 4000 || (GameObjects.EnemyHeroes.Count(e => e.IsValidTarget(1000)) <= 2 && GetComboDamage(qTarget) > qTarget.Health)) && E.IsReady())
@@ -443,6 +444,7 @@ namespace DaoHungAIO.Champions
                     {
                         E.Cast(soldier.Position);
                         return;
+                        return;
                     }
                 }
             }
@@ -452,11 +454,13 @@ namespace DaoHungAIO.Champions
                 if (useR && R.IsReady())
                 {
                     R.Cast(qTarget, false, true);
+                    return;
                 }
 
                 if (Menu["Combo"].GetValue<MenuBool>("UseIgnite") && IgniteSlot != SpellSlot.Unknown && EnsoulSharp.Player.GetSpell(IgniteSlot).State == SpellState.Ready && Player.Distance(qTarget) < 600 * 600)
                 {
                     Player.Spellbook.CastSpell(IgniteSlot, qTarget);
+                    return;
                 }
             }
         }
@@ -466,6 +470,9 @@ namespace DaoHungAIO.Champions
             R.Width = 133 * (3 + R.Level);
 
             var minTargets = Menu["AzirR"].GetValue<MenuSlider>("AutoRN").Value;
+
+            var target = GameObjects.EnemyHeroes.Where(x => x.InAutoAttackRange()).FirstOrDefault();
+
             if (minTargets != 6)
             {
                 R.CastIfWillHit(R.GetTarget(), minTargets);
@@ -522,11 +529,13 @@ namespace DaoHungAIO.Champions
             if (Menu["LaneClear"].GetValue<MenuKeyBind>("LaneClearActive").Active)
             {
                 LaneClear();
+                return;
             }
 
             if (Menu["Misc"].GetValue<MenuKeyBind>("Jump").Active)
             {
                 Jumper.Jump();
+                return;
             }
         }
 
@@ -585,7 +594,7 @@ namespace DaoHungAIO.Champions
 
         public static void Jump()
         {
-            if (Math.Abs(Azir.E.CooldownTime) < 0.00001)
+            if (Azir.E.IsReady())
             {
                 var extended = ObjectManager.Player.Position.ToVector2().Extend(Game.CursorPosRaw.ToVector2(), Azir.Q.Range - 25);
 

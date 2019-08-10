@@ -84,6 +84,9 @@ namespace DaoHungAIO
                     case "Azir":
                         new Azir();
                         break;
+                    case "Draven":
+                        new Draven();
+                        break;
                     case "Fizz":
                         new Fizz();
                         break;

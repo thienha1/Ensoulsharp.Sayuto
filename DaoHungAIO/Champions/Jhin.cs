@@ -77,13 +77,13 @@ namespace DaoHungAIO.Champions
            WConfig.Add(new MenuBool("Wmarkall", "W marked (all enemys)", true));
            WConfig.Add(new MenuBool("Waoe", "W aoe (above 2 enemy)", true));
            WConfig.Add(new MenuBool("autoWcc", "Auto W CC enemy", true));
-           WConfig.Add(new MenuSlider("MaxRangeW", "Max W range", 2500, 2500, 0));
+           WConfig.Add(new MenuSlider("MaxRangeW", "Max W range", 2500, 0, 2500));
 
            EConfig.Add(new MenuBool("autoE", "Auto E on hard CC", true));
            EConfig.Add(new MenuBool("bushE", "Auto E bush", true));
            EConfig.Add(new MenuBool("Espell", "E on special spell detection", true));
            EConfig.Add(new MenuList("EmodeCombo", "E combo mode", new[] { "always", "run - cheese", "disable" }, 1));
-           EConfig.Add(new MenuSlider("Eaoe", "Auto E x enemies", 3, 5, 0));
+           EConfig.Add(new MenuSlider("Eaoe", "Auto E x enemies", 3, 0, 5));
            EConfig.Add(new MenuList("EmodeGC", "Gap Closer position mode", new[] { "Dash end position", "My hero position" }, 0));
             foreach (var enemy in GameObjects.EnemyHeroes)
                EConfig.Add(new MenuBool("EGCchampion" + enemy.CharacterName, enemy.CharacterName, true));
@@ -103,8 +103,8 @@ namespace DaoHungAIO.Champions
            Farm.Add(new MenuBool("farmQ", "Lane clear Q", true));
            Farm.Add(new MenuBool("farmW", "Lane clear W", true));
            Farm.Add(new MenuBool("farmE", "Lane clear E", true));
-           Farm.Add(new MenuSlider("Mana", "LaneClear Mana", 40, 100, 0));
-           Farm.Add(new MenuSlider("LCminions", "LaneClear minimum minions", 3, 10, 0));
+           Farm.Add(new MenuSlider("Mana", "LaneClear Mana", 40, 0, 100));
+           Farm.Add(new MenuSlider("LCminions", "LaneClear minimum minions", 3, 0, 10));
            Farm.Add(new MenuBool("jungleE", "Jungle clear E", true));
            Farm.Add(new MenuBool("jungleQ", "Jungle clear Q", true));
            Farm.Add(new MenuBool("jungleW", "Jungle clear W", true));
@@ -194,8 +194,11 @@ namespace DaoHungAIO.Champions
 
             if (LagFree(1) && (R.IsReady() || IsCastingR) && Config["RConfig"].GetValue<MenuBool>("autoR"))
                 LogicR();
-
-            if (IsCastingR)
+            //Chat.Print(")
+            //Chat.Print(R.Instance.Name);
+            //Chat.Print(R.Instance.SData.Name);
+            //Chat.Print(R.Name);
+            if (Config["RConfig"].GetValue<MenuKeyBind>("useR").Active)
             {
                 Orbwalker.MovementState = false;
                 Orbwalker.AttackState = false;
@@ -374,7 +377,7 @@ namespace DaoHungAIO.Champions
 
                 E.CastIfWillHit(t, Config["EConfig"].GetValue<MenuSlider>("Eaoe").Value);
             }
-            else if (LaneClear && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value && Config["EConfig"].GetValue<MenuBool>("farmE"))
+            else if (LaneClear && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value && Config["Farm"].GetValue<MenuBool>("farmE"))
             {
                 var minionList = MinionManager.GetMinions(Player.Position, E.Range);
                 var farmPosition = E.GetCircularFarmLocation(minionList, E.Width);
@@ -421,7 +424,7 @@ namespace DaoHungAIO.Champions
                 else if (Farm && Config["QConfig"].GetValue<MenuBool>("harrasQ") && Player.Mana > RMANA + QMANA + WMANA + EMANA)
                     Q.CastOnUnit(t);
             }
-            if (LaneClear && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value && Config["Farm"].GetValue<MenuSlider>("farmQ"))
+            if (LaneClear && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value && Config["Farm"].GetValue<MenuBool>("farmQ"))
             {
                 var minionList = MinionManager.GetMinions(Player.Position, Q.Range);
 
@@ -479,7 +482,7 @@ namespace DaoHungAIO.Champions
             }
         }
 
-        private bool IsCastingR { get { return R.Instance.Learned && !R.IsReady() && R.State != SpellState.Cooldown; } }
+        private bool IsCastingR { get { return R.Instance.Learned && !R.IsReady(); } }
 
         private double GetRdmg(AIBaseClient target)
         {
