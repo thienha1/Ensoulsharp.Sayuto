@@ -111,21 +111,21 @@ namespace DaoHungAIO.Champions
 
         void Harass()
         {
-            if (Config.GetBool("Harass", "UseQHarass") && Q.IsReady())
+            if (Config.GetBool("Harass", "UseQHarass") && Q.IsReady() && Program.LagFree(1))
             {
                 var enemy = TargetSelector.GetTarget(Q.Range);
-                if (enemy.IsValidEnemy())
+                if (enemy.IsValidEnemy() && Program.LagFree(1))
                 {
                     Q.Cast(enemy);
                 }
             }
-            if (Config.GetBool("Harass", "UseWHarass") && W.IsReady())
+            if (Config.GetBool("Harass", "UseWHarass") && W.IsReady() && Program.LagFree(2))
             {
                 AIHeroClient target = TargetSelector.GetTarget(950);
                 var autoWI = Config.GetBool("Harass", "Harass.AutoWI");
                 var autoWD = Config.GetBool("Harass", "Harass.AutoWD");
                 var hitchance = HarassHitChance(Config);
-                if (target != null && W.IsReady())
+                if (target != null && W.IsReady() && Program.LagFree(2))
                 {
                     if (!EvolvedW && Khazix.Distance(target) <= W.Range)
                     {
@@ -151,7 +151,7 @@ namespace DaoHungAIO.Champions
         void LH()
         {
             List<AIBaseClient> allMinions = MinionManager.GetMinions(Khazix.Position, Q.Range).OrderBy(x => x.MaxHealth).ToList();
-            if (Config.GetBool("Farm", "UseQFarm") && Q.IsReady())
+            if (Config.GetBool("Farm", "UseQFarm") && Q.IsReady() && Program.LagFree(1))
             {
                 foreach (AIBaseClient minion in
                     allMinions.Where(
@@ -170,7 +170,7 @@ namespace DaoHungAIO.Champions
                 }
 
             }
-            if (Config.GetBool("Farm", "UseWFarm") && W.IsReady())
+            if (Config.GetBool("Farm", "UseWFarm") && W.IsReady() && Program.LagFree(2))
             {
                   FarmLocation farmLocation = FarmPrediction.GetBestCircularFarmLocation(
                   MinionManager.GetMinions(Khazix.Position, W.Range).Where(minion => HealthPrediction.GetPrediction(
@@ -198,7 +198,7 @@ namespace DaoHungAIO.Champions
                 }
             }
 
-            if (Config.GetBool("Farm", "UseEFarm") && E.IsReady())
+            if (Config.GetBool("Farm", "UseEFarm") && E.IsReady() && Program.LagFree(3))
             {
 
                 FarmLocation farmLocation =
@@ -240,7 +240,7 @@ namespace DaoHungAIO.Champions
         {
             List<AIMinionClient> allMinions = ObjectManager.Get<AIMinionClient>().OrderBy(x => x.MaxHealth).Where(x => x.IsValidTarget(W.Range) && !x.IsWard).ToList();
 
-            if (Config.GetBool("Farm", "UseQFarm") && Q.IsReady() && !Orbwalker.CanAttack())
+            if (Config.GetBool("Farm", "UseQFarm") && Q.IsReady() && !Orbwalker.CanAttack() && Program.LagFree(1))
             {
                 bool UsedQ = false;
                 var minion = Orbwalker.GetTarget() as AIMinionClient;
@@ -279,7 +279,7 @@ namespace DaoHungAIO.Champions
                 }
             }
 
-            if (Config.GetBool("Farm", "UseWFarm") && W.IsReady() && Khazix.HealthPercent <= Config.GetSlider("Farm", "Farm.WHealth"))
+            if (Config.GetBool("Farm", "UseWFarm") && W.IsReady() && Khazix.HealthPercent <= Config.GetSlider("Farm", "Farm.WHealth") && Program.LagFree(2))
             {
                 var wmins = EvolvedW ? allMinions.Where(x => x.IsValidTarget(WE.Range)) : allMinions.Where(x => x.IsValidTarget(W.Range));
                FarmLocation farmLocation = FarmPrediction.GetBestCircularFarmLocation(wmins
@@ -292,7 +292,7 @@ namespace DaoHungAIO.Champions
                 }
             }
 
-            if (Config.GetBool("Farm", "UseEFarm") && E.IsReady())
+            if (Config.GetBool("Farm", "UseEFarm") && E.IsReady() && Program.LagFree(3))
             {
                FarmLocation farmLocation =
                     FarmPrediction.GetBestCircularFarmLocation(
@@ -369,7 +369,7 @@ namespace DaoHungAIO.Champions
 
                 // Normal abilities
 
-                if (Config.GetBool("Combo", "UseQCombo") && Q.IsReady() && !Jumping)
+                if (Config.GetBool("Combo", "UseQCombo") && Q.IsReady() && !Jumping && Program.LagFree(1))
                 {
                     if (dist <= Q.Range)
                     {
@@ -377,7 +377,7 @@ namespace DaoHungAIO.Champions
                     }
                 }
 
-                if (Config.GetBool("Combo", "UseWCombo") && W.IsReady() && !EvolvedW && dist <= W.Range)
+                if (Config.GetBool("Combo", "UseWCombo") && W.IsReady() && !EvolvedW && dist <= W.Range && Program.LagFree(2))
                 {
                     var pred = W.GetPrediction(target);
                     if (pred.Hitchance >= Config.GetHitChance("WHitchance"))
@@ -386,7 +386,7 @@ namespace DaoHungAIO.Champions
                     }
                 }
 
-                if (Config.GetBool("Combo", "UseECombo") && E.IsReady() && !Jumping && dist <= E.Range && dist > Q.Range + (0.4 * Khazix.MoveSpeed))
+                if (Config.GetBool("Combo", "UseECombo") && E.IsReady() && !Jumping && dist <= E.Range && dist > Q.Range + (0.4 * Khazix.MoveSpeed) && Program.LagFree(3))
                 {
                     var jump = GetJumpPosition(target);
                     if (jump.shouldJump)
@@ -396,7 +396,7 @@ namespace DaoHungAIO.Champions
                 }
 
                 // Use EQ
-                if ((Config.GetBool("Combo", "UseEGapcloseQ") && Q.IsReady() && E.IsReady() && dist > Q.Range + (0.4 * Khazix.MoveSpeed) && dist <= E.Range + Q.Range))
+                if ((Config.GetBool("Combo", "UseEGapcloseQ") && Q.IsReady() && E.IsReady() && dist > Q.Range + (0.4 * Khazix.MoveSpeed) && dist <= E.Range + Q.Range) && Program.LagFree(3))
                 {
                     var jump = GetJumpPosition(target);
                     if (jump.shouldJump)
@@ -419,7 +419,7 @@ namespace DaoHungAIO.Champions
 
                 // Evolved
 
-                if (W.IsReady() && EvolvedW && dist <= WE.Range && Config.GetBool("Combo", "UseWCombo"))
+                if (W.IsReady() && EvolvedW && dist <= WE.Range && Config.GetBool("Combo", "UseWCombo") && Program.LagFree(2))
                 {
                     PredictionOutput pred = WE.GetPrediction(target);
                     if (pred.Hitchance >= Config.GetHitChance("WHitchance"))
@@ -461,7 +461,7 @@ namespace DaoHungAIO.Champions
             //    return;
             //}
 
-            if (Config.GetBool("Safety", "Safety.autoescape") && !IsHealthy)
+            if (Config.GetBool("Safety", "Safety.autoescape") && !IsHealthy && Program.LagFree(3))
             {
                 if (Khazix.CountEnemyHeroesInRange(500) > 0)
                 {
@@ -510,7 +510,7 @@ namespace DaoHungAIO.Champions
                 }
 
                 if (Config.GetBool("KillSteal", "UseQKs") && Q.IsReady() &&
-                    Vector3.Distance(Khazix.Position, target.Position) <= Q.Range)
+                    Vector3.Distance(Khazix.Position, target.Position) <= Q.Range && Program.LagFree(1))
                 {
                     double QDmg = GetQDamage(target);
                     if (!Jumping && target.Health <= QDmg)
@@ -521,7 +521,7 @@ namespace DaoHungAIO.Champions
                 }
 
                 if (Config.GetBool("KillSteal", "UseEKs") && E.IsReady() && !Jumping &&
-                    Vector3.Distance(Khazix.Position, target.Position) <= E.Range && Vector3.Distance(Khazix.Position, target.Position) > Q.Range)
+                    Vector3.Distance(Khazix.Position, target.Position) <= E.Range && Vector3.Distance(Khazix.Position, target.Position) > Q.Range && Program.LagFree(3))
                 {
                     double EDmg = Khazix.GetSpellDamage(target, SpellSlot.E);
                     if (!Jumping && target.Health < EDmg)
@@ -542,7 +542,7 @@ namespace DaoHungAIO.Champions
                 }
 
                 if (W.IsReady() && !EvolvedW && Vector3.Distance(Khazix.Position, target.Position) <= W.Range &&
-                    Config.GetBool("KillSteal", "UseWKs"))
+                    Config.GetBool("KillSteal", "UseWKs") && Program.LagFree(2))
                 {
                     double WDmg = Khazix.GetSpellDamage(target, SpellSlot.W);
                     if (target.Health <= WDmg)
@@ -558,7 +558,7 @@ namespace DaoHungAIO.Champions
 
                 if (W.IsReady() && EvolvedW &&
                         Vector3.Distance(Khazix.Position, target.Position) <= W.Range &&
-                        Config.GetBool("KillSteal", "UseWKs"))
+                        Config.GetBool("KillSteal", "UseWKs") && Program.LagFree(2))
                 {
                     double WDmg = Khazix.GetSpellDamage(target, SpellSlot.W);
                     PredictionOutput pred = WE.GetPrediction(target);
@@ -586,7 +586,7 @@ namespace DaoHungAIO.Champions
                 // Mixed's EQ KS
                 if (Q.IsReady() && E.IsReady() &&
                     target.IsValidEnemy(0.90f * (E.Range + Q.Range))
-                    && Config.GetBool("KillSteal", "UseEQKs"))
+                    && Config.GetBool("KillSteal", "UseEQKs") && Program.LagFree(3))
                 {
                     double QDmg = GetQDamage(target);
                     double EDmg = Khazix.GetSpellDamage(target, SpellSlot.E);
@@ -606,7 +606,7 @@ namespace DaoHungAIO.Champions
                 // MIXED EW KS
                 if (W.IsReady() && E.IsReady() && !EvolvedW &&
                     target.IsValidEnemy(W.Range + E.Range)
-                    && Config.GetBool("KillSteal", "UseEWKs"))
+                    && Config.GetBool("KillSteal", "UseEWKs") && Program.LagFree(3))
                 {
                     double WDmg = Khazix.GetSpellDamage(target, SpellSlot.W);
                     if (target.Health <= WDmg)
@@ -716,6 +716,7 @@ namespace DaoHungAIO.Champions
 
         internal void CastWE(AIBaseClient unit, Vector2 unitPosition, int minTargets = 0, HitChance hc = HitChance.Medium)
         {
+            if (Program.LagFree(3) || Program.LagFree(2)) return;
             var points = new List<Vector2>();
             var hitBoxes = new List<int>();
 
@@ -822,7 +823,7 @@ namespace DaoHungAIO.Champions
 
             var Targets = HeroList.Where(x => x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie);
 
-            if (Q.IsReady() && E.IsReady())
+            if (Q.IsReady() && E.IsReady() && (Program.LagFree(1) || Program.LagFree(3)))
             {
                 var CheckQKillable = Targets.FirstOrDefault(x => Vector3.Distance(Khazix.Position, x.Position) < Q.Range - 25 && GetQDamage(x) > x.Health);
 

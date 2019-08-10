@@ -5,11 +5,7 @@ using EnsoulSharp.SDK.MenuUI.Values;
 using EnsoulSharp.SDK.Prediction;
 using EnsoulSharp.SDK.Utility;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utility = EnsoulSharp.SDK.Utility;
 using SPrediction;
 using static SPrediction.MinionManager;
 
@@ -24,15 +20,7 @@ namespace DaoHungAIO.Champions
         private bool attackNow = true;
 
         private AIHeroClient Player { get { return ObjectManager.Player; } }
-        private static int HitChanceNum = 4, tickNum = 4, tickIndex = 0;
-        private static bool LagFree(int offset)
-        {
-            if (tickIndex == offset)
-                return true;
-            else
-                return false;
-        }
-        private static bool LaneClear = false, None = false, Farm = false, Combo = false;
+
         public KogMaw()
         {
             Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "KogMaw credit Sebby"));
@@ -100,23 +88,12 @@ namespace DaoHungAIO.Champions
             Config.Add(Farm);
             Config.Attach();
 
-            Game.OnUpdate += OnUpdate;
             Game.OnTick += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Orbwalker.OnAction += OnActionDelegate;
             Gapcloser.OnGapcloser += OnGapcloserEvent;
         }
 
-        private void OnUpdate(EventArgs args)
-        {
-            Combo = Orbwalker.ActiveMode == OrbwalkerMode.Combo;
-            Farm = (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear && Config.GetValue<MenuBool>("harassLaneclear")) || Orbwalker.ActiveMode == OrbwalkerMode.Harass;
-            None = Orbwalker.ActiveMode == OrbwalkerMode.None;
-            LaneClear = Orbwalker.ActiveMode == OrbwalkerMode.LaneClear;
-            tickIndex++;
-            if (tickIndex > 4)
-                tickIndex = 0;
-        }
 
         private void OnGapcloserEvent(AIHeroClient sender, Gapcloser.GapcloserArgs gapcloser)
         {
@@ -137,7 +114,7 @@ namespace DaoHungAIO.Champions
             if (args.Type == OrbwalkerType.AfterAttack)
             {
                 attackNow = true;
-                if (LaneClear && W.IsReady() && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value)
+                if (Program.LaneClear && W.IsReady() && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value)
                 {
                     var minions = MinionManager.GetMinions(Player.Position, 650);
 
@@ -157,7 +134,7 @@ namespace DaoHungAIO.Champions
 
         private void Game_OnUpdate(EventArgs args)
         {
-            if (LagFree(0))
+            if (Program.LagFree(0))
             {
                 R.Range = 870 + 300 * Player.Spellbook.GetSpell(SpellSlot.R).Level;
                 W.Range = 650 + 30 * Player.Spellbook.GetSpell(SpellSlot.W).Level;
@@ -165,22 +142,22 @@ namespace DaoHungAIO.Champions
                 Jungle();
 
             }
-            if (LagFree(1) && E.IsReady() && !Player.Spellbook.IsAutoAttack && Config["EConfig"].GetValue<MenuBool>("autoE"))
+            if (Program.LagFree(1) && E.IsReady() && !Player.Spellbook.IsAutoAttack && Config["EConfig"].GetValue<MenuBool>("autoE"))
                 LogicE();
 
-            if (LagFree(2) && Q.IsReady() && !Player.Spellbook.IsAutoAttack && Config["QConfig"].GetValue<MenuBool>("autoQ"))
+            if (Program.LagFree(2) && Q.IsReady() && !Player.Spellbook.IsAutoAttack && Config["QConfig"].GetValue<MenuBool>("autoQ"))
                 LogicQ();
 
-            if (LagFree(3) && W.IsReady() && Config["WConfig"].GetValue<MenuBool>("autoW"))
+            if (Program.LagFree(3) && W.IsReady() && Config["WConfig"].GetValue<MenuBool>("autoW"))
                 LogicW();
 
-            if (LagFree(4) && R.IsReady() && !Player.Spellbook.IsAutoAttack)
+            if (Program.LagFree(4) && R.IsReady() && !Player.Spellbook.IsAutoAttack)
                 LogicR();
 
         }
         private void Jungle()
         {
-            if (LaneClear && Player.Mana > RMANA + QMANA)
+            if (Program.LaneClear && Player.Mana > RMANA + QMANA)
             {
                 var mobs = MinionManager.GetMinions(650, MinionManager.MinionTypes.All, MinionTeam.Neutral);
                 if (mobs.Count > 0)
@@ -227,7 +204,7 @@ namespace DaoHungAIO.Champions
 
                     if (R.GetDamage(target) > target.Health - Player.CalculateDamage(target, DamageType.Physical, 1))
                         CastSpell(R, target);
-                    else if (Combo && Rdmg * 2 > target.Health && Player.Mana > RMANA * 3)
+                    else if (Program.Combo && Rdmg * 2 > target.Health && Player.Mana > RMANA * 3)
                         CastSpell(R, target);
                     else if (countR < comboStack + 2 && Player.Mana > RMANA * 3)
                     {
@@ -239,9 +216,9 @@ namespace DaoHungAIO.Champions
 
                     if (target.HasBuffOfType(BuffType.Slow) && Config["RConfig"].GetValue<MenuBool>("Rslow") && countR < comboStack + 1 && Player.Mana > RMANA + WMANA + EMANA + QMANA)
                         CastSpell(R, target);
-                    else if (Combo && countR < comboStack && Player.Mana > RMANA + WMANA + EMANA + QMANA)
+                    else if (Program.Combo && countR < comboStack && Player.Mana > RMANA + WMANA + EMANA + QMANA)
                         CastSpell(R, target);
-                    else if (Farm && countR < harasStack && Player.Mana > RMANA + WMANA + EMANA + QMANA)
+                    else if (Program.Farm && countR < harasStack && Player.Mana > RMANA + WMANA + EMANA + QMANA)
                         CastSpell(R, target);
                 }
             }
@@ -251,9 +228,9 @@ namespace DaoHungAIO.Champions
         {
             if (Player.CountEnemyHeroesInRange(W.Range) > 0 && Sheen())
             {
-                if (Combo)
+                if (Program.Combo)
                     W.Cast();
-                else if (Farm && Config["EConfig"].GetValue<MenuBool>("harasW") && Player.CountEnemyHeroesInRange(Player.AttackRange) > 0)
+                else if (Program.Farm && Config["EConfig"].GetValue<MenuBool>("harasW") && Player.CountEnemyHeroesInRange(Player.AttackRange) > 0)
                     W.Cast();
             }
         }
@@ -269,11 +246,11 @@ namespace DaoHungAIO.Champions
                     var eDmg = E.GetDamage(t);
                     if (t.IsValidTarget(W.Range) && qDmg + eDmg > t.Health)
                         CastSpell(Q, t);
-                    else if (Combo && Player.Mana > RMANA + QMANA * 2 + EMANA)
+                    else if (Program.Combo && Player.Mana > RMANA + QMANA * 2 + EMANA)
                         CastSpell(Q, t);
-                    else if ((Farm && Player.Mana > RMANA + EMANA + QMANA * 2 + WMANA) && Config["QConfig"].GetValue<MenuBool>("harrasQ") && !Player.IsUnderEnemyTurret())
+                    else if ((Program.Farm && Player.Mana > RMANA + EMANA + QMANA * 2 + WMANA) && Config["QConfig"].GetValue<MenuBool>("harrasQ") && !Player.IsUnderEnemyTurret())
                         CastSpell(Q, t);
-                    else if ((Combo || Farm) && Player.Mana > RMANA + QMANA + EMANA)
+                    else if ((Program.Combo || Program.Farm) && Player.Mana > RMANA + QMANA + EMANA)
                     {
                         foreach (var enemy in GameObjects.EnemyHeroes.Where(enemy => enemy.IsValidTarget(Q.Range) && !Orbwalker.CanMove()))
                             Q.Cast(enemy, true);
@@ -296,17 +273,17 @@ namespace DaoHungAIO.Champions
                         CastSpell(E, t);
                     else if (eDmg + qDmg > t.Health && Q.IsReady())
                         CastSpell(E, t);
-                    else if (Combo && ObjectManager.Player.Mana > RMANA + WMANA + EMANA + QMANA)
+                    else if (Program.Combo && ObjectManager.Player.Mana > RMANA + WMANA + EMANA + QMANA)
                         CastSpell(E, t);
-                    else if (Farm && Config["EConfig"].GetValue<MenuBool>("HarrasE") && Player.Mana > RMANA + WMANA + EMANA + QMANA + EMANA)
+                    else if (Program.Farm && Config["EConfig"].GetValue<MenuBool>("HarrasE") && Player.Mana > RMANA + WMANA + EMANA + QMANA + EMANA)
                         CastSpell(E, t);
-                    else if ((Combo || Farm) && ObjectManager.Player.Mana > RMANA + WMANA + EMANA)
+                    else if ((Program.Combo || Program.Farm) && ObjectManager.Player.Mana > RMANA + WMANA + EMANA)
                     {
                         foreach (var enemy in GameObjects.EnemyHeroes.Where(enemy => enemy.IsValidTarget(E.Range) && !Orbwalker.CanMove()))
                             E.Cast(enemy, true);
                     }
                 }
-                else if (LaneClear && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value && Config["Farm"].GetValue<MenuBool>("farmE") && Player.Mana > RMANA + EMANA)
+                else if (Program.LaneClear && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value && Config["Farm"].GetValue<MenuBool>("farmE") && Player.Mana > RMANA + EMANA)
                 {
                     var minionList = MinionManager.GetMinions(Player.Position, E.Range);
                     var farmPosition = E.GetLineFarmLocation(minionList, E.Width);
@@ -349,7 +326,7 @@ namespace DaoHungAIO.Champions
 
         private void SetMana()
         {
-            if ((Config.GetValue<MenuBool>("manaDisable") && Combo) || Player.HealthPercent < 20)
+            if ((Config.GetValue<MenuBool>("manaDisable") && Program.Combo) || Player.HealthPercent < 20)
             {
                 QMANA = 0;
                 WMANA = 0;

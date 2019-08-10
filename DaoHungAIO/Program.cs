@@ -23,6 +23,7 @@ namespace DaoHungAIO
         //public static IncomingDamage IncDamages;
         public static Menu SPredictionMenu;
 
+        public static int HitChanceNum = 4, tickNum = 4, tickIndex = 0;
         public static bool IsSPrediction
         {
             get { return SPredictionMenu.GetValue<MenuList>("PREDICTONLIST").SelectedValue == "SPrediction"; }
@@ -36,6 +37,14 @@ namespace DaoHungAIO
         }
 
         private static int timeFuck = 0;
+
+        public static bool LagFree(int offset)
+        {
+            if (tickIndex == offset)
+                return true;
+            else
+                return false;
+        }
         private static void OnGameLoad()
         {
             try
@@ -136,7 +145,14 @@ namespace DaoHungAIO
 
         private static void DelayTime(EventArgs args)
         {
-            Thread.Sleep(50);
+
+            Combo = Orbwalker.ActiveMode == OrbwalkerMode.Combo;
+            Farm = (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear && Config.GetValue<MenuBool>("harassLaneclear")) || Orbwalker.ActiveMode == OrbwalkerMode.Harass;
+            None = Orbwalker.ActiveMode == OrbwalkerMode.None;
+            LaneClear = Orbwalker.ActiveMode == OrbwalkerMode.LaneClear;
+            tickIndex++;
+            if (tickIndex > 4)
+                tickIndex = 0;
         }
         private static void TrashTalk(EventArgs args)
         {
