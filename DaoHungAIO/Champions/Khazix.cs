@@ -119,13 +119,13 @@ namespace DaoHungAIO.Champions
                     Q.Cast(enemy);
                 }
             }
-            if (Config.GetBool("Harass", "UseWHarass") && W.IsReady() && Program.LagFree(2))
+            if (Config.GetBool("Harass", "UseWHarass") && W.IsReady())
             {
                 AIHeroClient target = TargetSelector.GetTarget(950);
                 var autoWI = Config.GetBool("Harass", "Harass.AutoWI");
                 var autoWD = Config.GetBool("Harass", "Harass.AutoWD");
                 var hitchance = HarassHitChance(Config);
-                if (target != null && W.IsReady() && Program.LagFree(2))
+                if (target != null && W.IsReady())
                 {
                     if (!EvolvedW && Khazix.Distance(target) <= W.Range)
                     {
@@ -170,7 +170,7 @@ namespace DaoHungAIO.Champions
                 }
 
             }
-            if (Config.GetBool("Farm", "UseWFarm") && W.IsReady() && Program.LagFree(2))
+            if (Config.GetBool("Farm", "UseWFarm") && W.IsReady())
             {
                   FarmLocation farmLocation = FarmPrediction.GetBestCircularFarmLocation(
                   MinionManager.GetMinions(Khazix.Position, W.Range).Where(minion => HealthPrediction.GetPrediction(
@@ -279,7 +279,7 @@ namespace DaoHungAIO.Champions
                 }
             }
 
-            if (Config.GetBool("Farm", "UseWFarm") && W.IsReady() && Khazix.HealthPercent <= Config.GetSlider("Farm", "Farm.WHealth") && Program.LagFree(2))
+            if (Config.GetBool("Farm", "UseWFarm") && W.IsReady() && Khazix.HealthPercent <= Config.GetSlider("Farm", "Farm.WHealth"))
             {
                 var wmins = EvolvedW ? allMinions.Where(x => x.IsValidTarget(WE.Range)) : allMinions.Where(x => x.IsValidTarget(W.Range));
                FarmLocation farmLocation = FarmPrediction.GetBestCircularFarmLocation(wmins
@@ -377,7 +377,7 @@ namespace DaoHungAIO.Champions
                     }
                 }
 
-                if (Config.GetBool("Combo", "UseWCombo") && W.IsReady() && !EvolvedW && dist <= W.Range && Program.LagFree(2))
+                if (Config.GetBool("Combo", "UseWCombo") && W.IsReady() && !EvolvedW && dist <= W.Range)
                 {
                     var pred = W.GetPrediction(target);
                     if (pred.Hitchance >= Config.GetHitChance("WHitchance"))
@@ -419,7 +419,7 @@ namespace DaoHungAIO.Champions
 
                 // Evolved
 
-                if (W.IsReady() && EvolvedW && dist <= WE.Range && Config.GetBool("Combo", "UseWCombo") && Program.LagFree(2))
+                if (W.IsReady() && EvolvedW && dist <= WE.Range && Config.GetBool("Combo", "UseWCombo"))
                 {
                     PredictionOutput pred = WE.GetPrediction(target);
                     if (pred.Hitchance >= Config.GetHitChance("WHitchance"))
@@ -542,7 +542,7 @@ namespace DaoHungAIO.Champions
                 }
 
                 if (W.IsReady() && !EvolvedW && Vector3.Distance(Khazix.Position, target.Position) <= W.Range &&
-                    Config.GetBool("KillSteal", "UseWKs") && Program.LagFree(2))
+                    Config.GetBool("KillSteal", "UseWKs"))
                 {
                     double WDmg = Khazix.GetSpellDamage(target, SpellSlot.W);
                     if (target.Health <= WDmg)
@@ -558,7 +558,7 @@ namespace DaoHungAIO.Champions
 
                 if (W.IsReady() && EvolvedW &&
                         Vector3.Distance(Khazix.Position, target.Position) <= W.Range &&
-                        Config.GetBool("KillSteal", "UseWKs") && Program.LagFree(2))
+                        Config.GetBool("KillSteal", "UseWKs"))
                 {
                     double WDmg = Khazix.GetSpellDamage(target, SpellSlot.W);
                     PredictionOutput pred = WE.GetPrediction(target);
@@ -716,7 +716,6 @@ namespace DaoHungAIO.Champions
 
         internal void CastWE(AIBaseClient unit, Vector2 unitPosition, int minTargets = 0, HitChance hc = HitChance.Medium)
         {
-            if (Program.LagFree(3) || Program.LagFree(2)) return;
             var points = new List<Vector2>();
             var hitBoxes = new List<int>();
 

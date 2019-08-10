@@ -150,7 +150,7 @@ namespace DaoHungAIO
         {
 
             Combo = Orbwalker.ActiveMode == OrbwalkerMode.Combo;
-            Farm = (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear && Config.GetValue<MenuBool>("harassLaneclear")) || Orbwalker.ActiveMode == OrbwalkerMode.Harass;
+            Farm = (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear) || Orbwalker.ActiveMode == OrbwalkerMode.Harass;
             None = Orbwalker.ActiveMode == OrbwalkerMode.None;
             LaneClear = Orbwalker.ActiveMode == OrbwalkerMode.LaneClear;
             tickIndex++;
