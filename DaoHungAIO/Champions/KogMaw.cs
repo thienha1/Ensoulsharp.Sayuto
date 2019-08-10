@@ -88,6 +88,8 @@ namespace DaoHungAIO.Champions
             Config.Add(Farm);
             Config.Attach();
 
+            Program.Config = Config;
+
             Game.OnTick += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Orbwalker.OnAction += OnActionDelegate;

@@ -479,7 +479,7 @@ namespace DaoHungAIO.Champions
             }
         }
 
-        private bool IsCastingR { get { return !R.IsReady() && R.State != SpellState.Cooldown; } }
+        private bool IsCastingR { get { return R.Instance.Learned && !R.IsReady() && R.State != SpellState.Cooldown; } }
 
         private double GetRdmg(AIBaseClient target)
         {

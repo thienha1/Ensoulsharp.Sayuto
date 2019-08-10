@@ -37,6 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SebbyLib">
+      <HintPath>C:\Users\dao hung\Desktop\EnsoulSharp.Dependencies-master\EnsoulSharp.Dependencies-master\Loader\EnsoulSharp\System\SebbyLib.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX.Direct3D9">
       <HintPath>C:\Users\dao hung\Desktop\EnsoulSharp.Dependencies-master\EnsoulSharp.Dependencies-master\Loader\EnsoulSharp\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>

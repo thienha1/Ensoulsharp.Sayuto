@@ -18,12 +18,15 @@ namespace DaoHungAIO
 {
     internal class Program
     {
+        public static Menu Config;
         public static AIHeroClient player;
         public static string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         //public static IncomingDamage IncDamages;
         public static Menu SPredictionMenu;
 
         public static int HitChanceNum = 4, tickNum = 4, tickIndex = 0;
+
+        public static bool LaneClear = false, None = false, Farm = false, Combo = false;
         public static bool IsSPrediction
         {
             get { return SPredictionMenu.GetValue<MenuList>("PREDICTONLIST").SelectedValue == "SPrediction"; }
