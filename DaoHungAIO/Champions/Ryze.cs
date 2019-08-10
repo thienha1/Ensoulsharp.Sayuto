@@ -35,6 +35,7 @@ namespace DaoHungAIO.Champions
         public Ryze()
         {
 
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Ryze credit my brain"));
             Player = ObjectManager.Player;
 
 

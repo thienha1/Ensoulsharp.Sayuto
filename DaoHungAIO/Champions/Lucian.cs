@@ -99,7 +99,7 @@ namespace DaoHungAIO.Champions
         private static void OnMenuLoad()
         {
             Menu = new Menu("Lucian", "DH.Lucian", true);
-            Notifications.Add(new Notification("Dao Hung AIO", "Lucian credit Hoola"));
+            Notifications.Add(new Notification("Dao Hung AIO", "Lucian credit Hoola and Fuck you WWapper"));
             var Combo = new Menu("Combo", "Combo");
             Combo.Add(new MenuBool("CQ", "Use Q"));
             Combo.Add(new MenuBool("CW", "Use W"));

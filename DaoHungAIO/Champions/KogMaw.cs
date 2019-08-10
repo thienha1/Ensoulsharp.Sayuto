@@ -35,6 +35,7 @@ namespace DaoHungAIO.Champions
         private static bool LaneClear = false, None = false, Farm = false, Combo = false;
         public KogMaw()
         {
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "KogMaw credit Sebby"));
             Q = new Spell(SpellSlot.Q, 980);
             W = new Spell(SpellSlot.W, 1000);
             E = new Spell(SpellSlot.E, 1200);

@@ -80,6 +80,7 @@ namespace DaoHungAIO.Champions
 
         public Jayce()
         {
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Jayce credit  Detusk"));
 
             setSkillShots();
             try

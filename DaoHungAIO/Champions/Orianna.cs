@@ -88,6 +88,7 @@ namespace DaoHungAIO.Champions
         public static void initOrianna()
         {
 
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Orianna credits Kortatu and XSalice"));
             Player = ObjectManager.Player;
 
             if (Player.CharacterName != ChampionName) return;

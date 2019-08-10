@@ -27,6 +27,7 @@ namespace DaoHungAIO.Champions
 
         public Tristana()
         {
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Tristana credit ScienceARK"));
 
             //Ability Information - Range - Variables.
             Q = new Spell(SpellSlot.Q, 585);

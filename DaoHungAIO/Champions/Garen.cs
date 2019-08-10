@@ -17,6 +17,7 @@ namespace DaoHungAIO.Champions
 
         public Garen()
         {
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Garen creadit Soresu"));
             InitGaren();
             InitMenu();
             //Game.PrintChat("<font color='#9933FF'>Soresu </font><font color='#FFFFFF'>- Garen</font>");

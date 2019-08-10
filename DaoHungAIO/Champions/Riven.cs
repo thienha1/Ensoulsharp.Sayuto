@@ -92,6 +92,7 @@ namespace DaoHungAIO.Champions
         public Riven()
         {
 
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Riven credit Hoola"));
             if (Player.CharacterName != "Riven") return;
             Q = new Spell(SpellSlot.Q);
             W = new Spell(SpellSlot.W);

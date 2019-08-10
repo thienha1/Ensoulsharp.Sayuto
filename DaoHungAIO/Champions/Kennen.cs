@@ -464,6 +464,8 @@ namespace DaoHungAIO.Champions
             config.Add(Program.SPredictionMenu);
             config.Add(new MenuBool("Credit", "Credit: Soresu"));
             config.Attach();
+
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Kennen credit Soresu"));
         }
     }
 }

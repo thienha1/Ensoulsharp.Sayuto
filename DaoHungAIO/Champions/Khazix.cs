@@ -20,6 +20,7 @@ namespace DaoHungAIO.Champions
     {
         public Khazix()
         {
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Khazix credit Seph"));
             Init();
             GenerateMenu(this);
             Game.OnUpdate += OnUpdate;

@@ -43,6 +43,7 @@ namespace DaoHungAIO.Champions
         public Velkoz()
         {
 
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Velkoz credit Kortatu"));
             Player = ObjectManager.Player;
 
             if (Player.CharacterName != ChampionName) return;

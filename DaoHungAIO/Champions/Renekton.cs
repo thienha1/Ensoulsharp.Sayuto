@@ -28,6 +28,7 @@ namespace DaoHungAIO.Champions
 
         public Renekton()
         {
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Renekton credits Soresu and Exory"));
             InitRenekton();
             InitMenu();
 

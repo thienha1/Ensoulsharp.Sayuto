@@ -88,6 +88,7 @@ namespace DaoHungAIO.Champions
         public Fizz()
         {
 
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Fizz credit ChewyMoon"));
             Q = new Spell(SpellSlot.Q, 550);
             W = new Spell(SpellSlot.W, Player.GetRealAutoAttackRange());
             E = new Spell(SpellSlot.E, 400);
@@ -107,7 +108,6 @@ namespace DaoHungAIO.Champions
             AIBaseClient.OnProcessSpellCast += ObjAiBaseOnOnProcessSpellCast;
             Drawing.OnDraw += DrawingOnOnDraw;
 
-            Chat.Print("<font color=\"#7CFC00\"><b>DaoHungAIO:</b></font> Loaded");
         }
 
 

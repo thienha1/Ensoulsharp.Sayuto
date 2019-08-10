@@ -28,6 +28,7 @@ namespace DaoHungAIO.Champions
 
         public Jax()
         {
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Jax credit Soresu"));
             InitJax();
             InitMenu();
             //Game.PrintChat("<font color='#9933FF'>Soresu </font><font color='#FFFFFF'>- Jax</font>");

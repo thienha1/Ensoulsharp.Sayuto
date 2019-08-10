@@ -44,6 +44,7 @@ namespace DaoHungAIO.Champions
 
         public Syndra()
         {
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Syndra credit Kortatu"));
 
             Player = ObjectManager.Player;
 

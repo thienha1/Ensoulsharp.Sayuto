@@ -46,6 +46,7 @@ namespace DaoHungAIO.Champions
 
         public Nidalee()
         {
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Nidalee credit Kurisu"));
 
             Javelin = new Spell(SpellSlot.Q, 1500f);
             Bushwack = new Spell(SpellSlot.W, 900f);

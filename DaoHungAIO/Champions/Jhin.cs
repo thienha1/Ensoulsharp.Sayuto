@@ -41,6 +41,7 @@ namespace DaoHungAIO.Champions
         public Jhin()
         {
 
+            Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Jhin credit Sebby"));
             Q = new Spell(SpellSlot.Q, 600);
             W = new Spell(SpellSlot.W, 2500);
             E = new Spell(SpellSlot.E, 760);
@@ -91,9 +92,9 @@ namespace DaoHungAIO.Champions
            RConfig.Add(new MenuBool("Rvisable", "Don't shot if enemy is not visable", false));
            RConfig.Add(new MenuBool("Rks", "Auto R if can kill in 3 hits", true));
            RConfig.Add(new MenuKeyBind("useR", "Semi-manual cast R key", System.Windows.Forms.Keys.T, KeyBindType.Press)); //32 == space
-           RConfig.Add(new MenuSlider("MaxRangeR", "Max R range", 3000, 3500, 0));
-           RConfig.Add(new MenuSlider("MinRangeR", "Min R range", 1000, 3500, 0));
-           RConfig.Add(new MenuSlider("Rsafe", "R safe area", 1000, 2000, 0));
+           RConfig.Add(new MenuSlider("MaxRangeR", "Max R range", 3000, 0, 3500));
+           RConfig.Add(new MenuSlider("MinRangeR", "Min R range", 1000, 0, 3500));
+           RConfig.Add(new MenuSlider("Rsafe", "R safe area", 1000, 0, 2000));
            RConfig.Add(new MenuBool("trinkiet", "Auto blue trinkiet", true));
 
             //foreach (var enemy in GameObjects.EnemyHeroes)
@@ -191,7 +192,7 @@ namespace DaoHungAIO.Champions
                 Jungle();
             }
 
-            if (LagFree(1) && R.IsReady() && Config["RConfig"].GetValue<MenuBool>("autoR"))
+            if (LagFree(1) && (R.IsReady() || IsCastingR) && Config["RConfig"].GetValue<MenuBool>("autoR"))
                 LogicR();
 
             if (IsCastingR)
@@ -253,11 +254,12 @@ namespace DaoHungAIO.Champions
                 }
                 if (IsCastingR)
                 {
+                    var enemies = GameObjects.EnemyHeroes.Where(enemy => enemy.IsValidTarget(R.Range) && InCone(t.Position)).OrderBy(enemy => enemy.Health);
                     if (InCone(t.Position))
                         R.Cast(t);
                     else
                     {
-                        foreach (var enemy in GameObjects.EnemyHeroes.Where(enemy => enemy.IsValidTarget(R.Range) && InCone(t.Position)).OrderBy(enemy => enemy.Health))
+                        foreach (var enemy in enemies)
                         {
                             R.Cast(t);
                             rPosLast = R.GetPrediction(enemy).CastPosition;
@@ -477,7 +479,7 @@ namespace DaoHungAIO.Champions
             }
         }
 
-        private bool IsCastingR { get { return R.Instance.Name == "JhinRShot"; } }
+        private bool IsCastingR { get { return !R.IsReady() && R.State != SpellState.Cooldown; } }
 
         private double GetRdmg(AIBaseClient target)
         {
