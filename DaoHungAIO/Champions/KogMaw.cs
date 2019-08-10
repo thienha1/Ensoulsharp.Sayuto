@@ -69,7 +69,6 @@ namespace DaoHungAIO.Champions
 
             Config.Add(new MenuBool("sheen", "Sheen logic", true));
             Config.Add(new MenuBool("AApriority", "AA priority over spell", true));
-            Config.Add(new MenuBool("harassLaneclear", "Harass in LaneClear", true));
             Config.Add(new MenuBool("manaDisable", "Disable Mana Manager", false));
             Config.Add(new MenuBool("credit", "Credit: Sebby", false));
 
