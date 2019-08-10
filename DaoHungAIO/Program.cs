@@ -77,7 +77,7 @@ namespace DaoHungAIO
                 //}
                 //IncDamages = new IncomingDamage();
                 new Activator();
-                //Game.OnUpdate += DelayTime;
+                Game.OnUpdate += DelayTime;
                 //Game.OnUpdate += TrashTalk;
                 switch (player.CharacterName)
                 {

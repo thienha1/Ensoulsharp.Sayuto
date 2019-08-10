@@ -1094,7 +1094,7 @@ namespace DaoHungAIO.Champions
             farm.AddBool("UseWFarm", "Use W");
             farm.AddSlider("Farm.WHealth", "Health % to use W", 80, 0, 100);
             farm.AddBool("UseItemsFarm", "Use Items");
-            harass.AddBool("Farm.InMixed", "Farm in Mixed Mode", true);
+            farm.AddBool("Farm.InMixed", "Farm in Mixed Mode", true);
 
             //Kill Steal
             var ks = menu.AddSubMenu("KillSteal");
