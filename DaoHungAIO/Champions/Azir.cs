@@ -44,10 +44,10 @@ namespace DaoHungAIO.Champions
             E = new Spell(SpellSlot.E, 1250);
             R = new Spell(SpellSlot.R, 450);
 
-            Q.SetSkillshot(0, 70, 1600, false, SkillshotType.Circle);
-            Qline.SetSkillshot(0, 70, 1600, false, SkillshotType.Line);
-            E.SetSkillshot(0, 100, 1700, false, SkillshotType.Line);
-            R.SetSkillshot(0.5f, 0, 1400, false, SkillshotType.Line);
+            Q.SetSkillshot(0, 70, 1600, false, false, SkillshotType.Circle);
+            Qline.SetSkillshot(0, 70, 1600, false, false, SkillshotType.Line);
+            E.SetSkillshot(0, 100, 1700, false, false, SkillshotType.Line);
+            R.SetSkillshot(0.5f, 0, 1400, false, false, SkillshotType.Line);
 
             IgniteSlot = Player.GetSpellSlot("SummonerDot");
             #endregion

@@ -385,7 +385,7 @@ namespace DaoHungAIO.Champions
         private void InitKennen()
         {
             Q = new Spell(SpellSlot.Q, 950);
-            Q.SetSkillshot(0.5f, 50, 1700, true, SkillshotType.Line);
+            Q.SetSkillshot(0.5f, 50, 1700, true, false, SkillshotType.Line);
             W = new Spell(SpellSlot.W, 900);
             E = new Spell(SpellSlot.E);
             R = new Spell(SpellSlot.R, 500);

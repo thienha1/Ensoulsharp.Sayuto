@@ -327,8 +327,8 @@ namespace DaoHungAIO.Champions
 
         private static void setSkillShots()
         {
-            Q1.SetSkillshot(0.3f, 70f, 1500, true, SkillshotType.Line);
-            QEmp1.SetSkillshot(0.3f, 70f, 2180, true, SkillshotType.Line);
+            Q1.SetSkillshot(0.3f, 70f, 1500, true, false, SkillshotType.Line);
+            QEmp1.SetSkillshot(0.3f, 70f, 2180, true, false, SkillshotType.Line);
             // QEmp1.SetSkillshot(0.25f, 70f, float.MaxValue, false, Prediction.SkillshotType.Line);
         }
 

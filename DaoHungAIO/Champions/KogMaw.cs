@@ -29,9 +29,9 @@ namespace DaoHungAIO.Champions
             E = new Spell(SpellSlot.E, 1200);
             R = new Spell(SpellSlot.R, 1800);
 
-            Q.SetSkillshot(0.25f, 50f, 2000f, true, SkillshotType.Line);
-            E.SetSkillshot(0.25f, 120f, 1400f, false, SkillshotType.Line);
-            R.SetSkillshot(1.2f, 120f, float.MaxValue, false, SkillshotType.Circle);
+            Q.SetSkillshot(0.25f, 50f, 2000f, true, false, SkillshotType.Line);
+            E.SetSkillshot(0.25f, 120f, 1400f, false, false, SkillshotType.Line);
+            R.SetSkillshot(1.2f, 120f, float.MaxValue, false, false, SkillshotType.Circle);
 
             Config = new Menu("Kogmaw", "DH.Kog'Maw", true);
             Menu QConfig = new Menu("QConfig", "QConfig");

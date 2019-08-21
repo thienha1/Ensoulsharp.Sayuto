@@ -1396,9 +1396,9 @@ namespace DaoHungAIO.Champions
             WE = new Spell(SpellSlot.W, 1000f);
             E = new Spell(SpellSlot.E, 700f);
             R = new Spell(SpellSlot.R, 0);
-            W.SetSkillshot(0.225f, 80f, 828.5f, true, SkillshotType.Line);
-            WE.SetSkillshot(0.225f, 100f, 828.5f, true, SkillshotType.Line);
-            E.SetSkillshot(0.25f, 300f, 1500f, false, SkillshotType.Circle);
+            W.SetSkillshot(0.225f, 80f, 828.5f, true, false, SkillshotType.Line);
+            WE.SetSkillshot(0.225f, 100f, 828.5f, true, false, SkillshotType.Line);
+            E.SetSkillshot(0.25f, 300f, 1500f, false, false, SkillshotType.Circle);
             Ignite = new Spell(ObjectManager.Player.GetSpellSlot("summonerdot"), 550);
 
             Hydra = new Items.Item(3074, 225f);
@@ -1421,7 +1421,7 @@ namespace DaoHungAIO.Champions
             if (!EvolvedW && Khazix.HasBuff("khazixwevo"))
             {
                 EvolvedW = true;
-                W.SetSkillshot(0.225f, 100f, 828.5f, true, SkillshotType.Line);
+                W.SetSkillshot(0.225f, 100f, 828.5f, true, false, SkillshotType.Line);
             }
 
             if (!EvolvedE && Khazix.HasBuff("khazixeevo"))

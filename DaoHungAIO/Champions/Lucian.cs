@@ -63,9 +63,9 @@ namespace DaoHungAIO.Champions
             OnMenuLoad();
 
             Q.SetTargetted(0.25f, 1400f);
-            Q1.SetSkillshot(0.5f, 50, float.MaxValue, false, SkillshotType.Line);
-            W.SetSkillshot(0.30f, 80f, 1600f, true, SkillshotType.Line);
-            R.SetSkillshot(0.2f, 110f, 2500, true, SkillshotType.Line);
+            Q1.SetSkillshot(0.5f, 50, float.MaxValue, false, false, SkillshotType.Line);
+            W.SetSkillshot(0.30f, 80f, 1600f, true, false, SkillshotType.Line);
+            R.SetSkillshot(0.2f, 110f, 2500, true, false, SkillshotType.Line);
 
             Spellbook.OnCastSpell += Spellbook_OnCastSpell;
             Game.OnUpdate += Game_OnUpdate;

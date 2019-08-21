@@ -514,7 +514,7 @@ namespace DaoHungAIO.Champions
             Q = new Spell(SpellSlot.Q, 300);
             W = new Spell(SpellSlot.W, player.AttackRange + 55);
             E = new Spell(SpellSlot.E, 450);
-            E.SetSkillshot(100f, E.Instance.SData.LineWidth, E.Speed, false, SkillshotType.Line);
+            E.SetSkillshot(100f, E.Instance.SData.LineWidth, E.Speed, false, false, SkillshotType.Line);
             R = new Spell(SpellSlot.R, 300);
         }
 

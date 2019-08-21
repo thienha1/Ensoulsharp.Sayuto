@@ -138,9 +138,9 @@ namespace DaoHungAIO.Champions
         {
 
             Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Varus credit jQuery"));
-            spells[Spells.Q].SetSkillshot(.25f, 70f, 1850f, false, SkillshotType.Line);
-            spells[Spells.E].SetSkillshot(0.35f, 120, 1500, false, SkillshotType.Circle);
-            spells[Spells.R].SetSkillshot(.25f, 120f, 1850f, false, SkillshotType.Line);
+            spells[Spells.Q].SetSkillshot(.25f, 70f, 1850f, false, false, SkillshotType.Line);
+            spells[Spells.E].SetSkillshot(0.35f, 120, 1500, false, false, SkillshotType.Circle);
+            spells[Spells.R].SetSkillshot(.25f, 120f, 1850f, false, false, SkillshotType.Line);
 
             spells[Spells.Q].SetCharged("VarusQLaunch", "VarusQLaunch", 925, 1600, 2);
             Initialize();

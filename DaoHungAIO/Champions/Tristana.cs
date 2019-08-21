@@ -34,7 +34,7 @@ namespace DaoHungAIO.Champions
 
             //RocketJump Settings
             W = new Spell(SpellSlot.W, 900);
-            W.SetSkillshot(0.25f, 150, 1200, false, SkillshotType.Circle);
+            W.SetSkillshot(0.25f, 150, 1200, false, false, SkillshotType.Circle);
 
             E = new Spell(SpellSlot.E, 630);
             R = new Spell(SpellSlot.R, 630);

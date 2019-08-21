@@ -47,9 +47,9 @@ namespace DaoHungAIO.Champions
             E = new Spell(SpellSlot.E, 760);
             R = new Spell(SpellSlot.R, 3500);
 
-            W.SetSkillshot(0.75f, 40, 10000, false, SkillshotType.Line);
-            E.SetSkillshot(1f, 120, 1600, false, SkillshotType.Circle);
-            R.SetSkillshot(0.24f, 80, 5000, false, SkillshotType.Line);
+            W.SetSkillshot(0.75f, 40, 10000, false, false, SkillshotType.Line);
+            E.SetSkillshot(1f, 120, 1600, false, false, SkillshotType.Circle);
+            R.SetSkillshot(0.24f, 80, 5000, false, false, SkillshotType.Line);
 
             Config = new Menu("Jhin", "DH.Jhin", true);
             Menu QConfig = new Menu("QConfig", "QConfig");
@@ -185,7 +185,6 @@ namespace DaoHungAIO.Champions
         }
         private void Game_OnGameUpdate(EventArgs args)
         {
-
             if (LagFree(0))
             {
                 SetMana();
@@ -257,13 +256,20 @@ namespace DaoHungAIO.Champions
                 }
                 if (IsCastingR)
                 {
-                    var enemies = GameObjects.EnemyHeroes.Where(enemy => enemy.IsValidTarget(R.Range) && InCone(t.Position)).OrderBy(enemy => enemy.Health);
-                    if (InCone(t.Position))
+                    var enemies = GameObjects.EnemyHeroes.Where(enemy => enemy.IsValidTarget(R.Range)).OrderBy(enemy => enemy.Health);
+
+                    //Chat.Print("Casting:" + enemies.Count());
+                    if (t.IsValidTarget(R.Range))
+                    {
+                        //Chat.Print("Cast R to Selected");
                         R.Cast(t);
+                    }
+                        
                     else
                     {
                         foreach (var enemy in enemies)
                         {
+                            //Chat.Print("Cast R on Enemies");
                             R.Cast(t);
                             rPosLast = R.GetPrediction(enemy).CastPosition;
                             rTargetLast = enemy;
@@ -273,8 +279,11 @@ namespace DaoHungAIO.Champions
             }
             else if (IsCastingR && rTargetLast != null && !rTargetLast.IsDead)
             {
-                if (!Config["RConfig"].GetValue<MenuBool>("Rvisable") && InCone(rTargetLast.Position) && InCone(rPosLast))
+                if (!Config["RConfig"].GetValue<MenuBool>("Rvisable") && rTargetLast.IsValidTarget(R.Range))
+                {//InCone(rTargetLast.Position) && InCone(rPosLast))
+                    //Chat.Print("Cast R on Last target");
                     R.Cast(rPosLast);
+                }
             }
         }
 
@@ -452,6 +461,7 @@ namespace DaoHungAIO.Champions
                 return true;
 
             return false;
+
         }
 
         private void Jungle()
@@ -482,7 +492,7 @@ namespace DaoHungAIO.Champions
             }
         }
 
-        private bool IsCastingR { get { return R.Instance.Learned && !R.IsReady(); } }
+        private bool IsCastingR { get { return R.Name == "JhinRShot"; } }
 
         private double GetRdmg(AIBaseClient target)
         {

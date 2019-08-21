@@ -94,8 +94,8 @@ namespace DaoHungAIO.Champions
             E = new Spell(SpellSlot.E, 400);
             R = new Spell(SpellSlot.R, 1300);
 
-            E.SetSkillshot(0.25f, 330, float.MaxValue, false, SkillshotType.Circle);
-            R.SetSkillshot(0.25f, 80, 1200, false, SkillshotType.Line);
+            E.SetSkillshot(0.25f, 330, float.MaxValue, false, false, SkillshotType.Circle);
+            R.SetSkillshot(0.25f, 80, 1200, false, false, SkillshotType.Line);
 
             CreateMenu();
 

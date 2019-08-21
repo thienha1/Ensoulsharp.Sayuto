@@ -81,9 +81,9 @@ namespace DaoHungAIO
                 //Game.OnUpdate += TrashTalk;
                 switch (player.CharacterName)
                 {
-                    case "Azir":
-                        new Azir();
-                        break;
+                    //case "Azir":
+                    //    new Azir();
+                    //    break;
                     case "Draven":
                         new Draven();
                         break;
@@ -120,9 +120,9 @@ namespace DaoHungAIO
                     case "Orianna":
                         Orianna.initOrianna();
                         break;
-                    case "Riven":
-                        new Riven();
-                        break;
+                    //case "Riven":
+                    //    new Riven();
+                    //    break;
                     case "Renekton":
                         new Renekton();
                         break;

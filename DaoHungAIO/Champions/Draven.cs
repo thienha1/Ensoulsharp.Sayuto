@@ -141,8 +141,8 @@ namespace DaoHungAIO.Champions
             E = new Spell(SpellSlot.E, 1050);
             R = new Spell(SpellSlot.R);
 
-            E.SetSkillshot(0.25f, 130, 1400, false, SkillshotType.Line);
-            R.SetSkillshot(0.4f, 160, 2000, true, SkillshotType.Line);
+            E.SetSkillshot(0.25f, 130, 1400, false, false, SkillshotType.Line);
+            R.SetSkillshot(0.4f, 160, 2000, true, false, SkillshotType.Line);
 
             QReticles = new List<QRecticle>();
 
@@ -155,7 +155,7 @@ namespace DaoHungAIO.Champions
             Interrupter.OnInterrupterSpell += Interrupter2OnOnInterruptableTarget;
             Drawing.OnDraw += DrawingOnOnDraw;
             Game.OnUpdate += GameOnOnUpdate;
-            Orbwalker.OnAction += OnActionDelegate;
+            //Orbwalker.OnAction += OnActionDelegate;
         }
 
         #endregion
@@ -169,18 +169,18 @@ namespace DaoHungAIO.Champions
         /// 
 
 
-        private void OnActionDelegate(
-    Object sender,
-    OrbwalkerActionArgs args
-)
-        {
+//        private void OnActionDelegate(
+//    Object sender,
+//    OrbwalkerActionArgs args
+//)
+//        {
 
-            if(args.Type == OrbwalkerType.AfterAttack)
-            {
+//            if(args.Type == OrbwalkerType.AfterAttack)
+//            {
 
-                CatchAxe();
-            }
-        }
+//                CatchAxe();
+//            }
+//        }
         private void AntiGapcloserOnOnEnemyGapcloser(AIHeroClient sender, Gapcloser.GapcloserArgs args)
         {
             if (!Menu["Misc"].GetValue<MenuBool>("UseEGapcloser") || !E.IsReady()
@@ -203,6 +203,8 @@ namespace DaoHungAIO.Champions
                  || (catchOption == "Any" && Orbwalker.ActiveMode != OrbwalkerMode.None))
                 || catchOption == "Always")
             {
+
+                //Chat.Print(QReticles.Count());
                 var bestReticle =
                     QReticles.Where(
                         x =>
@@ -229,26 +231,27 @@ namespace DaoHungAIO.Champions
                         if (Player.IsUnderEnemyTurret() && bestReticle.Object.Position.IsUnderEnemyTurret())
                         {
                             Player.IssueOrder(GameObjectOrder.MoveTo, bestReticle.Position);
-                            //Orbwalker.Move(bestReticle.Position);
+                            //Orbwalker.Move();
+                            Orbwalker.Move(bestReticle.Position);
 
                         }
                         else if (!bestReticle.Position.IsUnderEnemyTurret())
                         {
-                            Player.IssueOrder(GameObjectOrder.MoveTo, bestReticle.Position);
-                            //Orbwalker.Move(bestReticle.Position);
+                            //Player.IssueOrder(GameObjectOrder.MoveTo, bestReticle.Position);
+                            Orbwalker.Move(bestReticle.Position);
                         }
                     }
                     else
                     {
-                        Player.IssueOrder(GameObjectOrder.MoveTo, bestReticle.Position);
-                        //Orbwalker.Move(bestReticle.Position);
+                        //Player.IssueOrder(GameObjectOrder.MoveTo, bestReticle.Position);
+                        Orbwalker.Move(bestReticle.Position);
                     }
                 }
-                else
-                {
-                    Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
-                    //Orbwalker.Move(Game.CursorPosRaw);
-                }
+                //else
+                //{
+                //    //Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
+                //    Orbwalker.Move(Game.CursorPosRaw);
+                //}
             }
            
         }
@@ -432,7 +435,8 @@ namespace DaoHungAIO.Champions
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void GameObjectOnOnCreate(GameObject sender, EventArgs args)
         {
-            if (!sender.Name.Contains("Draven_Base_Q_reticle_self.troy"))
+            //Chat.Print(sender.Name);
+            if (!sender.Name.Contains("Q_reticle_self"))
             {
                 return;
             }
@@ -464,7 +468,7 @@ namespace DaoHungAIO.Champions
         {
             QReticles.RemoveAll(x => x.Object.IsDead);
 
-
+            CatchAxe();
             if (W.IsReady() && Menu["Misc"].GetValue<MenuBool>("UseWSlow") && Player.HasBuffOfType(BuffType.Slow))
             {
                 W.Cast();

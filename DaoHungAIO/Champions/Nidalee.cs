@@ -65,10 +65,10 @@ namespace DaoHungAIO.Champions
 
 
             // Set skillshot prediction (i has rito decode now)
-            Javelin.SetSkillshot(0.125f, 40f, 1300f, true, SkillshotType.Line);
-            Bushwack.SetSkillshot(0.50f, 100f, 1500f, false, SkillshotType.Circle);
-            Swipe.SetSkillshot(0.50f, 375f, 1500f, false, SkillshotType.Cone);
-            Pounce.SetSkillshot(0.50f, 400f, 1500f, false, SkillshotType.Cone);
+            Javelin.SetSkillshot(0.125f, 40f, 1300f, true, false, SkillshotType.Line);
+            Bushwack.SetSkillshot(0.50f, 100f, 1500f, false, false, SkillshotType.Circle);
+            Swipe.SetSkillshot(0.50f, 375f, 1500f, false, false, SkillshotType.Cone);
+            Pounce.SetSkillshot(0.50f, 400f, 1500f, false, false, SkillshotType.Cone);
 
 
             Game.OnUpdate += NidaleeOnUpdate;

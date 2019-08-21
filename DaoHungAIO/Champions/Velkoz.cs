@@ -57,12 +57,12 @@ namespace DaoHungAIO.Champions
             IgniteSlot = Player.GetSpellSlot("SummonerDot");
 
 
-            Q.SetSkillshot(0.25f, 55f, 1300f, true, SkillshotType.Line);
-            QSplit.SetSkillshot(0.25f, 55f, 2100, true, SkillshotType.Line);
-            QDummy.SetSkillshot(0.25f, 55f, float.MaxValue, false, SkillshotType.Line);
-            W.SetSkillshot(0.25f, 85f, 1700f, false, SkillshotType.Line);
-            E.SetSkillshot(0.5f, 100f, 1500f, false, SkillshotType.Circle);
-            R.SetSkillshot(0.3f, 1f, float.MaxValue, false, SkillshotType.Line);
+            Q.SetSkillshot(0.25f, 55f, 1300f, true, false, SkillshotType.Line);
+            QSplit.SetSkillshot(0.25f, 55f, 2100, true, false, SkillshotType.Line);
+            QDummy.SetSkillshot(0.25f, 55f, float.MaxValue, false, false, SkillshotType.Line);
+            W.SetSkillshot(0.25f, 85f, 1700f, false, false, SkillshotType.Line);
+            E.SetSkillshot(0.5f, 100f, 1500f, false, false, SkillshotType.Circle);
+            R.SetSkillshot(0.3f, 1f, float.MaxValue, false, false, SkillshotType.Line);
 
 
             SpellList.Add(Q);

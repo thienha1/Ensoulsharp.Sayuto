@@ -98,10 +98,10 @@ namespace DaoHungAIO.Champions
             E = new Spell(SpellSlot.E, 1095);
             R = new Spell(SpellSlot.R, 325);
 
-            Q.SetSkillshot(0f, 130f, 1400f, false, SkillshotType.Circle);
-            W.SetSkillshot(0.25f, 240f, float.MaxValue, false, SkillshotType.Circle);
-            E.SetSkillshot(0.25f, 80f, 1700f, false, SkillshotType.Line);
-            R.SetSkillshot(0.6f, 375f, float.MaxValue, false, SkillshotType.Circle);
+            Q.SetSkillshot(0f, 130f, 1400f, false, false, SkillshotType.Circle);
+            W.SetSkillshot(0.25f, 240f, float.MaxValue, false, false, SkillshotType.Circle);
+            E.SetSkillshot(0.25f, 80f, 1700f, false, false, SkillshotType.Line);
+            R.SetSkillshot(0.6f, 375f, float.MaxValue, false, false, SkillshotType.Circle);
 
 
             Config = new Menu(ChampionName, "[DH]" + ChampionName, true);

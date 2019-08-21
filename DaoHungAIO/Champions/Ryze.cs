@@ -43,7 +43,7 @@ namespace DaoHungAIO.Champions
             W = new Spell(SpellSlot.W, 615f);
             E = new Spell(SpellSlot.E, 615f);
             R = new Spell(SpellSlot.R, 1750f);
-            Q.SetSkillshot(0.25f, 55f, 700f, true, SkillshotType.Line);
+            Q.SetSkillshot(0.25f, 55f, 700f, true, false, SkillshotType.Line);
 
             Config = new Menu(ChampionName, "[DH]" + ChampionName, true);
 
