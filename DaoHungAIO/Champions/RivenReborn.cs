@@ -54,7 +54,7 @@ namespace DaoHungAIO.Champions
             R.SetSkillshot(0.25f, 45, 1600, false, false, SkillshotType.Cone);
             R.MinHitChance = HitChance.Medium;
 
-            Menu = new Menu("HeavenStrike" + Player.CharacterName, Player.CharacterName, true);
+            Menu = new Menu("DH." + Player.CharacterName, "DH." + Player.CharacterName, true);
             Menu.Add(new MenuKeyBind("Burst", "Burst", Keys.T, KeyBindType.Press));
             Menu.Add(new MenuKeyBind("FastHarass", "FastHarass", Keys.V, KeyBindType.Press));
             //Menu orbwalkerMenu = new Menu("Orbwalker", "Orbwalker");
@@ -63,7 +63,7 @@ namespace DaoHungAIO.Champions
             spellMenu.Add(new MenuBool("RcomboKillable", "RcomboKillable"));
             spellMenu.Add(new MenuBool("R2comboKS", "R2comboKS"));
             spellMenu.Add(new MenuBool("R2comboMaxdmg", "RcomboMaxdmg"));
-            spellMenu.Add(new MenuBool("R2BadaoStyle", "R2 Badao Style"));
+            //spellMenu.Add(new MenuBool("R2BadaoStyle", "R2 Badao Style"));
             spellMenu.Add(new MenuBool("Ecombo", "Ecombo"));
             spellMenu.Add(new MenuBool("QGap", "Q Gap", false));
             spellMenu.Add(new MenuBool("UseQBeforeExpiry", "Use Q Before Expiry"));
@@ -114,17 +114,17 @@ namespace DaoHungAIO.Champions
                     {
                         CastItem();
                     }
-                    else if (R2BadaoStyle && R.IsReady() && R.Instance.Name == R2name && Qstate == 3)
-                    {
-                        if (target is AIBaseClient)
-                        {
-                            R.Cast(target as AIBaseClient);
-                        }
-                        if (Q.IsReady())
-                        {
-                            Utility.DelayAction.Add(150, () => callbackQ(TTTar));
-                        }
-                    }
+                    //else if (R2BadaoStyle && R.IsReady() && R.Instance.Name == R2name && Qstate == 3)
+                    //{
+                    //    if (target is AIBaseClient)
+                    //    {
+                    //        R.Cast(target as AIBaseClient);
+                    //    }
+                    //    if (Q.IsReady())
+                    //    {
+                    //        Utility.DelayAction.Add(150, () => callbackQ(TTTar));
+                    //    }
+                    //}
                     else if (W.IsReady() && InWRange(target))
                     {
                         W.Cast();
@@ -256,24 +256,35 @@ namespace DaoHungAIO.Champions
         {
             if (!sender.IsMe)
                 return;
-            if (args.Animation.Contains("c29"))
+
+            //Chat.Print(args.Animation);
+            if (args.Animation.Contains("1a"))
             {
+                //Chat.Print("Cancel Q1");
                 //if (Orbwalker.ActiveMode != OrbwalkerMode.None)
                 //{
-                    Utility.DelayAction.Add(280 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
+                //Utility.DelayAction.Add(200 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
+                //Utility.DelayAction.Add(240 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
+                Utility.DelayAction.Add(280 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
                 //}
                 Qstate = 2;
             }
-            else if (args.Animation.Contains("c39"))
+            else if (args.Animation.Contains("1b"))
             {
+                //Chat.Print("Cancel Q2");
                 //if (Orbwalker.ActiveMode != OrbwalkerMode.None)
-                    Utility.DelayAction.Add(300 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
+                //Utility.DelayAction.Add(220 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
+                //Utility.DelayAction.Add(260 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
+                Utility.DelayAction.Add(300 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
                 Qstate = 3;
             }
-            else if (args.Animation.Contains("c49"))
+            else if (args.Animation.Contains("1c"))
             {
+                //Chat.Print("Cancel Q3");
                 //if (Orbwalker.ActiveMode != OrbwalkerMode.None)
-                    Utility.DelayAction.Add(380 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
+                //Utility.DelayAction.Add(300 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
+                //Utility.DelayAction.Add(340 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
+                Utility.DelayAction.Add(380 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
                 Qstate = 1;
             }
 
@@ -285,12 +296,12 @@ namespace DaoHungAIO.Champions
         private static bool RcomboKillable { get { return Menu["Spells"].GetValue<MenuBool>("RcomboKillable"); } }
         private static bool R2comboKS { get { return Menu["Spells"].GetValue<MenuBool>("R2comboKS"); } }
         private static bool R2comboMaxdmg { get { return Menu["Spells"].GetValue<MenuBool>("R2comboMaxdmg"); } }
-        private static bool R2BadaoStyle { get { return Menu["Spells"].GetValue<MenuBool>("R2BadaoStyle"); } }
+        //private static bool R2BadaoStyle { get { return Menu["Spells"].GetValue<MenuBool>("R2BadaoStyle"); } }
         private static bool Ecombo { get { return Menu["Spells"].GetValue<MenuBool>("Ecombo"); } }
         private static bool QGap { get { return Menu["Spells"].GetValue<MenuBool>("QGap"); } }
         private static bool UseQBeforeExpiry { get { return Menu["Spells"].GetValue<MenuBool>("UseQBeforeExpiry"); } }
         private static bool BurstActive { get { return Menu.GetValue<MenuKeyBind>("Burst").Active; } }
-        private static bool FlashBurst { get { return Menu["BurstCombo"].GetValue<MenuBool>("UseFlash"); } }
+        private static bool FlashBurst { get { return Menu["Spells"]["BurstCombo"].GetValue<MenuBool>("UseFlash"); } }
         private static bool Winterrupt { get { return Menu["Misc"].GetValue<MenuBool>("Winterrupt"); } }
         private static bool Wgapcloser { get { return Menu["Misc"].GetValue<MenuBool>("Wgapcloser"); } }
 
@@ -401,7 +412,7 @@ namespace DaoHungAIO.Champions
             }
             if (spell.Name.Contains("RivenMartyr"))
             {
-                Utility.DelayAction.Add(160 - Game.Ping, () => Chat.Say("/d Fuck Wapper", false));
+                Utility.DelayAction.Add(160 - Game.Ping, () => Cancel());//Chat.Say("/d Fuck Wapper", false));
 
             }
             if (spell.Name.Contains("RivenFient"))
@@ -415,12 +426,12 @@ namespace DaoHungAIO.Champions
             }
             if (spell.Name.Contains("RivenFengShuiEngine"))
             {
-                Utility.DelayAction.Add(140 - Game.Ping, () => Chat.Say("/d Fuck Wapper", false));
+                Utility.DelayAction.Add(140 - Game.Ping, () => Cancel());//Chat.Say("/d Fuck Wapper", false));
 
             }
             if (spell.Name.Contains("rivenizunablade"))
             {
-                Utility.DelayAction.Add(140 - Game.Ping, () => Chat.Say("/d Fuck Wapper", false));
+                Utility.DelayAction.Add(140 - Game.Ping, () => Cancel());//Chat.Say("/d Fuck Wapper", false));
 
             }
         }
@@ -452,12 +463,14 @@ namespace DaoHungAIO.Champions
                 if (target.InAutoAttackRange() && Orbwalker.CanMove() && (!R.IsReady() || (R.IsReady() && R.Instance.Name == R1name)))
                 {
                     W.Cast();
+                    return;
                 }
                 if (target.InAutoAttackRange() && Orbwalker.CanMove() && R.IsReady())
                 {
                     if (R.IsReady() && R.Instance.Name == R1name) R.Cast();
                     Utility.DelayAction.Add(350, () => CastItem());
                     Utility.DelayAction.Add(400, () => W.Cast());
+                    return;
                 }
                 if (!target.InAutoAttackRange() && Orbwalker.CanMove() && E.IsReady() && R.IsReady() && Player.Distance(target.Position) <= E.Range + Player.BoundingRadius + target.BoundingRadius)
                 {
@@ -465,6 +478,7 @@ namespace DaoHungAIO.Champions
                     if (R.IsReady() && R.Instance.Name == R1name) R.Cast();
                     Utility.DelayAction.Add(350, () => CastItem());
                     Utility.DelayAction.Add(400, () => W.Cast());
+                    return;
                 }
                 if (!target.InAutoAttackRange() && Orbwalker.CanMove() && !E.IsReady() && R.IsReady() && !Player.IsDashing()
                     && flash != SpellSlot.Unknown && flash.IsReady() && FlashBurst && Player.Distance(target.Position) <= 425 + Player.BoundingRadius + target.BoundingRadius)
@@ -474,6 +488,7 @@ namespace DaoHungAIO.Champions
                     Player.Spellbook.CastSpell(flash, x);
                     Utility.DelayAction.Add(350, () => CastItem());
                     Utility.DelayAction.Add(400, () => W.Cast());
+                    return;
                 }
                 if (!target.InAutoAttackRange() && Orbwalker.CanMove() && E.IsReady() && flash != SpellSlot.Unknown && flash.IsReady() && FlashBurst
                     && R.IsReady() && Player.Distance(target.Position) <= E.Range + Player.BoundingRadius + target.BoundingRadius + 425
@@ -484,6 +499,7 @@ namespace DaoHungAIO.Champions
                     Utility.DelayAction.Add(350, () => Player.Spellbook.CastSpell(flash, target.Position));
                     Utility.DelayAction.Add(350, () => CastItem());
                     Utility.DelayAction.Add(500, () => W.Cast());
+                    return;
                 }
             }
         }
@@ -497,6 +513,7 @@ namespace DaoHungAIO.Champions
                 {
                     if (Prediction.GetFastUnitPosition(Player, 100).Distance(target.Position) <= Player.Distance(target.Position))
                         Q.Cast(Game.CursorPosRaw);
+                    return;
                 }
             }
             if (W.IsReady() && Orbwalker.CanMove())
@@ -505,6 +522,7 @@ namespace DaoHungAIO.Champions
                 if (targets.Any())
                 {
                     W.Cast();
+                    return;
                 }
             }
             if (E.IsReady() && Orbwalker.CanMove() && Ecombo)
@@ -513,6 +531,7 @@ namespace DaoHungAIO.Champions
                 if (target.IsValidTarget() && !target.IsZombie)
                 {
                     E.Cast(target.Position);
+                    return;
                 }
             }
             if (R.IsReady())
@@ -525,6 +544,7 @@ namespace DaoHungAIO.Champions
                         if (target.IsValidTarget() && !target.IsZombie && E.IsReady())
                         {
                             R.Cast();
+                            return;
                         }
                         else
                         {
@@ -532,6 +552,7 @@ namespace DaoHungAIO.Champions
                             if (targetR.IsValidTarget() && !targetR.IsZombie)
                             {
                                 R.Cast();
+                                return;
                             }
                         }
 
@@ -542,10 +563,12 @@ namespace DaoHungAIO.Champions
                         if (targetR.IsValidTarget() && !targetR.IsZombie && basicdmg(targetR) <= targetR.Health && totaldame(targetR) >= targetR.Health)
                         {
                             R.Cast();
+                            return;
                         }
                         if (targetR.IsValidTarget() && !targetR.IsZombie && Player.CountEnemyHeroesInRange(800) >= 2)
                         {
                             R.Cast();
+                            return;
                         }
                     }
                 }
@@ -558,6 +581,7 @@ namespace DaoHungAIO.Champions
                         {
                             if (target.Health < Rdame(target, target.Health))
                                 R.Cast(target);
+                            return;
                         }
                     }
                     if (R2comboMaxdmg)
@@ -567,19 +591,22 @@ namespace DaoHungAIO.Champions
                         {
                             if (target.Health / target.MaxHealth <= 0.25)
                                 R.Cast(target);
+                            return;
                         }
                     }
-                    if (R2BadaoStyle && !Q.IsReady())
-                    {
-                        var target = TargetSelector.GetTarget(R.Range);
-                        if (target.IsValidTarget() && !target.IsZombie)
-                        {
-                            R.Cast(target);
-                        }
-                    }
+                    //if (R2BadaoStyle && !Q.IsReady())
+                    //{
+                    //    var target = TargetSelector.GetTarget(R.Range);
+                    //    if (target.IsValidTarget() && !target.IsZombie)
+                    //    {
+                    //        R.Cast(target);
+                    //        return;
+                    //    }
+                    //}
                     var targethits = TargetSelector.GetTarget(R.Range);
                     if (targethits.IsValidTarget() && !targethits.IsZombie)
                         R.CastIfWillHit(targethits, 4);
+                    return;
 
                 }
             }
@@ -591,18 +618,22 @@ namespace DaoHungAIO.Champions
             if (targetW != null && InWRange(targetW) && W.IsReady() && Orbwalker.CanMove() && UseWClear)
             {
                 W.Cast();
+                return;
             }
             if (targetW2 != null && InWRange(targetW2) && W.IsReady() && Orbwalker.CanMove() && UseWClear)
             {
                 W.Cast();
+                return;
             }
             if (targetW != null && InWRange(targetW) && E.IsReady() && Orbwalker.CanMove() && UseEClear)
             {
                 E.Cast(targetW.Position);
+                return;
             }
             if (targetW2 != null && InWRange(targetW2) && E.IsReady() && Orbwalker.CanMove() && UseEClear)
             {
                 E.Cast(targetW2.Position);
+                return;
             }
         }
         public static void fastharass()
@@ -613,6 +644,7 @@ namespace DaoHungAIO.Champions
                 if (targets.Any())
                 {
                     W.Cast();
+                    return;
                 }
             }
             if (E.IsReady() && Orbwalker.CanMove())
@@ -621,6 +653,7 @@ namespace DaoHungAIO.Champions
                 if (target.IsValidTarget() && !target.IsZombie)
                 {
                     E.Cast(target.Position);
+                    return;
                 }
             }
         }
@@ -636,6 +669,7 @@ namespace DaoHungAIO.Champions
                         Q.Cast(TTTar.Position);
                     else
                         Q.Cast(Game.CursorPosRaw);
+                    return;
                 }
                 else
                 {
@@ -643,6 +677,7 @@ namespace DaoHungAIO.Champions
                         Q.Cast(TTTar.Position);
                     else
                         Q.Cast(Game.CursorPosRaw);
+                    return;
                 }
                 if (Environment.TickCount - waitQTick >= 500 + Game.Ping / 2)
                     waitQ = false;
@@ -650,12 +685,15 @@ namespace DaoHungAIO.Champions
             if (waitR2 == true && TTTar.IsValidTarget())
             {
                 R.Cast(TTTar as AIBaseClient);
+                return;
                 if (Environment.TickCount - waitQTick >= 500 + Game.Ping / 2)
                     waitQ = false;
             }
             if (Q.IsReady() && UseQBeforeExpiry && !Player.IsRecalling())
             {
-                if (Qstate != 1 && Variables.GameTimeTickCount - cQ <= 3800 - Game.Ping / 2 && Variables.GameTimeTickCount - cQ >= 3300 - Game.Ping / 2) { Q.Cast(Game.CursorPosRaw); }
+                if (Qstate != 1 && Variables.GameTimeTickCount - cQ <= 3800 - Game.Ping / 2 && Variables.GameTimeTickCount - cQ >= 3300 - Game.Ping / 2) { Q.Cast(Game.CursorPosRaw);
+                    return;
+                }
             }
         }
         public static bool HasItem()
@@ -797,10 +835,12 @@ namespace DaoHungAIO.Champions
         {
             if (target != null)
             {
-                var missinghealth = (target.MaxHealth - health) / target.MaxHealth > 0.75 ? 0.75 : (target.MaxHealth - health) / target.MaxHealth;
-                var pluspercent = missinghealth * (8 / 3);
-                var rawdmg = new double[] { 80, 120, 160 }[R.Level - 1] + 0.6 * Player.FlatPhysicalDamageMod;
-                return Player.CalculateDamage(target, DamageType.Physical, rawdmg * (1 + pluspercent));
+                //var missinghealth = (target.MaxHealth - health) / target.MaxHealth > 0.75 ? 0.75 : (target.MaxHealth - health) / target.MaxHealth;
+                //var pluspercent = missinghealth * (8 / 3);
+                //var rawdmg = new double[] { 80, 150, 160 }[R.Level - 1] + 0.6 * Player.FlatPhysicalDamageMod;
+                
+                //Chat.Print(R.GetDamage(target));
+                return R.GetDamage(target);
             }
             else return 0;
         }
