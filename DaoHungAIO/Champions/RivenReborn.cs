@@ -665,18 +665,24 @@ namespace DaoHungAIO.Champions
                 //if (Variables.GameTimeTickCount - cQ >= 350 + Player.AttackCastDelay - Game.Ping / 2) //"Lock Target", "To Mouse" 
                 if (Orbwalker.ActiveMode != OrbwalkerMode.LaneClear)
                 {
-                    if (Qmode == "Lock Target" && TTTar != null)
-                        Q.Cast(TTTar.Position);
+                    if (Qmode == "Lock Target")
+
+                        Q.Cast(Prediction.GetFastUnitPosition((AIBaseClient)TTTar, 300));
                     else
+                    {
                         Q.Cast(Game.CursorPosRaw);
+                    }
+                        
                     return;
                 }
                 else
                 {
-                    if (Qmode == "Lock Target" && TTTar != null)
-                        Q.Cast(TTTar.Position);
+                    if (Qmode == "Lock Target")
+                        Q.Cast(Prediction.GetFastUnitPosition((AIBaseClient)TTTar, 300));
                     else
+                    {
                         Q.Cast(Game.CursorPosRaw);
+                    }
                     return;
                 }
                 if (Environment.TickCount - waitQTick >= 500 + Game.Ping / 2)

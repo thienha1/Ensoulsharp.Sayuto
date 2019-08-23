@@ -4,6 +4,7 @@ using EnsoulSharp.SDK.MenuUI;
 using EnsoulSharp.SDK.MenuUI.Values;
 using EnsoulSharp.SDK.Prediction;
 using SharpDX;
+using SPrediction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,16 +18,621 @@ namespace DaoHungAIO.Champions
         public static IEnumerable<AIHeroClient> Enemies {
             get { return GameObjects.EnemyHeroes; }
         }
+    }
+
+
+    internal class EvadeTarget
+    {
+        #region Static Fields
+
+        private static readonly List<Targets> DetectedTargets = new List<Targets>();
+
+        private static readonly List<SpellData> Spells = new List<SpellData>();
+        private static AIHeroClient Player = ObjectManager.Player;
+
+        #endregion
+
+        #region Methods
+
+        internal static void Init()
+        {
+            LoadSpellData();
+
+            Spells.RemoveAll(i => !HeroManager.Enemies.Any(
+            a =>
+            string.Equals(
+                a.CharacterName,
+                i.CharacterName,
+                StringComparison.InvariantCultureIgnoreCase)));
+
+            var evadeMenu = new Menu("Evade Targeted SkillShot", "EvadeTarget");
+            {
+                evadeMenu.Add(new MenuBool("W", "Use W"));
+                var aaMenu = new Menu("AA", "Auto Attack");
+                {
+                    aaMenu.Add(new MenuBool("B", "Basic Attack", false));
+                    aaMenu.Add(new MenuSlider("BHpU", "-> If Hp < (%)", 35));
+                    aaMenu.Add(new MenuBool("C", "Crit Attack", false));
+                    aaMenu.Add(new MenuSlider("CHpU", "-> If Hp < (%)", 40));
+                    evadeMenu.Add(aaMenu);
+                }
+                foreach (var hero in
+                    HeroManager.Enemies.Where(
+                        i =>
+                        Spells.Any(
+                            a =>
+                            string.Equals(
+                                a.CharacterName,
+                                i.CharacterName,
+                                StringComparison.InvariantCultureIgnoreCase))))
+                {
+                    evadeMenu.Add(new Menu("-> " + hero.CharacterName, hero.CharacterName.ToLowerInvariant()));
+                }
+                foreach (var spell in
+                    Spells.Where(
+                        i =>
+                        HeroManager.Enemies.Any(
+                            a =>
+                            string.Equals(
+                                a.CharacterName,
+                                i.CharacterName,
+                                StringComparison.InvariantCultureIgnoreCase))))
+                {
+                    ((Menu)evadeMenu[spell.CharacterName.ToLowerInvariant()]).Add(new MenuBool(
+                        spell.MissileName,
+                        spell.MissileName + " (" + spell.Slot + ")",
+                        false));
+                }
+            }
+            Fiora.Config.Add(evadeMenu);
+            Game.OnUpdate += OnUpdateTarget;
+            GameObject.OnCreate += ObjSpellMissileOnCreate;
+            GameObject.OnDelete += ObjSpellMissileOnDelete;
+        }
+
+        private static void LoadSpellData()
+        {
+            Spells.Add(
+                new SpellData { CharacterName = "Ahri", SpellNames = new[] { "ahrifoxfiremissiletwo" }, Slot = SpellSlot.W });
+            Spells.Add(
+                new SpellData { CharacterName = "Ahri", SpellNames = new[] { "ahritumblemissile" }, Slot = SpellSlot.R });
+            Spells.Add(
+                new SpellData { CharacterName = "Akali", SpellNames = new[] { "akalimota" }, Slot = SpellSlot.Q });
+            Spells.Add(
+                new SpellData { CharacterName = "Anivia", SpellNames = new[] { "frostbite" }, Slot = SpellSlot.E });
+            Spells.Add(
+                new SpellData { CharacterName = "Annie", SpellNames = new[] { "disintegrate" }, Slot = SpellSlot.Q });
+            Spells.Add(
+                new SpellData
+                {
+                    CharacterName = "Brand",
+                    SpellNames = new[] { "brandconflagrationmissile" },
+                    Slot = SpellSlot.E
+                });
+            Spells.Add(
+                new SpellData
+                {
+                    CharacterName = "Brand",
+                    SpellNames = new[] { "brandwildfire", "brandwildfiremissile" },
+                    Slot = SpellSlot.R
+                });
+            Spells.Add(
+                new SpellData
+                {
+                    CharacterName = "Caitlyn",
+                    SpellNames = new[] { "caitlynaceintheholemissile" },
+                    Slot = SpellSlot.R
+                });
+            Spells.Add(
+                new SpellData { CharacterName = "Cassiopeia", SpellNames = new[] { "cassiopeiatwinfang" }, Slot = SpellSlot.E });
+            Spells.Add(
+                new SpellData { CharacterName = "Elise", SpellNames = new[] { "elisehumanq" }, Slot = SpellSlot.Q });
+            Spells.Add(
+                new SpellData
+                {
+                    CharacterName = "Ezreal",
+                    SpellNames = new[] { "ezrealarcaneshiftmissile" },
+                    Slot = SpellSlot.E
+                });
+            Spells.Add(
+                new SpellData
+                {
+                    CharacterName = "FiddleSticks",
+                    SpellNames = new[] { "fiddlesticksdarkwind", "fiddlesticksdarkwindmissile" },
+                    Slot = SpellSlot.E
+                });
+            Spells.Add(
+                new SpellData { CharacterName = "Gangplank", SpellNames = new[] { "parley" }, Slot = SpellSlot.Q });
+            Spells.Add(
+                new SpellData { CharacterName = "Janna", SpellNames = new[] { "sowthewind" }, Slot = SpellSlot.W });
+            Spells.Add(
+                new SpellData { CharacterName = "Kassadin", SpellNames = new[] { "nulllance" }, Slot = SpellSlot.Q });
+            Spells.Add(
+                new SpellData
+                {
+                    CharacterName = "Katarina",
+                    SpellNames = new[] { "katarinaq", "katarinaqmis" },
+                    Slot = SpellSlot.Q
+                });
+            Spells.Add(
+                new SpellData { CharacterName = "Kayle", SpellNames = new[] { "judicatorreckoning" }, Slot = SpellSlot.Q });
+            Spells.Add(
+                new SpellData
+                {
+                    CharacterName = "Leblanc",
+                    SpellNames = new[] { "leblancchaosorb", "leblancchaosorbm" },
+                    Slot = SpellSlot.Q
+                });
+            Spells.Add(new SpellData { CharacterName = "Lulu", SpellNames = new[] { "luluw" }, Slot = SpellSlot.W });
+            Spells.Add(
+                new SpellData { CharacterName = "Malphite", SpellNames = new[] { "seismicshard" }, Slot = SpellSlot.Q });
+            Spells.Add(
+                new SpellData
+                {
+                    CharacterName = "MissFortune",
+                    SpellNames = new[] { "missfortunericochetshot", "missFortunershotextra" },
+                    Slot = SpellSlot.Q
+                });
+            Spells.Add(
+                new SpellData
+                {
+                    CharacterName = "Nami",
+                    SpellNames = new[] { "namiwenemy", "namiwmissileenemy" },
+                    Slot = SpellSlot.W
+                });
+            Spells.Add(
+                new SpellData { CharacterName = "Nunu", SpellNames = new[] { "iceblast" }, Slot = SpellSlot.E });
+            Spells.Add(
+                new SpellData { CharacterName = "Pantheon", SpellNames = new[] { "pantheonq" }, Slot = SpellSlot.Q });
+            Spells.Add(
+                new SpellData
+                {
+                    CharacterName = "Ryze",
+                    SpellNames = new[] { "spellflux", "spellfluxmissile" },
+                    Slot = SpellSlot.E
+                });
+            Spells.Add(
+                new SpellData { CharacterName = "Shaco", SpellNames = new[] { "twoshivpoison" }, Slot = SpellSlot.E });
+            Spells.Add(
+                new SpellData { CharacterName = "Shen", SpellNames = new[] { "shenvorpalstar" }, Slot = SpellSlot.Q });
+            Spells.Add(
+                new SpellData { CharacterName = "Sona", SpellNames = new[] { "sonaqmissile" }, Slot = SpellSlot.Q });
+            Spells.Add(
+                new SpellData { CharacterName = "Swain", SpellNames = new[] { "swaintorment" }, Slot = SpellSlot.E });
+            Spells.Add(
+                new SpellData { CharacterName = "Syndra", SpellNames = new[] { "syndrar" }, Slot = SpellSlot.R });
+            Spells.Add(
+                new SpellData { CharacterName = "Taric", SpellNames = new[] { "dazzle" }, Slot = SpellSlot.E });
+            Spells.Add(
+                new SpellData { CharacterName = "Teemo", SpellNames = new[] { "blindingdart" }, Slot = SpellSlot.Q });
+            Spells.Add(
+                new SpellData { CharacterName = "Tristana", SpellNames = new[] { "detonatingshot" }, Slot = SpellSlot.E });
+            Spells.Add(
+                new SpellData { CharacterName = "Tristana", SpellNames = new[] { "tristanar" }, Slot = SpellSlot.R });
+            Spells.Add(
+                new SpellData { CharacterName = "TwistedFate", SpellNames = new[] { "bluecardattack" }, Slot = SpellSlot.W });
+            Spells.Add(
+                new SpellData { CharacterName = "TwistedFate", SpellNames = new[] { "goldcardattack" }, Slot = SpellSlot.W });
+            Spells.Add(
+                new SpellData { CharacterName = "TwistedFate", SpellNames = new[] { "redcardattack" }, Slot = SpellSlot.W });
+            Spells.Add(
+                new SpellData
+                {
+                    CharacterName = "Urgot",
+                    SpellNames = new[] { "urgotheatseekinghomemissile" },
+                    Slot = SpellSlot.Q
+                });
+            Spells.Add(
+                new SpellData { CharacterName = "Vayne", SpellNames = new[] { "vaynecondemnmissile" }, Slot = SpellSlot.E });
+            Spells.Add(
+                new SpellData { CharacterName = "Veigar", SpellNames = new[] { "veigarprimordialburst" }, Slot = SpellSlot.R });
+            Spells.Add(
+                new SpellData { CharacterName = "Viktor", SpellNames = new[] { "viktorpowertransfer" }, Slot = SpellSlot.Q });
+            Spells.Add(
+                new SpellData
+                {
+                    CharacterName = "Vladimir",
+                    SpellNames = new[] { "vladimirtidesofbloodnuke" },
+                    Slot = SpellSlot.E
+                });
+        }
+
+        private static void ObjSpellMissileOnCreate(GameObject sender, EventArgs args)
+        {
+            var missile = sender as MissileClient;
+            if (missile == null || !missile.IsValid)
+            {
+                return;
+            }
+            var caster = missile.SpellCaster as AIHeroClient;
+            if (caster == null || !caster.IsValid || caster.Team == ObjectManager.Player.Team || !(missile != null && missile.IsMe))
+            {
+                return;
+            }
+            var spellData =
+                Spells.FirstOrDefault(
+                    i =>
+                    i.SpellNames.Contains(missile.SData.Name.ToLower())
+                    && Fiora.Config["EvadeTarget"][i.CharacterName.ToLowerInvariant()].GetValue<MenuBool>(i.MissileName));
+            if (spellData == null && Orbwalker.IsAutoAttack(missile.SData.Name)
+                && (!missile.SData.Name.ToLower().Contains("crit")
+                        ? Fiora.Config["EvadeTarget"]["AA"].GetValue<MenuBool>("B")
+                          && Player.HealthPercent < Fiora.Config["EvadeTarget"]["AA"].GetValue<MenuSlider>("BHpU").Value
+                        : Fiora.Config["EvadeTarget"]["AA"].GetValue<MenuBool>("C")
+                          && Player.HealthPercent < Fiora.Config["EvadeTarget"]["AA"].GetValue<MenuSlider>("CHpU").Value))
+            {
+                spellData = new SpellData { CharacterName = caster.CharacterName, SpellNames = new[] { missile.SData.Name } };
+            }
+            if (spellData == null)
+            {
+                return;
+            }
+            DetectedTargets.Add(new Targets { Start = caster.Position, Obj = missile });
+        }
+
+        private static void ObjSpellMissileOnDelete(GameObject sender, EventArgs args)
+        {
+            var missile = sender as MissileClient;
+            if (missile == null || !missile.IsValid)
+            {
+                return;
+            }
+            var caster = missile.SpellCaster as AIHeroClient;
+            if (caster == null || !caster.IsValid || caster.Team == Player.Team)
+            {
+                return;
+            }
+            DetectedTargets.RemoveAll(i => i.Obj.NetworkId == missile.NetworkId);
+        }
+
+        private static void OnUpdateTarget(EventArgs args)
+        {
+            if (Player.IsDead)
+            {
+                return;
+            }
+            if (Player.HasBuffOfType(BuffType.SpellShield) || Player.HasBuffOfType(BuffType.SpellImmunity))
+            {
+                return;
+            }
+            if (!Fiora.Config["EvadeTarget"].GetValue<MenuBool>("W") || !Fiora.W.IsReady())
+            {
+                return;
+            }
+            foreach (var target in
+                DetectedTargets.Where(i => Fiora.W.IsInRange(i.Obj, 150 + Game.Ping * i.Obj.SData.MissileSpeed / 1000)).OrderBy(i => i.Obj.Position.Distance(Player.Position)))
+            {
+                var tar = TargetSelector.GetTarget(Fiora.W.Range);
+                if (tar.IsValidTarget(Fiora.W.Range))
+                    Player.Spellbook.CastSpell(SpellSlot.W, tar.Position);
+                else
+                {
+                    var hero = HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(Fiora.W.Range));
+                    if (hero != null)
+                        Player.Spellbook.CastSpell(SpellSlot.W, hero.Position);
+                    else
+                        Player.Spellbook.CastSpell(SpellSlot.W, Player.Position.Extend(target.Start, 100));
+                }
+            }
+        }
+
+        #endregion
+
+        private class SpellData
+        {
+            #region Fields
+
+            public string CharacterName;
+
+            public SpellSlot Slot;
+
+            public string[] SpellNames = { };
+
+            #endregion
+
+            #region Public Properties
+
+            public string MissileName
+            {
+                get
+                {
+                    return this.SpellNames.First();
+                }
+            }
+
+            #endregion
+        }
+
+        private class Targets
+        {
+            #region Fields
+
+            public MissileClient Obj;
+
+            public Vector3 Start;
+
+            #endregion
+        }
+    }
+    public static class FioraPassive
+    {
+        #region FioraPassive
+        public static List<Vector2> GetRadiusPoints(Vector2 targetpredictedpos, Vector2 passivepredictedposition)
+        {
+            List<Vector2> RadiusPoints = new List<Vector2>();
+            for (int i = 50; i <= 300; i = i + 25)
+            {
+                var x = targetpredictedpos.Extend(passivepredictedposition, i);
+                for (int j = -45; j <= 45; j = j + 5)
+                {
+                    RadiusPoints.Add(x.RotateAroundPoint(targetpredictedpos, j * (float)(Math.PI / 180)));
+                }
+            }
+            return RadiusPoints;
+        }
+        public static PassiveStatus GetPassiveStatus(this AIHeroClient target, float delay = 0.25f)
+        {
+            var allobjects = GetPassiveObjects()
+                .Where(x => x.Object != null && x.Object.IsValid
+                           && x.Object.Position.ToVector2().Distance(target.Position.ToVector2()) <= 50);
+            var targetpredictedpos = Prediction.GetFastUnitPosition(target, delay);
+            if (!allobjects.Any())
+            {
+                return new PassiveStatus(false, PassiveType.None, new Vector2(), new List<PassiveDirection>(), new List<Vector2>());
+            }
+            else
+            {
+                var x = allobjects.First();
+                var listdirections = new List<PassiveDirection>();
+                foreach (var a in allobjects)
+                {
+                    listdirections.Add(a.PassiveDirection);
+                }
+                var listpositions = new List<Vector2>();
+                foreach (var a in listdirections)
+                {
+                    if (a == PassiveDirection.NE)
+                    {
+                        var pos = targetpredictedpos;
+                        pos.Y = pos.Y + 200;
+                        listpositions.Add(pos);
+                    }
+                    else if (a == PassiveDirection.NW)
+                    {
+                        var pos = targetpredictedpos;
+                        pos.X = pos.X + 200;
+                        listpositions.Add(pos);
+                    }
+                    else if (a == PassiveDirection.SE)
+                    {
+                        var pos = targetpredictedpos;
+                        pos.X = pos.X - 200;
+                        listpositions.Add(pos);
+                    }
+                    else if (a == PassiveDirection.SW)
+                    {
+                        var pos = targetpredictedpos;
+                        pos.Y = pos.Y - 200;
+                        listpositions.Add(pos);
+                    }
+                }
+                if (x.PassiveType == PassiveType.PrePassive)
+                {
+                    return new PassiveStatus(true, PassiveType.PrePassive, targetpredictedpos, listdirections, listpositions);
+                }
+                if (x.PassiveType == PassiveType.NormalPassive)
+                {
+                    return new PassiveStatus(true, PassiveType.NormalPassive, targetpredictedpos, listdirections, listpositions);
+                }
+                if (x.PassiveType == PassiveType.UltiPassive)
+                {
+                    return new PassiveStatus(true, PassiveType.UltiPassive, targetpredictedpos, listdirections, listpositions);
+                }
+                return new PassiveStatus(false, PassiveType.None, new Vector2(), new List<PassiveDirection>(), new List<Vector2>());
+            }
+        }
+        public static List<PassiveObject> GetPassiveObjects()
+        {
+            List<PassiveObject> PassiveObjects = new List<PassiveObject>();
+            foreach (var x in FioraPrePassiveObjects.Where(i => i != null && i.IsValid))
+            {
+                PassiveObjects.Add(new PassiveObject(x.Name, x, PassiveType.PrePassive, GetPassiveDirection(x)));
+            }
+            foreach (var x in FioraPassiveObjects.Where(i => i != null && i.IsValid))
+            {
+                PassiveObjects.Add(new PassiveObject(x.Name, x, PassiveType.NormalPassive, GetPassiveDirection(x)));
+            }
+            foreach (var x in FioraUltiPassiveObjects.Where(i => i != null && i.IsValid))
+            {
+                PassiveObjects.Add(new PassiveObject(x.Name, x, PassiveType.UltiPassive, GetPassiveDirection(x)));
+            }
+            return PassiveObjects;
+        }
+        public static PassiveDirection GetPassiveDirection(EffectEmitter x)
+        {
+            if (x.Name.Contains("NE"))
+            {
+                return PassiveDirection.NE;
+            }
+            else if (x.Name.Contains("SE"))
+            {
+                return PassiveDirection.SE;
+            }
+            else if (x.Name.Contains("NW"))
+            {
+                return PassiveDirection.NW;
+            }
+            else
+            {
+                return PassiveDirection.SW;
+            }
+        }
+        public class PassiveStatus
+        {
+            public bool HasPassive;
+            public PassiveType PassiveType;
+            public Vector2 TargetPredictedPosition;
+            public List<PassiveDirection> PassiveDirections = new List<PassiveDirection>();
+            public List<Vector2> PassivePredictedPositions = new List<Vector2>();
+            public PassiveStatus(bool hasPassive, PassiveType passiveType, Vector2 targetPredictedPosition
+                , List<PassiveDirection> passiveDirections, List<Vector2> passivePredictedPositions)
+            {
+                HasPassive = hasPassive;
+                PassiveType = passiveType;
+                TargetPredictedPosition = targetPredictedPosition;
+                PassiveDirections = passiveDirections;
+                PassivePredictedPositions = passivePredictedPositions;
+            }
+        }
+        public enum PassiveType
+        {
+            None, PrePassive, NormalPassive, UltiPassive
+        }
+        public enum PassiveDirection
+        {
+            NE, SE, NW, SW
+        }
+        public class PassiveObject
+        {
+            public string PassiveName;
+            public EffectEmitter Object;
+            public PassiveType PassiveType;
+            public PassiveDirection PassiveDirection;
+            public PassiveObject(string passiveName, EffectEmitter obj, PassiveType passiveType, PassiveDirection passiveDirection)
+            {
+                PassiveName = passiveName;
+                Object = obj;
+                PassiveType = passiveType;
+                PassiveDirection = passiveDirection;
+            }
+        }
+        public static List<EffectEmitter> FioraUltiPassiveObjects = new List<EffectEmitter>();
+        //{
+        //    get
+        //    {
+        //        var x = ObjectManager.Get<EffectEmitter>()
+        //        .Where(a => a.Name.Contains("Fiora_Base_R_Mark") || (a.Name.Contains("Fiora_Base_R") && a.Name.Contains("Timeout_FioraOnly.troy")))
+        //        .ToList();
+        //        return x;
+        //    }
+        //}
+        public static List<EffectEmitter> FioraPassiveObjects = new List<EffectEmitter>();
+        //{
+        //    get
+        //    {
+        //        var x = ObjectManager.Get<EffectEmitter>().Where(a => FioraPassiveName.Contains(a.Name)).ToList();
+        //        return x;
+        //    }
+        //}
+        public static List<EffectEmitter> FioraPrePassiveObjects = new List<EffectEmitter>();
+        //{
+        //    get
+        //    {
+        //        var x = ObjectManager.Get<EffectEmitter>().Where(a => FioraPrePassiveName.Contains(a.Name)).ToList();
+        //        return x;
+        //    }
+        //}
+        public static List<string> FioraPassiveName = new List<string>()
+        {
+            "Fiora_Base_Passive_NE.troy",
+            "Fiora_Base_Passive_SE.troy",
+            "Fiora_Base_Passive_NW.troy",
+            "Fiora_Base_Passive_SW.troy",
+            "Fiora_Base_Passive_NE_Timeout.troy",
+            "Fiora_Base_Passive_SE_Timeout.troy",
+            "Fiora_Base_Passive_NW_Timeout.troy",
+            "Fiora_Base_Passive_SW_Timeout.troy"
+        };
+        public static List<string> FioraPrePassiveName = new List<string>()
+        {
+            "Fiora_Base_Passive_NE_Warning.troy",
+            "Fiora_Base_Passive_SE_Warning.troy",
+            "Fiora_Base_Passive_NW_Warning.troy",
+            "Fiora_Base_Passive_SW_Warning.troy"
+        };
+        public static void FioraPassiveUpdate()
+        {
+            FioraPrePassiveObjects = new List<EffectEmitter>();
+            FioraPassiveObjects = new List<EffectEmitter>();
+            FioraUltiPassiveObjects = new List<EffectEmitter>();
+            var ObjectEmitter = ObjectManager.Get<EffectEmitter>()
+                                             .Where(a => FioraPassiveName.Contains(a.Name) || FioraPrePassiveName.Contains(a.Name)
+                                             || a.Name.Contains("Fiora_Base_R_Mark")
+                                             || (a.Name.Contains("Fiora_Base_R") && a.Name.Contains("Timeout_FioraOnly.troy")))
+                                             .ToList();
+            FioraPrePassiveObjects.AddRange(ObjectEmitter.Where(a => FioraPrePassiveName.Contains(a.Name)));
+            FioraPassiveObjects.AddRange(ObjectEmitter.Where(a => FioraPassiveName.Contains(a.Name)));
+            FioraUltiPassiveObjects.AddRange(ObjectEmitter
+                .Where(a =>
+                       a.Name.Contains("Fiora_Base_R_Mark")
+                       || (a.Name.Contains("Fiora_Base_R") && a.Name.Contains("Timeout_FioraOnly.troy"))));
+        }
+        #endregion FioraPassive
+    }
+    public static class OrbwalkLastClick
+    {
+        private static Vector2 LastClickPoint = new Vector2();
+        public static void Init()
+        {
+            Game.OnUpdate += Game_OnUpdate;
+            Game.OnWndProc += Game_OnWndProc;
+            Player.OnIssueOrder += AIBaseClient_OnIssueOrder;
+        }
+
+        private static void AIBaseClient_OnIssueOrder(
+    AIBaseClient sender,
+    PlayerIssueOrderEventArgs args
+)
+        {
+            if (!OrbwalkLastClickActive)
+                return;
+            if (!sender.IsMe)
+                return;
+            if (args.Order != GameObjectOrder.MoveTo)
+                return;
+            if (!Orbwalker.CanMove())// || Player.IsCastingInterruptableSpell())
+                args.Process = false;
+        }
+
+//        public static void OrbwalkLRCLK_ValueChanged(
+//    Object sender,
+//    EventArgs e
+//)
+//        {
+//            if (e.GetNewValue<KeyBind>().Active)
+//            {
+//                LastClickPoint = Game.CursorPosRaw.ToVector2();
+//            }
+//        }
+        private static void Game_OnUpdate(EventArgs args)
+        {
+            if (!OrbwalkLastClickActive)
+                return;
+            Combo();
+            var target = TargetSelector.GetTarget(500);
+            Orbwalker.Orbwalk(
+                        target.InAutoAttackRange() ? target : null,
+                        LastClickPoint.IsValid() ? LastClickPoint.ToVector3() : Game.CursorPosRaw);
+        }
+
+        private static void Game_OnWndProc(WndEventArgs args)
+        {
+            if (args.Msg == (uint)WindowsMessages.RBUTTONDOWN)
+            {
+                LastClickPoint = Game.CursorPosRaw.ToVector2();
+            }
+        }
+    }
+
     class Fiora
     {
         private static AIHeroClient Player { get { return ObjectManager.Player; } }
 
-        private static Spell Q, W, E, R;
-
-        private static Menu Menu;
+        public static Spell Q, W, E, R;
 
         private const float LaneClearWaitTimeMod = 2f;
 
+        public static Menu Config;
 
         public Fiora()
         {
@@ -38,15 +644,15 @@ namespace DaoHungAIO.Champions
             W.MinHitChance = HitChance.High;
 
 
-            Menu = new Menu(Player.CharacterName, "DH.Fiora", true);
+            Config = new Menu(Player.CharacterName, "DH.Fiora", true);
 
-            Menu spellMenu = Menu.Add(new Menu("Spell", "Spell"));
+            Menu spellMenu = Config.Add(new Menu("Spell", "Spell"));
 
             Menu Harass = spellMenu.Add(new Menu("Harass", "Harass"));
 
             Menu Combo = spellMenu.Add(new Menu("Combo", "Combo"));
 
-            Menu Target = Menu.Add(new Menu("Targeting Modes", "Targeting Modes"));
+            Menu Target = Config.Add(new Menu("Targeting Modes", "Targeting Modes"));
 
             Menu PriorityMode = Target.Add(new Menu("Priority", "Priority Mode"));
 
@@ -56,14 +662,14 @@ namespace DaoHungAIO.Champions
 
             Menu LaneClear = spellMenu.Add(new Menu("Lane Clear", "Lane Clear"));
 
-                spellMenu.Add(new MenuKeyBind("Orbwalk Last Right Click", "Orbwalk Last Right Click", System.Windows.Forms.Keys.A, KeyBindType.Press)
-                    .ValueChanged += OrbwalkLastClick.OrbwalkLRCLK_ValueChanged;
+            spellMenu.Add(new MenuKeyBind("Orbwalk Last Right Click", "Orbwalk Last Right Click", System.Windows.Forms.Keys.A, KeyBindType.Press));
+                    //.ValueChanged += OrbwalkLastClick.OrbwalkLRCLK_ValueChanged;
 
             Menu JungClear = spellMenu.Add(new Menu("Jungle Clear", "Jungle Clear"));
 
-            Menu Misc = Menu.Add(new Menu("Misc", "Misc"));
+            Menu Misc = Config.Add(new Menu("Misc", "Misc"));
 
-            Menu Draw = Menu.Add(new Menu("Draw", "Draw")); ;
+            Menu Draw = Config.Add(new Menu("Draw", "Draw")); ;
 
             Harass.Add(new MenuBool("UseQHarass","QEnable"));
             Harass.Add(new MenuBool("UseQHarassGap","UseQtogapclose"));
@@ -135,13 +741,14 @@ namespace DaoHungAIO.Champions
 
             if (HeroManager.Enemies.Any())
             {
+                SpellBlocking.EvadeManager.Attach();
                 Evade.Evade.Init();
                 EvadeTarget.Init();
                 TargetedNoMissile.Init();
                 OtherSkill.Init();
             }
             OrbwalkLastClick.Init();
-            Menu.AddToMainMenu();
+            Config.Attach();
             Drawing.OnDraw += Drawing_OnDraw;
             Drawing.OnEndScene += Drawing_OnEndScene;
 
@@ -227,9 +834,9 @@ namespace DaoHungAIO.Champions
                         && (Orbwalker.ActiveMode == OrbwalkerMode.Combo
                         || OrbwalkLastClickActive))
                     {
-                        if (ItemData.Youmuus_Ghostblade.GetItem().IsReady())
-                            ItemData.Youmuus_Ghostblade.GetItem().Cast();
-                    }
+                        if (Player.CanUseItem((int)ItemId.Youmuus_Ghostblade))
+                            Player.UseItem((int)ItemId.Youmuus_Ghostblade);
+                }
                 }
             }
 
@@ -464,19 +1071,19 @@ namespace DaoHungAIO.Champions
                     {
                         foreach (var x in status.PassivePredictedPositions)
                         {
-                            Render.Circle.DrawCircle(x.To3D(), 50, Color.Yellow);
+                            Render.Circle.DrawCircle(x.ToVector3(), 50, Color.Yellow);
                         }
                     }
                 }
             }
             if (activewalljump)
             {
-                var Fstwall = GetFirstWallPoint(Player.Position.To2D(), Game.CursorPos.To2D());
+                var Fstwall = GetFirstWallPoint(Player.Position.ToVector2(), Game.CursorPosRaw.ToVector2());
                 if (Fstwall != null)
                 {
                     var firstwall = ((Vector2)Fstwall);
-                    var pos = firstwall.Extend(Game.CursorPos.To2D(), 100);
-                    var Lstwall = GetLastWallPoint(firstwall, Game.CursorPos.To2D());
+                    var pos = firstwall.Extend(Game.CursorPosRaw.ToVector2(), 100);
+                    var Lstwall = GetLastWallPoint(firstwall, Game.CursorPosRaw.ToVector2());
                     if (Lstwall != null)
                     {
                         var lastwall = ((Vector2)Lstwall);
@@ -486,14 +1093,14 @@ namespace DaoHungAIO.Champions
                             {
                                 var pos1 = pos.RotateAround(firstwall, i);
                                 var pos2 = firstwall.Extend(pos1, 400);
-                                if (pos1.InTheCone(firstwall, Game.CursorPos.To2D(), 60) && pos1.IsWall() && !pos2.IsWall())
+                                if (pos1.InTheCone(firstwall, Game.CursorPosRaw.ToVector2(), 60) && pos1.IsWall() && !pos2.IsWall())
                                 {
-                                    Render.Circle.DrawCircle(firstwall.To3D(), 50, Color.Green);
+                                    Render.Circle.DrawCircle(firstwall.ToVector3(), 50, Color.Green);
                                     goto Finish;
                                 }
                             }
 
-                            Render.Circle.DrawCircle(firstwall.To3D(), 50, Color.Red);
+                            Render.Circle.DrawCircle(firstwall.ToVector3(), 50, Color.Red);
                         }
                     }
                 }
@@ -515,40 +1122,40 @@ namespace DaoHungAIO.Champions
         {
             if (usewalljump && activewalljump)
             {
-                var Fstwall = GetFirstWallPoint(Player.Position.To2D(), Game.CursorPos.To2D());
+                var Fstwall = GetFirstWallPoint(Player.Position.ToVector2(), Game.CursorPosRaw.ToVector2());
                 if (Fstwall != null)
                 {
                     var firstwall = ((Vector2)Fstwall);
-                    var Lstwall = GetLastWallPoint(firstwall, Game.CursorPos.To2D());
+                    var Lstwall = GetLastWallPoint(firstwall, Game.CursorPosRaw.ToVector2());
                     if (Lstwall != null)
                     {
                         var lastwall = ((Vector2)Lstwall);
                         if (InMiddileWall(firstwall, lastwall))
                         {
-                            var y = Player.Position.Extend(Game.CursorPos, 30);
+                            var y = Player.Position.Extend(Game.CursorPosRaw, 30);
                             for (int i = 20; i <= 300; i = i + 20)
                             {
                                 if (Utils.GameTimeTickCount - movetick < (70 + Math.Min(60, Game.Ping)))
                                     break;
-                                if (Player.Distance(Game.CursorPos) <= 1200 && Player.Position.To2D().Extend(Game.CursorPos.To2D(), i).IsWall())
+                                if (Player.Distance(Game.CursorPosRaw) <= 1200 && Player.Position.ToVector2().Extend(Game.CursorPosRaw.ToVector2(), i).IsWall())
                                 {
-                                    Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.To2D().Extend(Game.CursorPos.To2D(), i - 20).To3D());
+                                    Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.ToVector2().Extend(Game.CursorPosRaw.ToVector2(), i - 20).ToVector3());
                                     movetick = Utils.GameTimeTickCount;
                                     break;
                                 }
                                 Player.IssueOrder(GameObjectOrder.MoveTo,
-                                    Player.Distance(Game.CursorPos) <= 1200 ?
-                                    Player.Position.To2D().Extend(Game.CursorPos.To2D(), 200).To3D() :
-                                    Game.CursorPos);
+                                    Player.Distance(Game.CursorPosRaw) <= 1200 ?
+                                    Player.Position.ToVector2().Extend(Game.CursorPosRaw.ToVector2(), 200).ToVector3() :
+                                    Game.CursorPosRaw);
                             }
                             if (y.IsWall() && Prediction.GetPrediction(Player, 500).UnitPosition.Distance(Player.Position) <= 10 && Q.IsReady())
                             {
-                                var pos = Player.Position.To2D().Extend(Game.CursorPos.To2D(), 100);
+                                var pos = Player.Position.ToVector2().Extend(Game.CursorPosRaw.ToVector2(), 100);
                                 for (int i = 0; i <= 359; i++)
                                 {
-                                    var pos1 = pos.RotateAround(Player.Position.To2D(), i);
-                                    var pos2 = Player.Position.To2D().Extend(pos1, 400);
-                                    if (pos1.InTheCone(Player.Position.To2D(), Game.CursorPos.To2D(), 60) && pos1.IsWall() && !pos2.IsWall())
+                                    var pos1 = pos.RotateAround(Player.Position.ToVector2(), i);
+                                    var pos2 = Player.Position.ToVector2().Extend(pos1, 400);
+                                    if (pos1.InTheCone(Player.Position.ToVector2(), Game.CursorPosRaw.ToVector2(), 60) && pos1.IsWall() && !pos2.IsWall())
                                     {
                                         Q.Cast(pos2);
                                     }
@@ -558,19 +1165,19 @@ namespace DaoHungAIO.Champions
                         }
                         else if (Utils.GameTimeTickCount - movetick >= (70 + Math.Min(60, Game.Ping)))
                         {
-                            Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+                            Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
                             movetick = Utils.GameTimeTickCount;
                         }
                     }
                     else if (Utils.GameTimeTickCount - movetick >= (70 + Math.Min(60, Game.Ping)))
                     {
-                        Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+                        Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
                         movetick = Utils.GameTimeTickCount;
                     }
                 }
                 else if (Utils.GameTimeTickCount - movetick >= (70 + Math.Min(60, Game.Ping)))
                 {
-                    Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+                    Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
                     movetick = Utils.GameTimeTickCount;
                 }
             }
@@ -615,7 +1222,7 @@ namespace DaoHungAIO.Champions
         private static bool InMiddileWall(Vector2 firstwall, Vector2 lastwall)
         {
             var midwall = new Vector2((firstwall.X + lastwall.X) / 2, (firstwall.Y + lastwall.Y) / 2);
-            var point = midwall.Extend(Game.CursorPos.To2D(), 50);
+            var point = midwall.Extend(Game.CursorPosRaw.ToVector2(), 50);
             for (int i = 0; i <= 350; i = i + 10)
             {
                 var testpoint = point.RotateAround(midwall, i);
@@ -638,28 +1245,28 @@ namespace DaoHungAIO.Champions
                 if (target.IsValidTarget(OrbwalkToPassiveRange) && !target.IsZombie)
                 {
                     var status = target.GetPassiveStatus(0);
-                    if (Player.Position.To2D().Distance(target.Position.To2D()) <= OrbwalkToPassiveRange && status.HasPassive
+                    if (Player.Position.ToVector2().Distance(target.Position.ToVector2()) <= OrbwalkToPassiveRange && status.HasPassive
                         && ((TargetingMode == TargetMode.Selected && OrbwalkToPassiveTargeted && (OrbwalkTargetedUnderTower || !Player.UnderTurret(true)))
                         || (TargetingMode == TargetMode.Optional && OrbwalkToPassiveOptional && (OrbwalkOptionalUnderTower || !Player.UnderTurret(true)))
                         || (TargetingMode == TargetMode.Priority && OrbwalkToPassivePriority && (OrbwalkPriorityUnderTower || !Player.UnderTurret(true)))))
                     {
-                        var point = status.PassivePredictedPositions.OrderBy(x => x.Distance(Player.Position.To2D())).FirstOrDefault();
-                        point = point.IsValid() ? target.Position.To2D().Extend(point, 150) : Game.CursorPos.To2D();
-                        Orbwalker.SetOrbwalkerPoint(point.To3D());
+                        var point = status.PassivePredictedPositions.OrderBy(x => x.Distance(Player.Position.ToVector2())).FirstOrDefault();
+                        point = point.IsValid() ? target.Position.ToVector2().Extend(point, 150) : Game.CursorPosRaw.ToVector2();
+                        Orbwalker.SetOrbwalkerPosition(point.ToVector3());
                         // humanizer
                         //if (InAutoAttackRange(target)
-                        //        && status.PassivePredictedPositions.Any(x => Player.Position.To2D()
+                        //        && status.PassivePredictedPositions.Any(x => Player.Position.ToVector2()
                         //            .InTheCone(status.TargetPredictedPosition, x, 90)))
                         //{
                         //    Orbwalker.SetMovement(false);
                         //    return;
                         //}
                     }
-                    else Orbwalker.SetOrbwalkerPoint(Game.CursorPos);
+                    else Orbwalker.SetOrbwalkerPosition(Game.CursorPosRaw);
                 }
-                else Orbwalker.SetOrbwalkerPoint(Game.CursorPos);
+                else Orbwalker.SetOrbwalkerPosition(Game.CursorPosRaw);
             }
-            else Orbwalker.SetOrbwalkerPoint(Game.CursorPos);
+            else Orbwalker.SetOrbwalkerPosition(Game.CursorPosRaw);
             //Orbwalker.SetMovement(true);
         }
         #endregion OrbwalkToPassive
