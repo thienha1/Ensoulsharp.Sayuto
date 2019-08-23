@@ -87,6 +87,9 @@ namespace DaoHungAIO
                     case "Draven":
                         new Draven();
                         break;
+                    case "DrMundo":
+                        new DrMundo();
+                        break;
                     case "Fizz":
                         new Fizz();
                         break;
@@ -120,9 +123,9 @@ namespace DaoHungAIO
                     case "Orianna":
                         Orianna.initOrianna();
                         break;
-                    //case "Riven":
-                    //    new Riven();
-                    //    break;
+                    case "Riven":
+                        new RivenReborn();
+                        break;
                     case "Renekton":
                         new Renekton();
                         break;

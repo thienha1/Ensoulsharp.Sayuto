@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="Champions\Azir.cs" />
     <Compile Include="Champions\Draven.cs" />
+    <Compile Include="Champions\DrMundo.cs" />
     <Compile Include="Champions\Fizz.cs" />
     <Compile Include="Champions\Jax.cs" />
     <Compile Include="Champions\Jayce.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Champions\Nidalee.cs" />
     <Compile Include="Champions\Orianna.cs" />
     <Compile Include="Champions\Renekton.cs" />
+    <Compile Include="Champions\RivenReborn.cs" />
     <Compile Include="Champions\Ryze.cs" />
     <Compile Include="Champions\Syndra.cs" />
     <Compile Include="Champions\Tristana.cs" />

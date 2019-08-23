@@ -118,8 +118,9 @@ namespace DaoHungAIO.Champions
             {
                 if (W.IsReady() && Orbwalker.ActiveMode == OrbwalkerMode.Combo &&
                 args.Target is AIHeroClient && checkFuryMode(SpellSlot.W, (AIBaseClient)args.Target) &&
-                config["csettings"].GetValue<MenuBool>("usew"))
+                config["csettings"].GetValue<MenuBool>("usew") && player.Mana > 50)
                 {
+                    //Chat.Print("use w before go");
                     if ((player.Mana > 40 && !fury) || (Q.IsReady() && canBeOpWIthQ(player.Position)))
                     {
                         return;

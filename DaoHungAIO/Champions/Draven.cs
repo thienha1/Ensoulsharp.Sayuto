@@ -228,33 +228,34 @@ namespace DaoHungAIO.Champions
                     if (Menu["axeSetting"].GetValue<MenuBool>("DontCatchUnderTurret")) // debug this?
                     {
                         // If we're under the turret as well as the axe, catch the axe
-                        if (Player.IsUnderEnemyTurret() && bestReticle.Object.Position.IsUnderEnemyTurret())
+                        if (!bestReticle.Position.IsUnderEnemyTurret())
                         {
-                            Player.IssueOrder(GameObjectOrder.MoveTo, bestReticle.Position);
-                            //Orbwalker.Move();
-                            Orbwalker.Move(bestReticle.Position);
+
+                            Orbwalker.SetOrbwalkerPosition(bestReticle.Position);
 
                         }
-                        else if (!bestReticle.Position.IsUnderEnemyTurret())
-                        {
-                            //Player.IssueOrder(GameObjectOrder.MoveTo, bestReticle.Position);
-                            Orbwalker.Move(bestReticle.Position);
-                        }
+                        //else if (!bestReticle.Position.IsUnderEnemyTurret())
+                        //{
+                        //    Chat.Print("Catch2");
+                        //    Orbwalker.SetOrbwalkerPosition(bestReticle.Position);
+                        //}
                     }
                     else
                     {
-                        //Player.IssueOrder(GameObjectOrder.MoveTo, bestReticle.Position);
-                        Orbwalker.Move(bestReticle.Position);
+                        Orbwalker.SetOrbwalkerPosition(bestReticle.Position);
                     }
                 }
-                //else
-                //{
-                //    //Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
-                //    Orbwalker.Move(Game.CursorPosRaw);
-                //}
+                else
+                {
+                    Orbwalker.SetOrbwalkerPosition(Game.CursorPosRaw);
+                }
             }
-           
+            else
+            {
+                Orbwalker.SetOrbwalkerPosition(Game.CursorPosRaw);
+            }
         }
+
 
         /// <summary>
         ///     Does the combo.
@@ -441,8 +442,8 @@ namespace DaoHungAIO.Champions
                 return;
             }
 
-            QReticles.Add(new QRecticle(sender, Environment.TickCount + 1800));
-            Utility.DelayAction.Add(1800, () => QReticles.RemoveAll(x => x.Object.NetworkId == sender.NetworkId));
+            QReticles.Add(new QRecticle(sender, Environment.TickCount + 1300));
+            Utility.DelayAction.Add(1300, () => QReticles.RemoveAll(x => x.Object.NetworkId == sender.NetworkId));
         }
 
         /// <summary>
