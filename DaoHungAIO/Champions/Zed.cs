@@ -209,7 +209,7 @@ namespace DaoHungAIO.Champions
                 return;
             if (sender.IsEnemy)
             {
-                Chat.Print(castedSpell.SData.Name);
+                //Chat.Print(castedSpell.SData.Name);
                 try
                 {
                     if (_config["Misc"].GetValue<MenuBool>("rdodge") && (_r.IsReady() || _r.Name == "ZedR2") &&
@@ -237,10 +237,10 @@ namespace DaoHungAIO.Champions
 
                 }
                 
-                Chat.Print(ShadowStage);
+                //Chat.Print(ShadowStage);
                 if (ShadowStage == ShadowCastStage.Second && DangerDB.DodgeW.Any(spell => spell.Contains(castedSpell.SData.Name)))
                 {
-                    Chat.Print("Cast W");
+                    //Chat.Print("Cast W");
                     _w.Cast();
                     return;
 
