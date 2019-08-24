@@ -95,7 +95,7 @@ namespace DaoHungAIO.Champions
                 combo.Add(new MenuKeyBind("fullDMG", "Do full damage", Keys.A, KeyBindType.Press));
                 combo.Add(new MenuKeyBind("injTarget", "Tower Injection", Keys.G, KeyBindType.Press));
                 combo.Add(new MenuKeyBind("awsPress", "Press for awsomeee!!", Keys.Z, KeyBindType.Press));
-                combo.Add(new MenuSlider("eAway", "Gate distance from side", 20, 3, 60));
+                combo.Add(new MenuSlider("eAway", "Gate distance from side", 60, 3, 60));
 
                 //Extra
                 var extra = new Menu("extra", "Extra Sharp");
