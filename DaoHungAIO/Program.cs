@@ -77,7 +77,9 @@ namespace DaoHungAIO
                 //}
                 //IncDamages = new IncomingDamage();
                 new Activator();
-                Game.OnUpdate += DelayTime;
+                Game.OnTick += DelayTime;
+
+                //AIBaseClient.OnDoCast += OnProcessSpell;
                 //Game.OnUpdate += TrashTalk;
                 switch (player.CharacterName)
                 {
@@ -147,6 +149,9 @@ namespace DaoHungAIO
                     case "Velkoz":
                         new Velkoz();
                         break;
+                    case "Zed":
+                        new Zed();
+                        break;
                 }
             }
             catch (Exception e)
@@ -154,6 +159,11 @@ namespace DaoHungAIO
                 Console.WriteLine("Failed To load: " + e);
             }
         }
+
+        //private static void OnProcessSpell(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
+        //{
+        //    Chat.Print(args.SData.Name);
+        //}
 
         private static void DelayTime(EventArgs args)
         {

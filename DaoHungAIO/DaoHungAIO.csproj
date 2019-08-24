@@ -87,6 +87,7 @@
     <Compile Include="Champions\Tristana.cs" />
     <Compile Include="Champions\Varus.cs" />
     <Compile Include="Champions\Velkoz.cs" />
+    <Compile Include="Champions\Zed.cs" />
     <Compile Include="Evade\Geometry.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Program.cs" />
