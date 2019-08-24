@@ -90,7 +90,7 @@ namespace DaoHungAIO.Champions
 
             Drawing.OnDraw += OnDraw;
 
-            Game.OnUpdate += Game_OnGameUpdate;
+            Game.OnTick += Game_OnGameUpdate;
             Orbwalker.OnAction += OnActionDelegate;
             AIBaseClient.OnProcessSpellCast += oncast;
             AIBaseClient.OnPlayAnimation += AIBaseClient_OnPlayAnimation;
@@ -704,7 +704,7 @@ namespace DaoHungAIO.Champions
         }
         public static bool HasItem()
         {
-            if (Player.CanUseItem((int)ItemId.Youmuus_Ghostblade) || Player.CanUseItem((int)ItemId.Ravenous_Hydra_Melee_Only) || Player.CanUseItem((int)ItemId.Titanic_Hydra) || Player.CanUseItem((int)ItemId.Ravenous_Hydra))
+            if (Player.CanUseItem((int)ItemId.Youmuus_Ghostblade) || Player.CanUseItem((int)ItemId.Tiamat_Melee_Only) || Player.CanUseItem((int)ItemId.Ravenous_Hydra_Melee_Only) || Player.CanUseItem((int)ItemId.Titanic_Hydra) || Player.CanUseItem((int)ItemId.Ravenous_Hydra))
             {
                 return true;
             }
@@ -724,6 +724,8 @@ namespace DaoHungAIO.Champions
                 Player.UseItem((int)ItemId.Titanic_Hydra);
             if (Player.CanUseItem((int)ItemId.Ravenous_Hydra))
                 Player.UseItem((int)ItemId.Ravenous_Hydra);
+            if (Player.CanUseItem((int)ItemId.Tiamat_Melee_Only))
+                Player.UseItem((int)ItemId.Tiamat_Melee_Only);
         }
 
         private static bool InWRange(AttackableUnit target)

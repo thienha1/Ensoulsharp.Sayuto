@@ -70,6 +70,7 @@
     <Compile Include="Champions\Azir.cs" />
     <Compile Include="Champions\Draven.cs" />
     <Compile Include="Champions\DrMundo.cs" />
+    <Compile Include="Champions\Fiora.cs" />
     <Compile Include="Champions\Fizz.cs" />
     <Compile Include="Champions\Jax.cs" />
     <Compile Include="Champions\Jayce.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Champions\Tristana.cs" />
     <Compile Include="Champions\Varus.cs" />
     <Compile Include="Champions\Velkoz.cs" />
+    <Compile Include="Evade\Geometry.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

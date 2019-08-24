@@ -110,7 +110,7 @@ namespace DaoHungAIO.Champions
             var Misc = new Menu("Misc", "Misc");
             Misc.Add(new MenuSlider("Humanizer", "Humanizer Delay", 5, 0, 300));
             Misc.Add(new MenuBool("Nocolision", "Nocolision W"));
-            Misc.Add(new MenuBool("SkipPassive", "Fast combo skip some passive?")).Permashow();
+            Misc.Add(new MenuBool("SkipPassive", "Fast combo skip some passive?", false)).Permashow();
             Menu.Add(Misc);
 
 

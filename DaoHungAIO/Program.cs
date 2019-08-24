@@ -90,6 +90,9 @@ namespace DaoHungAIO
                     case "DrMundo":
                         new DrMundo();
                         break;
+                    case "Fiora":
+                        new Fiora();
+                        break;
                     case "Fizz":
                         new Fizz();
                         break;

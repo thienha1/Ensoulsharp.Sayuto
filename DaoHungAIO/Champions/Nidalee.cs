@@ -71,7 +71,7 @@ namespace DaoHungAIO.Champions
             Pounce.SetSkillshot(0.50f, 400f, 1500f, false, false, SkillshotType.Cone);
 
 
-            Game.OnUpdate += NidaleeOnUpdate;
+            Game.OnTick += NidaleeOnUpdate;
             Drawing.OnDraw += NidaleeOnDraw;
             //AIBaseClient.OnProcessSpellCast += AIBaseClientProcessSpellCast;
             // AntiGapcloer Event
