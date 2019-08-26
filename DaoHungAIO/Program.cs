@@ -160,10 +160,11 @@ namespace DaoHungAIO
             }
         }
 
-        //private static void OnProcessSpell(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
-        //{
-        //    Chat.Print(args.SData.Name);
-        //}
+        private static void OnProcessSpell(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
+        {
+            if(sender.IsMe)
+            Chat.Print(args.SData.Name);
+        }
 
         private static void DelayTime(EventArgs args)
         {

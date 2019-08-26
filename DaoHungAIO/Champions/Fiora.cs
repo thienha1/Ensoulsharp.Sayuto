@@ -287,6 +287,11 @@ namespace DaoHungAIO.Champions
                 }
                 return;
             }
+            if(args.Msg == (uint)WindowsMessages.RBUTTONDOWN)
+            {
+                Config.GetValue<MenuKeyBind>("OrbwalkPassive").SetValue(false);
+                Config.GetValue<MenuKeyBind>("OrbwalkLastRightClick").SetValue(false);
+            }
         }
     }
     internal class EvadeTarget
@@ -314,14 +319,14 @@ namespace DaoHungAIO.Champions
             var evadeMenu = new Menu("EvadeTarget", "Evade Targeted SkillShot");
             {
                 evadeMenu.Add(new MenuBool("W", "Use W"));
-                var aaMenu = new Menu("AA", "Auto Attack");
-                {
-                    aaMenu.Add(new MenuBool("B", "Basic Attack", false));
-                    aaMenu.Add(new MenuSlider("BHpU", "-> If Hp < (%)", 35));
-                    aaMenu.Add(new MenuBool("C", "Crit Attack", false));
-                    aaMenu.Add(new MenuSlider("CHpU", "-> If Hp < (%)", 40));
-                    evadeMenu.Add(aaMenu);
-                }
+                //var aaMenu = new Menu("AA", "Auto Attack");
+                //{
+                //    aaMenu.Add(new MenuBool("B", "Basic Attack", false));
+                //    aaMenu.Add(new MenuSlider("BHpU", "-> If Hp < (%)", 35));
+                //    aaMenu.Add(new MenuBool("C", "Crit Attack", false));
+                //    aaMenu.Add(new MenuSlider("CHpU", "-> If Hp < (%)", 40));
+                //    evadeMenu.Add(aaMenu);
+                //}
                 foreach (var hero in
                     HeroManager.Enemies.Where(
                         i =>
@@ -449,7 +454,7 @@ namespace DaoHungAIO.Champions
             Spells.Add(
                 new SpellData { CharacterName = "Nunu", SpellNames = new[] { "iceblast" }, Slot = SpellSlot.E });
             Spells.Add(
-                new SpellData { CharacterName = "Pantheon", SpellNames = new[] { "pantheonq" }, Slot = SpellSlot.Q });
+                new SpellData { CharacterName = "Pantheon", SpellNames = new[] { "pantheonw" }, Slot = SpellSlot.W });
             Spells.Add(
                 new SpellData
                 {
@@ -524,15 +529,16 @@ namespace DaoHungAIO.Champions
                     i =>
                     i.SpellNames.Contains(missile.SData.Name.ToLower())
                     && Fiora.Config["EvadeTarget"][i.CharacterName.ToLowerInvariant()].GetValue<MenuBool>(i.MissileName));
-            if (spellData == null && Orbwalker.IsAutoAttack(missile.SData.Name)
-                && (!missile.SData.Name.ToLower().Contains("crit")
-                        ? Fiora.Config["EvadeTarget"]["AA"].GetValue<MenuBool>("B")
-                          && Player.HealthPercent < Fiora.Config["EvadeTarget"]["AA"].GetValue<MenuSlider>("BHpU").Value
-                        : Fiora.Config["EvadeTarget"]["AA"].GetValue<MenuBool>("C")
-                          && Player.HealthPercent < Fiora.Config["EvadeTarget"]["AA"].GetValue<MenuSlider>("CHpU").Value))
-            {
-                spellData = new SpellData { CharacterName = caster.CharacterName, SpellNames = new[] { missile.SData.Name } };
-            }
+
+            //if (spellData == null && Orbwalker.IsAutoAttack(missile.SData.Name)
+            //    && (!missile.SData.Name.ToLower().Contains("crit")
+            //            ? Fiora.Config["EvadeTarget"]["AA"].GetValue<MenuBool>("B")
+            //              && Player.HealthPercent < Fiora.Config["EvadeTarget"]["AA"].GetValue<MenuSlider>("BHpU").Value
+            //            : Fiora.Config["EvadeTarget"]["AA"].GetValue<MenuBool>("C")
+            //              && Player.HealthPercent < Fiora.Config["EvadeTarget"]["AA"].GetValue<MenuSlider>("CHpU").Value))
+            //{
+            //    spellData = new SpellData { CharacterName = caster.CharacterName, SpellNames = new[] { missile.SData.Name } };
+            //}
 
             if (spellData == null)
             {
@@ -2968,21 +2974,18 @@ namespace DaoHungAIO.Champions
         {
             if (Config.GetValue<MenuKeyBind>("OrbwalkPassive").Active)
             {
-                Chat.Print("Active");
                 var target = TargetSelector.GetTarget(OrbwalkToPassiveRange);
                 if (target.IsValidTarget(OrbwalkToPassiveRange) && !target.IsZombie)
                 {
-                    Chat.Print("target in range");
                     var status = target.GetPassiveStatus(0);
                     if (Player.Position.ToVector2().Distance(target.Position.ToVector2()) <= OrbwalkToPassiveRange && status.HasPassive
                         && ((TargetingMode == GetTargets.TargetMode.Selected && OrbwalkToPassiveTargeted && (OrbwalkTargetedUnderTower || !Player.IsUnderEnemyTurret()))
                         || (TargetingMode == GetTargets.TargetMode.Optional && OrbwalkToPassiveOptional && (OrbwalkOptionalUnderTower || !Player.IsUnderEnemyTurret()))
                         || (TargetingMode == GetTargets.TargetMode.Priority && OrbwalkToPassivePriority && (OrbwalkPriorityUnderTower || !Player.IsUnderEnemyTurret()))))
                     {
-                        Chat.Print("Go GO");
                         var point = status.PassivePredictedPositions.OrderBy(x => x.Distance(Player.Position.ToVector2())).FirstOrDefault();
                         point = point.IsValid() ? target.Position.ToVector2().Extend(point, 150) : Game.CursorPosRaw.ToVector2();
-                        Orbwalker.Orbwalk(null, point.ToVector3());
+                        Orbwalker.Orbwalk(target, point.ToVector3());
                         // humanizer
                         //if (InAutoAttackRange(target)
                         //        && status.PassivePredictedPositions.Any(x => Player.Position.ToVector2()
@@ -2992,9 +2995,9 @@ namespace DaoHungAIO.Champions
                         //    return;
                         //}
                     }
-                    else Orbwalker.Orbwalk(null, Game.CursorPosRaw);
+                    else Orbwalker.Orbwalk(target, Game.CursorPosRaw);
                 }
-                else Orbwalker.Orbwalk(null, Game.CursorPosRaw);
+                else Orbwalker.Orbwalk(target, Game.CursorPosRaw);
             }
             
             //Orbwalker.SetMovement(true);

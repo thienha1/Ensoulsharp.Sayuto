@@ -565,7 +565,7 @@ namespace DaoHungAIO.Champions
 
         private static void castQEPred(AIHeroClient target)
         {
-            if (isHammer)
+            if (isHammer || target == null)
                 return;
             PredictionOutput po = QEmp1.GetPrediction(target);
             var dist = Player.Distance(po.UnitPosition);
