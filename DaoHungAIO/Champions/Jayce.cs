@@ -122,7 +122,7 @@ namespace DaoHungAIO.Champions
                 Drawing.OnDraw += onDraw;
                 Drawing.OnEndScene += OnEndScene;
 
-                Game.OnUpdate += OnGameUpdate;
+                Game.OnTick += OnGameUpdate;
 
                 GameObject.OnCreate += onCreate;
                 GameObject.OnDelete += onDelete;
@@ -351,33 +351,33 @@ namespace DaoHungAIO.Champions
                 {
                     castQPred(target);
                 }
-                else if (W1.IsReady() && gotManaFor(false, true) && targetInRange(getClosestEnem(), 650f) && Program.LagFree(2))
+                else if (W1.IsReady() && gotManaFor(false, true) && targetInRange(getClosestEnem(), 650f))
                 {
                     W1.Cast();
                     sumItems.cast(SummonerItems.ItemIds.Ghostblade);
                 }//and wont die wih 1 AA
-                else if (!Q1.IsReady() && !W1.IsReady() && R1.IsReady() && hammerWillKill(target) && hamQCDRem == 0 && hamECDRem == 0 && Program.LagFree(4))// will need to add check if other form skills ready
+                else if (!Q1.IsReady() && !W1.IsReady() && R1.IsReady() && hammerWillKill(target) && hamQCDRem == 0 && hamECDRem == 0)// will need to add check if other form skills ready
                 {
                     R1.Cast();
                 }
             }
             else
             {
-                if (!Q2.IsReady() && R2.IsReady() && Player.Distance(getClosestEnem()) > 350 && Program.LagFree(4))
+                if (!Q2.IsReady() && R2.IsReady() && Player.Distance(getClosestEnem()) > 350)
                 {
                     sumItems.cast(SummonerItems.ItemIds.Ghostblade);
                     R2.Cast();
                 }
-                if (Q2.IsReady() && gotManaFor(true) && targetInRange(target, Q2.Range) && Player.Distance(target) > 300 && Program.LagFree(1))
+                if (Q2.IsReady() && gotManaFor(true) && targetInRange(target, Q2.Range) && Player.Distance(target) > 300)
                 {
                     sumItems.cast(SummonerItems.ItemIds.Ghostblade);
                     Q2.Cast(target);
                 }
-                if (E2.IsReady() && gotManaFor(false, false, true) && targetInRange(target, E2.Range) && shouldIKnockDatMadaFaka(target) && Program.LagFree(3))
+                if (E2.IsReady() && gotManaFor(false, false, true) && targetInRange(target, E2.Range) && shouldIKnockDatMadaFaka(target))
                 {
                     E2.Cast(target);
                 }
-                if (W2.IsReady() && gotManaFor(false, true) && targetInRange(target, W2.Range) && Program.LagFree(2))
+                if (W2.IsReady() && gotManaFor(false, true) && targetInRange(target, W2.Range))
                 {
                     W2.Cast();
                 }
@@ -499,7 +499,7 @@ namespace DaoHungAIO.Champions
 
                     // QEmp1.CastIfHitchanceEquals(target, Prediction.HitChance.HighHitchance);
                 }
-                else if (Q1.IsReady() && gotManaFor(true) && !E1.IsReady(1000) && Program.LagFree(1))
+                else if (Q1.IsReady() && gotManaFor(true) && !E1.IsReady(1000))
                 {
                     if (Q1.Cast(target.Position))
                         castedQon = target;
@@ -591,7 +591,7 @@ namespace DaoHungAIO.Champions
 
         private static void castQPred(AIHeroClient target)
         {
-            if (isHammer || !Program.LagFree(1))
+            if (isHammer)
                 return;
             PredictionOutput po = Q1.GetPrediction(target);
             if (po.Hitchance == HitChance.Collision && Jayce.Config["extra"].GetValue<MenuBool>("useMunions"))
@@ -665,7 +665,7 @@ namespace DaoHungAIO.Champions
         {
             try
             {
-                if (isHammer && R2.IsReady() && Program.LagFree(4))
+                if (isHammer && R2.IsReady())
                     R2.Cast();
                 if (!E1.IsReady() || !Q1.IsReady() || isHammer)
                     return false;
@@ -680,8 +680,8 @@ namespace DaoHungAIO.Champions
                     Vector3 bPos = Player.Position - Vector3.Normalize(pos - Player.Position) * 50;
 
                     Player.IssueOrder(GameObjectOrder.MoveTo, bPos);
-                    if (Program.LagFree(1)) Q1.Cast(pos);
-                    if (Program.LagFree(3) && man)
+                    Q1.Cast(pos);
+                    if (man)
                         E1.Cast(getParalelVec(pos));
                 }
 
@@ -906,14 +906,14 @@ namespace DaoHungAIO.Champions
 
         private static void packetCastQ(Vector2 pos)
         {
-            if(Program.LagFree(1))
+            
             Q1.Cast(pos, true);
             //Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, SpellSlot.Q, Player.NetworkId, pos.X, pos.Y, Player.Position.X, Player.Position.Y)).Send();
         }
 
         private static void packetCastE(Vector2 pos)
         {
-            if (Program.LagFree(3))
+            
                 E1.Cast(pos, true);
             //Packet.C2S.Cast.Encoded(new Packet.C2S.Cast.Struct(0, SpellSlot.E, Player.NetworkId, pos.X, pos.Y, Player.Position.X, Player.Position.Y)).Send();
         }
@@ -923,9 +923,9 @@ namespace DaoHungAIO.Champions
             if (!targetInRange(target, 270) || hamECDRem != 0 || E1.Level == 0)
                 return;
 
-            if (!isHammer && R2.IsReady() && Program.LagFree(4))
+            if (!isHammer && R2.IsReady())
                 R1.Cast();
-            if (isHammer && E2.IsReady() && targetInRange(target, 260) && Program.LagFree(3))
+            if (isHammer && E2.IsReady() && targetInRange(target, 260))
                 E2.Cast(target);
 
         }

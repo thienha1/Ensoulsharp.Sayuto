@@ -134,7 +134,7 @@ namespace DaoHungAIO.Champions
             Config.Attach();
 
             //Add the events we are going to use:
-            Game.OnUpdate += Game_OnGameUpdate;
+            Game.OnTick += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Interrupter.OnInterrupterSpell += InterrupterSpellHandler;
             GameObject.OnCreate += Obj_SpellMissile_OnCreate;

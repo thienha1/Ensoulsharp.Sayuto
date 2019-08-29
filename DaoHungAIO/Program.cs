@@ -89,9 +89,6 @@ namespace DaoHungAIO
                     case "Draven":
                         new Draven();
                         break;
-                    case "DrMundo":
-                        new DrMundo();
-                        break;
                     case "Fiora":
                         new Fiora();
                         break;
@@ -148,6 +145,9 @@ namespace DaoHungAIO
                         break;
                     case "Velkoz":
                         new Velkoz();
+                        break;
+                    case "Yasuo":
+                        new Yasuo();
                         break;
                     case "Zed":
                         new Zed();

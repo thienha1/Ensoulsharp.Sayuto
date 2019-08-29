@@ -1178,7 +1178,7 @@ namespace DaoHungAIO.Champions
                     float width = caster.Level >= 16 ? 125 * 6 / 2 :
                                 caster.Level >= 11 ? 125 * 5 / 2 :
                                 125 * 4 / 2;
-                    DaoHungAIO.Evade.Geometry.Rectangle Rect = new DaoHungAIO.Evade.Geometry.Rectangle(start, end, width);
+                     DaoHungAIO.Helpers.Evade.Geometry.Rectangle Rect = new  DaoHungAIO.Helpers.Evade.Geometry.Rectangle(start, end, width);
                     var Poly = Rect.ToPolygon();
                     if (!Poly.IsOutside(Player.Position.ToVector2()))
                     {
@@ -2470,7 +2470,7 @@ namespace DaoHungAIO.Champions
 
             if (HeroManager.Enemies.Any())
             {
-                //SpellBlocking.EvadeManager.Attach();
+                //DaoHungAIO.Evade.EvadeManager.Attach();
                 //Evade.Evade.Init();
                 EvadeTarget.Init();
                 TargetedNoMissile.Init();
@@ -2665,7 +2665,9 @@ namespace DaoHungAIO.Champions
             WallJump();
             if (Orbwalker.ActiveMode == OrbwalkerMode.Combo)
             {
+                Config.GetValue<MenuKeyBind>("OrbwalkPassive").SetValue(true);
                 Combo();
+                Config.GetValue<MenuKeyBind>("OrbwalkPassive").SetValue(false);
             }
             if (Orbwalker.ActiveMode == OrbwalkerMode.Harass)
             {
