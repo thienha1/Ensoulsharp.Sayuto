@@ -836,7 +836,8 @@ namespace DaoHungAIO.Champions
                 Orbwalker.Orbwalk(null, Game.CursorPosRaw);
                 flee();
             }
-                
+
+            
             autoQ();
             KS();
             stackQ();
@@ -894,7 +895,7 @@ namespace DaoHungAIO.Champions
 
         #endregion
 
-        protected class EvadeSkillshot
+        public class EvadeSkillshot
         {
             #region Public Methods and Operators
             public static void Init(Menu menu)
@@ -1404,7 +1405,7 @@ namespace DaoHungAIO.Champions
             }
         }
 
-        protected class EvadeTarget
+        public class EvadeTarget
         {
             #region Static Fields
 
@@ -1709,6 +1710,10 @@ namespace DaoHungAIO.Champions
 
             private static void OnProcessSpellCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
             {
+                //if(sender.IsMe && args.Slot == SpellSlot.E)
+                //{
+                //    Q.CastOnUnit(Player);
+                //}
                 if (!sender.IsValid || sender.Team != ObjectManager.Player.Team || args.SData.Name != "YasuoWMovingWall")
                 {
                     return;
