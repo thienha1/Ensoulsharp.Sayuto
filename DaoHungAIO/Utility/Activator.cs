@@ -43,7 +43,7 @@ namespace DaoHungAIO.Plugins
         };
 
         private static IDictionary<string, BuffType> DebuffList2 = new Dictionary<string, BuffType> {
-            {"Stun", BuffType.Shred},
+            {"Stun", BuffType.Stun},
             {"Silence", BuffType.Silence},
             {"Taunt", BuffType.Taunt},
             {"Slow", BuffType.Slow},
@@ -55,6 +55,7 @@ namespace DaoHungAIO.Plugins
             {"Suppression", BuffType.Suppression},
             {"Blind", BuffType.Blind},
             {"Knockup", BuffType.Knockup},
+            {"Knockback", BuffType.Knockback},
         };
 
         private static Menu[] CleanersMenu;
@@ -63,9 +64,17 @@ namespace DaoHungAIO.Plugins
 
             Menu Cleaners = new Menu("Cleaners", "Cleaners");
 
+            Menu DontUseForChamp = new Menu("DontUse", "Dont use on buff from");
             Menu Mercurial_Scimitar = new Menu("Mercurial_Scimitar", "Mercurial Scimitar");
             Menu Quicksilver_Sash = new Menu("Quicksilver_Sash", "Quicksilver Sash");
             Menu Mikaels_Crucible = new Menu("Mikaels_Crucible", "Mikaels Crucible");
+
+            foreach(AIHeroClient enemy in GameObjects.EnemyHeroes)
+            {
+                DontUseForChamp.Add(new MenuBool(enemy.CharacterName, enemy.CharacterName, false));
+            }
+
+            Cleaners.Add(DontUseForChamp);
 
             CleanersMenu = new Menu[]
             {
@@ -79,8 +88,9 @@ namespace DaoHungAIO.Plugins
             config.Add(Cleaners);
 
             config.Attach();
-            Game.OnTick += ProcessCleaners;
+            AIBaseClient.OnBuffGain += OnBuffGain;
         }
+
 
         private static void AddChildMenuCleaner(Menu[] menus, Menu rootMenu)
         {
@@ -95,18 +105,23 @@ namespace DaoHungAIO.Plugins
             }
         }
 
-        private static void ProcessCleaners(EventArgs args)
-        {
-            foreach(int id in CleanSelfItemIds)
+        private static void OnBuffGain(AIBaseClient sender, AIBaseClientBuffGainEventArgs args)
+        {            
+            if(sender.IsMe && args.Buff.Caster.IsEnemy && !config["Cleaners"]["DontUse"].GetValue<MenuBool>(((AIBaseClient)args.Buff.Caster).CharacterName))
             {
-                if(id != 3222)
+                foreach (int id in CleanSelfItemIds)
                 {
-                    CheckAndClean(id);
-                } else
-                {                    
-                    CheckAndClean(id, GameObjects.AllyHeroes.Where(h => h.IsValidTarget(600) && HasDebuff(h)).FirstOrDefault());
+                    if (id != (int)ItemId.Mikaels_Crucible)
+                    {
+                        CheckAndClean(id);
+                    }
+                    else
+                    {
+                        CheckAndClean(id, GameObjects.AllyHeroes.Where(h => h.IsValidTarget(600) && HasDebuff(h)).FirstOrDefault());
+                    }
                 }
             }
+            
         }
 
         private static bool HasDebuff(AIHeroClient target)
@@ -123,7 +138,7 @@ namespace DaoHungAIO.Plugins
 
         private static void CheckAndClean(int ItemID, AIHeroClient target = null)
         {
-            if (Items.CanUseItem(Player, ItemID))
+            if (Player.CanUseItem(ItemID))
             {
                 string MenuName = ItemId.GetName(typeof(ItemId), ItemID);
                 if (config["Cleaners"][MenuName] == null)
@@ -139,7 +154,7 @@ namespace DaoHungAIO.Plugins
                             Player.UseItem(ItemID);
                             return;
                         } else if(target != null && target.HasBuffOfType(buffType.Value))
-                        {                        
+                        {
                             Player.UseItem(ItemID, target);
                             return;
                         }

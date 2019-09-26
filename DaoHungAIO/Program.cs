@@ -81,6 +81,7 @@ namespace DaoHungAIO
 
                 //AIBaseClient.OnDoCast += OnProcessSpell;
                 //Game.OnUpdate += TrashTalk;
+                Chat.Print(player.CharacterName);
                 switch (player.CharacterName)
                 {
                     //case "Azir":
@@ -118,6 +119,9 @@ namespace DaoHungAIO
                         break;
                     case "Lucian":
                         new Lucian();
+                        break;
+                    case "Malphite":
+                        new Malphite();
                         break;
                     case "Nidalee":
                         new Nidalee();

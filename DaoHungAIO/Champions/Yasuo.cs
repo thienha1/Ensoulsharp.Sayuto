@@ -347,7 +347,7 @@ namespace DaoHungAIO.Champions
                         if (!HaveQ3)
                         {
                             var obj = minionObj.FirstOrDefault(i => CanKill(i, GetQDmg(i)));
-                            if (obj != null && Q.Cast(obj, PacketCast))
+                            if (obj != null && Q.Cast(obj, PacketCast) == CastStates.SuccessfullyCasted)
                             {
                                 return;
                             }
@@ -483,7 +483,7 @@ namespace DaoHungAIO.Champions
                         {
                             if (!HaveQ3)
                             {
-                                if (Q.Cast(target, PacketCast, true))
+                                if (Q.Cast(target, PacketCast, true) == CastStates.SuccessfullyCasted)
                                 {
                                     return;
                                 }
@@ -508,7 +508,7 @@ namespace DaoHungAIO.Champions
                                         return;
                                     }
                                 }
-                                else if (Q2.Cast(target, PacketCast, true))
+                                else if (Q2.Cast(target, PacketCast, true) == CastStates.SuccessfullyCasted)
                                 {
                                     return;
                                 }
@@ -671,7 +671,7 @@ namespace DaoHungAIO.Champions
                     var target = TargetSelector.GetTarget(
                         !HaveQ3 ? QRange : Q2Range);
                     if (target != null && CanKill(target, GetQDmg(target))
-                        && (!HaveQ3 ? Q : Q2).Cast(target, PacketCast))
+                        && (!HaveQ3 ? Q : Q2).Cast(target, PacketCast) == CastStates.SuccessfullyCasted)
                     {
                         return;
                     }
@@ -709,7 +709,7 @@ namespace DaoHungAIO.Champions
                         MinionTypes.All,
                         MinionTeam.NotAlly,
                         MinionOrderTypes.MaxHealth).FirstOrDefault(i => CanKill(i, GetQDmg(i)));
-                if (obj != null && (!HaveQ3 ? Q : Q2).Cast(obj, PacketCast, true))
+                if (obj != null && (!HaveQ3 ? Q : Q2).Cast(obj, PacketCast, true) == CastStates.SuccessfullyCasted)
                 {
                     return;
                 }

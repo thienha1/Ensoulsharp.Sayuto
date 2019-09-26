@@ -146,8 +146,23 @@ namespace DaoHungAIO.Champions
             Initialize();
             Game.OnUpdate += OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
+            AIBaseClient.OnDoCast += OnDoCast;
             AIBaseClient.OnBuffGain += AIBaseClientBuffGain;
             AIBaseClient.OnBuffLose += AIBaseClientBuffLose;
+        }
+
+        private void OnDoCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
+        {
+            if(sender.IsMe && (args.Slot == SpellSlot.E || args.Slot == SpellSlot.Q))
+            {
+                if(args.Slot == SpellSlot.Q)
+                {
+                    DelayAction.Add(1250, () => { CanCastQE = true; });
+                } else
+                {
+                    DelayAction.Add(1000, () => { CanCastQE = true; });
+                }
+            }
         }
 
         #endregion
@@ -191,7 +206,7 @@ namespace DaoHungAIO.Champions
                     {
                         spells[Spells.E].Cast(prediction.CastPosition);
                         CanCastQE = false;
-                        DelayAction.Add((int)(prediction.CastPosition.Distance(Player) * 1000 / spells[Spells.E].Speed + Game.Ping *2), () => { CanCastQE = true; });
+                        //DelayAction.Add((int)(prediction.CastPosition.Distance(Player) * 1000 / spells[Spells.E].Speed + Game.Ping *5), () => { CanCastQE = true; });
                         return;
                     }
                 }
@@ -216,7 +231,7 @@ namespace DaoHungAIO.Champions
                         {
                             spells[Spells.Q].ShootChargedSpell(prediction.CastPosition);
                             CanCastQE = false;
-                            DelayAction.Add((int)(prediction.CastPosition.Distance(Player) * 1000 / spells[Spells.Q].Speed + Game.Ping *2 ), () => { CanCastQE = true; });
+                            //DelayAction.Add((int)(prediction.CastPosition.Distance(Player) * 1000 / spells[Spells.Q].Speed + Game.Ping *5 ), () => { CanCastQE = true; });
                             return;
                         }
                     }

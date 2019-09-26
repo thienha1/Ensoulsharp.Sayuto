@@ -184,12 +184,12 @@ namespace DaoHungAIO.Champions
         private void AntiGapcloserOnOnEnemyGapcloser(AIHeroClient sender, Gapcloser.GapcloserArgs args)
         {
             if (!Menu["Misc"].GetValue<MenuBool>("UseEGapcloser") || !E.IsReady()
-                || !sender.IsValidTarget(E.Range))
+                || !sender.IsValidTarget(E.Range) || Player.Distance(args.EndPosition) > 200)
             {
                 return;
             }
 
-            E.Cast(sender);
+            E.Cast(args.EndPosition);
         }
 
         /// <summary>
