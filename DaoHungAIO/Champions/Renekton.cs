@@ -321,7 +321,7 @@ namespace DaoHungAIO.Champions
                         {
                             return;
                         }
-                        if (E.CastIfHitchanceEquals(target, HitChance.High))
+                        if (E.CastIfHitchanceEquals(target, HitChance.High) == CastStates.SuccessfullyCasted)
                         {
                             lastE = System.Environment.TickCount;
                         }

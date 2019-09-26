@@ -1,2 +1,0 @@
-C:\Users\dao hung\Desktop\New folder (3)\DaoHungAIO\obj\Debug\DaoHungAIO.csprojAssemblyReference.cache
-C:\Users\dao hung\Desktop\New folder (3)\DaoHungAIO\obj\Debug\DaoHungAIO.csproj.CoreCompileInputs.cache

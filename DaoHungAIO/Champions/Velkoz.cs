@@ -230,7 +230,7 @@ namespace DaoHungAIO.Champions
 
             if (useQ && qTarget != null && Q.IsReady() && Q.Instance.ToggleState == 0)
             {
-                if (Q.Cast(qTarget))
+                if (Q.Cast(qTarget) == CastStates.SuccessfullyCasted)
                     return;
             }
 
