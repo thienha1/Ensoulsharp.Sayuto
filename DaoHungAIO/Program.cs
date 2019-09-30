@@ -183,13 +183,10 @@ namespace DaoHungAIO
         }
         private static void TrashTalk(EventArgs args)
         {
-            if((int)Game.Time - timeFuck > 10)
+            GameObjects.Player.Buffs.ForEach(buff =>
             {
-                var random = new Random();
-                var color = String.Format("#{0:X6}", random.Next(0x1000000));
-                Chat.Print("<font color=\"" + color + "\"><b>Dont worry if you not</b>, Fuck you Wwaper, Kastobar, remove my scripts, self-respect</font>");
-                timeFuck = (int)Game.Time;
-            }
+                Chat.Print(buff.Name);
+            });
         }
     }
 

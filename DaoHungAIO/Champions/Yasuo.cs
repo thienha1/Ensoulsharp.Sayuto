@@ -241,7 +241,7 @@ namespace DaoHungAIO.Champions
         {
             get
             {
-                return Player.HasBuff("YasuoQ3W");
+                return Player.HasBuff("YasuoQ2");
             }
         }
 
@@ -272,7 +272,7 @@ namespace DaoHungAIO.Champions
             {
                 return;
             }
-            (!HaveQ3 ? Q : Q2).Cast(target, PacketCast, true);
+            (!HaveQ3 ? Q : Q2).Cast(target, PacketCast);
         }
 
         private static bool CanCastE(AIBaseClient target)
