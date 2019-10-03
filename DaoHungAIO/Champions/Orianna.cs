@@ -243,6 +243,10 @@ namespace DaoHungAIO.Champions
             {
                 return;
             }
+            if(sender.Position.DistanceToPlayer() > E.Range)
+            {
+                return;
+            }
 
             if (!Config["Misc"].GetValue<MenuBool>("AutoEInitiators"))
             {
