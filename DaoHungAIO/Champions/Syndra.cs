@@ -347,7 +347,7 @@ namespace DaoHungAIO.Champions
             //Q
             if (qTarget != null && useQ)
             {
-                Q.Cast(qTarget, false, true);
+                Q.Cast(qTarget);
             }
 
             //E
