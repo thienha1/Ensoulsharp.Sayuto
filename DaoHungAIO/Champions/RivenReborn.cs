@@ -690,10 +690,10 @@ namespace DaoHungAIO.Champions
             }
             if (waitR2 == true && TTTar.IsValidTarget())
             {
-                R.Cast(TTTar as AIBaseClient);
-                return;
                 if (Environment.TickCount - waitQTick >= 500 + Game.Ping / 2)
                     waitQ = false;
+                R.Cast(TTTar as AIBaseClient);
+                return;
             }
             if (Q.IsReady() && UseQBeforeExpiry && !Player.IsRecalling())
             {
