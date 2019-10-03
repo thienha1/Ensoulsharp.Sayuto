@@ -341,8 +341,8 @@ namespace DaoHungAIO.Champions
                 foreach (var Minion in Minions)
                 {
                     var QHit = new Geometry.Rectangle(Player.Position, Player.Position.Extend(Minion.Position, Q1.Range), Q1.Width);
-                    var QPred = Q1.GetPrediction(extarget);
-                    if (!QHit.IsOutside(QPred.UnitPosition.ToVector2()) && QPred.Hitchance == HitChance.High)
+                    var QPred = Q1.GetSPrediction(extarget);
+                    if (!QHit.IsOutside(QPred.UnitPosition) && QPred.HitChance == HitChance.High)
                     {
                         Q.Cast(Minion);
                         break;
@@ -359,8 +359,8 @@ namespace DaoHungAIO.Champions
                 foreach (var Minion in Minions)
                 {
                     var QHit = new Geometry.Rectangle(Player.Position, Player.Position.Extend(Minion.Position, Q1.Range), Q1.Width);
-                    var QPred = Q1.GetPrediction(extarget);
-                    if (!QHit.IsOutside(QPred.UnitPosition.ToVector2()) && QPred.Hitchance == HitChance.High)
+                    var QPred = Q1.GetSPrediction(extarget);
+                    if (!QHit.IsOutside(QPred.UnitPosition) && QPred.HitChance == HitChance.High)
                     {
                         Q.Cast(Minion);
                         break;

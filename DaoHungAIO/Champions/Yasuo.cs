@@ -483,7 +483,7 @@ namespace DaoHungAIO.Champions
                         {
                             if (!HaveQ3)
                             {
-                                if (Q.Cast(target, PacketCast, true) == CastStates.SuccessfullyCasted)
+                                if (Q.Cast(target, PacketCast) == CastStates.SuccessfullyCasted)
                                 {
                                     return;
                                 }
@@ -508,7 +508,7 @@ namespace DaoHungAIO.Champions
                                         return;
                                     }
                                 }
-                                else if (Q2.Cast(target, PacketCast, true) == CastStates.SuccessfullyCasted)
+                                else if (Q2.Cast(target, PacketCast) == CastStates.SuccessfullyCasted)
                                 {
                                     return;
                                 }
@@ -524,7 +524,7 @@ namespace DaoHungAIO.Champions
                             .FirstOrDefault(i => CanKill(i, GetQDmg(i)));
                     if (obj != null)
                     {
-                        Q.Cast(obj, PacketCast, true);
+                        Q.Cast(obj, PacketCast);
                     }
                 }
             }
@@ -709,7 +709,7 @@ namespace DaoHungAIO.Champions
                         MinionTypes.All,
                         MinionTeam.NotAlly,
                         MinionOrderTypes.MaxHealth).FirstOrDefault(i => CanKill(i, GetQDmg(i)));
-                if (obj != null && (!HaveQ3 ? Q : Q2).Cast(obj, PacketCast, true) == CastStates.SuccessfullyCasted)
+                if (obj != null && (!HaveQ3 ? Q : Q2).Cast(obj, PacketCast) == CastStates.SuccessfullyCasted)
                 {
                     return;
                 }
@@ -862,7 +862,7 @@ namespace DaoHungAIO.Champions
             var target = Q.GetTarget();
             if (target != null && (!UnderTower(Player.Position) || !UnderTower(target.Position)))
             {
-                Q.Cast(target, PacketCast, true);
+                Q.Cast(target, PacketCast);
             }
             else
             {
