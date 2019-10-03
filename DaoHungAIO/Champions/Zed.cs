@@ -238,13 +238,13 @@ namespace DaoHungAIO.Champions
                 }
                 
                 //Chat.Print(ShadowStage);
-                if (ShadowStage == ShadowCastStage.Second && DangerDB.DodgeW.Any(spell => spell.Contains(castedSpell.SData.Name)))
-                {
-                    //Chat.Print("Cast W");
-                    _w.Cast();
-                    return;
+                //if (ShadowStage == ShadowCastStage.Second && DangerDB.DodgeW.Any(spell => spell.Contains(castedSpell.SData.Name)))
+                //{
+                //    //Chat.Print("Cast W");
+                //    _w.Cast();
+                //    return;
 
-                }
+                //}
             }
 
             if (sender.IsMe && castedSpell.SData.Name == "zedult")
