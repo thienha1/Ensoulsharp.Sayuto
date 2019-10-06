@@ -56,7 +56,7 @@ namespace DaoHungAIO
                 //pred = new Menu("spred", "Prediction settings");
                 //SPrediction.Prediction.Initialize(pred);
                 SPredictionMenu = SPrediction.Prediction.Initialize(); //new Menu("SPREDX", "SPrediction");
-                Notifications.Add(new Notification("XDreamms is just a kid stealing, disrespecting the source owner", "XDreamms is just a kid stealing, disrespecting the source owner"));
+                Chat.Print("XDreamms is just a kid stealing, disrespecting the source owner");
                 //SPredictionMenu.Attach();
                 //set default to common prediction
                 //var type = Type.GetType("DaoHungAIO.Champions." + player.CharacterName);
@@ -77,7 +77,7 @@ namespace DaoHungAIO
                 //    }
                 //}
                 //IncDamages = new IncomingDamage();
-                new Activator();
+                
                 Game.OnTick += DelayTime;
 
                 //AIBaseClient.OnDoCast += OnProcessSpell;

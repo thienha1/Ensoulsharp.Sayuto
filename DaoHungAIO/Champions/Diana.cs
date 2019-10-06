@@ -80,7 +80,7 @@ namespace DaoHungAIO.Champions
             ignite = Player.GetSpellSlot("summonerdot");
 
             ElDianaMenu.Initialize();
-            Game.OnUpdate += OnUpdate;
+            Game.OnTick += OnUpdate;
             Drawing.OnDraw += Drawings.Drawing_OnDraw;
 
             Gapclosers.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
@@ -148,7 +148,8 @@ namespace DaoHungAIO.Champions
                 if (Player.Distance(target) <= spells[Spells.Q].Range)
                 {
                     var prediction = spells[Spells.Q].GetPrediction(target);
-                    if (prediction.Hitchance >= HitChance.VeryHigh)
+
+                    if (prediction.Hitchance >= CustomHitChance)
                     {
                         spells[Spells.Q].Cast(prediction.CastPosition);
                     }
@@ -493,16 +494,13 @@ namespace DaoHungAIO.Champions
             {
                 spells[Spells.R].Cast(target);
                 spells[Spells.Q].Cast(target);
+                return;
             }
 
             if (IsActive("ElDiana.Combo.Q") && spells[Spells.Q].IsReady()
                 && target.IsValidTarget(spells[Spells.Q].Range))
             {
-                var pred = spells[Spells.Q].GetPrediction(target);
-                if (pred.Hitchance >= HitChance.VeryHigh)
-                {
-                    spells[Spells.Q].Cast(pred.CastPosition);
-                }
+                spells[Spells.Q].CastIfHitchanceEquals(target, CustomHitChance);
             }
 
             if (useR && spells[Spells.R].IsReady() && target.IsValidTarget(spells[Spells.R].Range)

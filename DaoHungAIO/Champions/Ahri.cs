@@ -27,9 +27,9 @@ namespace DaoHungAIO.Champions
         public Ahri()
         {
 
-            HelperAhri = new HelperAhri();
             _menu = new Menu("DH.Ahri credit Beaving", "AhriSharp", true);
 
+            HelperAhri = new HelperAhri();
             var targetSelectorMenu = new Menu("Target Selector", "TargetSelector");
             TargetSelector.AddToMenu(targetSelectorMenu);
             _menu.AddSubMenu(targetSelectorMenu);
@@ -79,7 +79,7 @@ namespace DaoHungAIO.Champions
             dmgAfterComboItem.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs) { Utility.HpBarDamageIndicator.Enabled = eventArgs.GetNewValue<bool>(); };
 
             Drawing.OnDraw += Drawing_OnDraw;
-            Game.OnUpdate += Game_OnUpdate;
+            Game.OnTick += Game_OnUpdate;
 
         }
 
