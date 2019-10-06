@@ -84,8 +84,14 @@ namespace DaoHungAIO
                 Chat.Print(player.CharacterName);
                 switch (player.CharacterName)
                 {
+                    case "Ahri":
+                        new Ahri();
+                        break;
                     case "Azir":
                         new Azir();
+                        break;
+                    case "Diana":
+                        new Diana();
                         break;
                     case "Draven":
                         new Draven();
