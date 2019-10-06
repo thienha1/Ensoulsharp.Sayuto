@@ -84,9 +84,9 @@ namespace DaoHungAIO
                 Chat.Print(player.CharacterName);
                 switch (player.CharacterName)
                 {
-                    //case "Azir":
-                    //    new Azir();
-                    //    break;
+                    case "Azir":
+                        new Azir();
+                        break;
                     case "Draven":
                         new Draven();
                         break;
@@ -131,6 +131,9 @@ namespace DaoHungAIO
                         break;
                     case "Riven":
                         new RivenReborn();
+                        break;
+                    case "Rengar":
+                        new Rengar();
                         break;
                     case "Renekton":
                         new Renekton();
