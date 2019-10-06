@@ -97,6 +97,9 @@ namespace DaoHungAIO
                     case "Draven":
                         new Draven();
                         break;
+                    case "Ekko":
+                        new Ekko();
+                        break;
                     case "Fiora":
                         new Fiora();
                         break;
