@@ -150,11 +150,17 @@ namespace DaoHungAIO
                     case "Velkoz":
                         new Velkoz();
                         break;
+                    case "Viktor":
+                        new Viktor();
+                        break;
                     case "Yasuo":
                         new Yasuo();
                         break;
                     case "Zed":
                         new Zed();
+                        break;
+                    case "Ziggs":
+                        new Ziggs();
                         break;
                 }
             }

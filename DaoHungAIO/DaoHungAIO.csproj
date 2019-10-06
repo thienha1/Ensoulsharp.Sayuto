@@ -37,6 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EnsoulSharp.Common">
+      <HintPath>C:\Users\dao hung\Desktop\EnsoulSharp\Loader\EnsoulSharp\System\EnsoulSharp.Common.dll</HintPath>
+    </Reference>
     <Reference Include="EnsoulSharp.SDK">
       <HintPath>C:\Users\dao hung\Desktop\EnsoulSharp\Loader\EnsoulSharp\System\EnsoulSharp.SDK.dll</HintPath>
     </Reference>
@@ -87,8 +90,10 @@
     <Compile Include="Champions\Tristana.cs" />
     <Compile Include="Champions\Varus.cs" />
     <Compile Include="Champions\Velkoz.cs" />
+    <Compile Include="Champions\Viktor.cs" />
     <Compile Include="Champions\Yasuo.cs" />
     <Compile Include="Champions\Zed.cs" />
+    <Compile Include="Champions\Ziggs.cs" />
     <Compile Include="Common\Champion.cs" />
     <Compile Include="Evade\BlockSpellData.cs" />
     <Compile Include="Evade\BlockSpellDataBase.cs" />
