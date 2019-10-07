@@ -139,6 +139,9 @@ namespace DaoHungAIO
                     case "Nidalee":
                         new Nidalee();
                         break;
+                    case "Olaf":
+                        new Olaf();
+                        break;
                     case "Orianna":
                         Orianna.initOrianna();
                         break;
