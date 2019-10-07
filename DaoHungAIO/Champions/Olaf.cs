@@ -422,7 +422,7 @@ namespace DaoHungAIO.Champions
             new Helper();
 
             Drawing.OnDraw += Drawing_OnDraw;
-            Game.OnUpdate += Game_OnUpdate;
+            Game.OnTick += Game_OnUpdate;
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
             Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
@@ -450,7 +450,7 @@ namespace DaoHungAIO.Champions
 
                 EnemyInfo = HeroManager.Enemies.Select(e => new EnemyHeros(e)).ToList();
 
-                Game.OnUpdate += Game_OnGameUpdate;
+                Game.OnTick += Game_OnGameUpdate;
             }
 
             private void Game_OnGameUpdate(EventArgs args)
