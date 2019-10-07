@@ -89,6 +89,7 @@
     <Compile Include="Champions\Orianna.cs" />
     <Compile Include="Champions\Renekton.cs" />
     <Compile Include="Champions\Rengar.cs" />
+    <Compile Include="Champions\RivenKurisu.cs" />
     <Compile Include="Champions\RivenReborn.cs" />
     <Compile Include="Champions\Ryze.cs" />
     <Compile Include="Champions\Syndra.cs" />

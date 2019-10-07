@@ -143,7 +143,7 @@ namespace DaoHungAIO
                         Orianna.initOrianna();
                         break;
                     case "Riven":
-                        new RivenReborn();
+                        new RivenKurisu();
                         break;
                     case "Rengar":
                         new Rengar();
