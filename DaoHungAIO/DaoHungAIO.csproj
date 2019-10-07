@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="Champions\Ahri.cs" />
     <Compile Include="Champions\Azir.cs" />
+    <Compile Include="Champions\Camille.cs" />
     <Compile Include="Champions\Diana.cs" />
     <Compile Include="Champions\Draven.cs" />
     <Compile Include="Champions\Ekko.cs" />

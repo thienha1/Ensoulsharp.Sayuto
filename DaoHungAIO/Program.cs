@@ -91,6 +91,9 @@ namespace DaoHungAIO
                     case "Azir":
                         new Azir();
                         break;
+                    case "Camille":
+                        new Camille();
+                        break;
                     case "Diana":
                         new Diana();
                         break;
