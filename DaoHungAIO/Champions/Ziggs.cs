@@ -163,6 +163,10 @@ namespace DaoHungAIO.Champions
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
+            if (gapcloser.Sender.IsAlly)
+            {
+                return;
+            }
             W.Cast(gapcloser.Sender);
         }
 

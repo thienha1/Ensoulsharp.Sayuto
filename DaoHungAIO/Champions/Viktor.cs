@@ -652,6 +652,10 @@ namespace DaoHungAIO.Champions
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
+            if (gapcloser.Sender.IsAlly)
+            {
+                return;
+            }
             if (boolLinks["miscGapcloser"].GetValue<bool>() && W.IsInRange(gapcloser.End) && gapcloser.Sender.IsEnemy)
             {
                 GapCloserPos = gapcloser.End;
