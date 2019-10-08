@@ -632,7 +632,7 @@ namespace DaoHungAIO.Champions
         private static void Interrupter2_OnInterruptableTarget(ActiveInterrupter interrupter)
         {
             var unit = interrupter.Sender;
-            if (interrupter.DangerLevel >= InterrupterDangerLevel.High)
+            if (interrupter.DangerLevel >= InterrupterDangerLevel.High && unit.IsEnemy)
             {
                 var useW = boolLinks["wInterrupt"].GetValue<bool>();
                 var useR = boolLinks["rInterrupt"].GetValue<bool>();
@@ -652,7 +652,7 @@ namespace DaoHungAIO.Champions
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            if (boolLinks["miscGapcloser"].GetValue<bool>() && W.IsInRange(gapcloser.End))
+            if (boolLinks["miscGapcloser"].GetValue<bool>() && W.IsInRange(gapcloser.End) && gapcloser.Sender.IsEnemy)
             {
                 GapCloserPos = gapcloser.End;
                 if (Geometry.Distance(gapcloser.Start, gapcloser.End) > gapcloser.Sender.Spellbook.GetSpell(gapcloser.Slot).SData.CastRangeDisplayOverride && gapcloser.Sender.Spellbook.GetSpell(gapcloser.Slot).SData.CastRangeDisplayOverride > 100)
