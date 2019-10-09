@@ -85,7 +85,7 @@ namespace DaoHungAIO.Champions
             SetupMenu();
 
             // Register events
-            Game.OnUpdate += Game_OnGameUpdate;
+            Game.OnTick += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Gapclosers.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Orbwalking.OnNonKillableMinion += Orbwalking_OnNonKillableMinion;
