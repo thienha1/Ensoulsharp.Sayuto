@@ -829,7 +829,7 @@ namespace DaoHungAIO.Champions
 
             subMenu = menu.AddSubMenu(new Menu("R config", "R config"));
             ProcessLink("HitR", subMenu.AddItem(new MenuItem("HitR", "Auto R if: ").SetValue(new StringList(new string[] { "1 target", "2 targets", "3 targets", "4 targets", "5 targets" }, 3))));
-            ProcessLink("AutoFollowR", subMenu.AddItem(new MenuItem("AutoFollowR", "Auto Follow R")));
+            ProcessLink("AutoFollowR", subMenu.AddItem(new MenuItem("AutoFollowR", "Auto Follow R").SetValue(true)));
             ProcessLink("rTicks", subMenu.AddItem(new MenuItem("rTicks", "Ultimate ticks to count").SetValue(new Slider(2, 1, 14))));
 
 

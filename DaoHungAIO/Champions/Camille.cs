@@ -163,7 +163,7 @@ namespace DaoHungAIO.Champions
 
         private static void Interrupter2_OnInterruptableTarget(ActiveInterrupter interrupter)
         {
-            if (RootMenu.Item("interrupt2").GetValue<bool>())
+            if (RootMenu.Item("interrupt2").GetValue<bool>() && interrupter.Sender.IsEnemy)
             {
                 if (interrupter.Sender.IsValidTarget(E.Range) && E.IsReady())
                 {
