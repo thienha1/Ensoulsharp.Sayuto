@@ -349,15 +349,17 @@ namespace DaoHungAIO.Champions
         #region AntiGapCloser
         static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-
-            if (Config.Item("Ekko.AutoQEGC").GetValue<bool>() && Q.IsReady() && (Player.Mana >= EMANA + QMANA) && Player.Distance(gapcloser.Sender) < Q.Range)
+            if (gapcloser.Sender.IsEnemy)
             {
-                Q.CastIfHitchanceEquals(gapcloser.Sender, HitChance.High, true);
-            }
+                if (Config.Item("Ekko.AutoQEGC").GetValue<bool>() && Q.IsReady() && (Player.Mana >= EMANA + QMANA) && Player.Distance(gapcloser.Sender) < Q.Range)
+                {
+                    Q.CastIfHitchanceEquals(gapcloser.Sender, HitChance.High, true);
+                }
 
-            if (Config.Item("Ekko.AutoWEGC").GetValue<bool>() && W.IsReady() && (Player.Mana >= EMANA + WMANA) && Player.Distance(gapcloser.Sender) < Q.Range)
-            {
-                W.Cast(Player.Position, true);
+                if (Config.Item("Ekko.AutoWEGC").GetValue<bool>() && W.IsReady() && (Player.Mana >= EMANA + WMANA) && Player.Distance(gapcloser.Sender) < Q.Range)
+                {
+                    W.Cast(Player.Position, true);
+                }
             }
 
         }

@@ -106,13 +106,16 @@ namespace DaoHungAIO.Champions
 
         private void OnInterrupterHandle(ActiveInterrupter interrupter)
         {
-            
+            if (interrupter.Sender.IsEnemy) {
                 var eSlot = spells[Spells.E];
                 if (ElDianaMenu.Menu.Item("ElDiana.Interrupt.UseEInterrupt").GetValue<bool>() && eSlot.IsReady()
                     && eSlot.Range >= Player.Distance(interrupter.Sender))
                 {
                     eSlot.Cast();
                 }
+            }
+            
+  
         }
 
         #endregion
@@ -121,18 +124,21 @@ namespace DaoHungAIO.Champions
 
         private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
-            if (!gapcloser.Sender.IsValidTarget(spells[Spells.E].Range))
-            {
-                return;
-            }
-
-            if (gapcloser.Sender.IsValidTarget(spells[Spells.E].Range))
-            {
-                if (IsActive("ElDiana.Interrupt.G") && spells[Spells.E].IsReady())
+            if (gapcloser.Sender.IsEnemy) {
+                if (!gapcloser.Sender.IsValidTarget(spells[Spells.E].Range))
                 {
-                    spells[Spells.E].Cast(gapcloser.Sender);
+                    return;
+                }
+
+                if (gapcloser.Sender.IsValidTarget(spells[Spells.E].Range))
+                {
+                    if (IsActive("ElDiana.Interrupt.G") && spells[Spells.E].IsReady())
+                    {
+                        spells[Spells.E].Cast(gapcloser.Sender);
+                    }
                 }
             }
+
         }
 
         private static void Combo()
