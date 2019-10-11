@@ -561,8 +561,7 @@ namespace DaoHungAIO.Champions
 
         private static void JungleClear()
         {
-            var mobs = GameObjects.GetJungles(_player.Position, _q.Range,
-                JungleType.All, JungleOrderTypes.MaxHealth);
+            var mobs = GameObjects.Jungle.Where(x => x.IsValidTarget(_q.Range)).OrderBy(x => x.MaxHealth).ToList<AIBaseClient>();
             var mymana = (_player.Mana >=
                           (_player.MaxMana * _config["Farm"]["Jungle"].GetValue<MenuSlider>("Energyjungle").Value) / 100);
             var useItemsJ = _config["Farm"]["Jungle"].GetValue<MenuBool>("UseItemsjungle");

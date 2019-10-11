@@ -149,7 +149,7 @@ namespace DaoHungAIO.Champions
             Config.SubMenu("Drawings").AddSpellDraw(SpellSlot.R);
             Config.SubMenu("Drawings").AddItem(new MenuBool("DrawOrbwalkTarget", "Draw Orbwalk target").SetValue(true));
 
-
+            Config.Attach();
             Game.OnTick += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             AIBaseClient.OnProcessSpellCast += AIBaseClient_OnProcessSpellCast;
@@ -547,7 +547,7 @@ namespace DaoHungAIO.Champions
             var WMinMana = Config.Item("Ekko.WMiniManaJungleClear").GetValue<MenuSlider>().Value;
             var EMinMana = Config.Item("Ekko.EMiniManaJungleClear").GetValue<MenuSlider>().Value;
 
-            var MinionN = GameObjects.GetJungles(Player.Position, Q.Range, JungleType.All, JungleOrderTypes.MaxHealth).FirstOrDefault();
+            var MinionN = GameObjects.Jungle.Where(x => x.IsValidTarget(Q.Range)).OrderBy(x => x.MaxHealth).ToList<AIBaseClient>().FirstOrDefault();
 
             if (!MinionN.IsValidTarget() || MinionN == null)
             {
@@ -559,7 +559,7 @@ namespace DaoHungAIO.Champions
 
             if (useQ && Q.IsReady() && Player.Mana >= QMANA && Player.ManaPercent >= QMinMana)
             {
-                var allMonsterQ = GameObjects.GetJungles(Player.Position, Q.Range, JungleType.All, JungleOrderTypes.MaxHealth);
+                var allMonsterQ = GameObjects.Jungle.Where(x => x.IsValidTarget(Q.Range)).OrderBy(x => x.MaxHealth).ToList<AIBaseClient>();
 
                 var farmAll = Q.GetLineFarmLocation(allMonsterQ, Q.Width);
                 if (farmAll.MinionsHit >= 1)
@@ -570,7 +570,7 @@ namespace DaoHungAIO.Champions
 
             if (useW && W.IsReady() && Player.Mana >= WMANA && Player.ManaPercent >= WMinMana)
             {
-                var allMonsterW = GameObjects.GetJungles(Player.Position, Q.Range, JungleType.All, JungleOrderTypes.MaxHealth);
+                var allMonsterW = GameObjects.Jungle.Where(x => x.IsValidTarget(Q.Range)).OrderBy(x => x.MaxHealth).ToList<AIBaseClient>();
 
                 var farmAll = W.GetCircularFarmLocation(allMonsterW, 350);
                 if (farmAll.MinionsHit >= 1)
@@ -582,7 +582,7 @@ namespace DaoHungAIO.Champions
 
             if (useE && E.IsReady() && Player.Mana >= EMANA && Player.ManaPercent >= EMinMana)
             {
-                var MinionE = GameObjects.GetJungles(Player.Position, Q.Range, JungleType.All, JungleOrderTypes.MaxHealth).FirstOrDefault();
+                var MinionE = GameObjects.Jungle.Where(x => x.IsValidTarget(Q.Range)).OrderBy(x => x.MaxHealth).ToList<AIBaseClient>().FirstOrDefault();
 
                 E.Cast(MinionE.Position, true);
             }
@@ -846,13 +846,7 @@ namespace DaoHungAIO.Champions
 
             }
 
-            if (Config.Item("DrawOrbwalkTarget").GetValue<MenuBool>().Enabled)
-            {
-                var orbT = Orbwalker.GetTarget();
-                if (orbT.IsValidTarget())
-                    Render.Circle.DrawCircle(orbT.Position, 100, System.Drawing.Color.Pink);
-            }
-
+ 
         }
         #endregion
 

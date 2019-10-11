@@ -31,7 +31,7 @@ namespace DaoHungAIO.Champions
         public Ahri()
         {
 
-            _menu = new Menu("DH.Ahri credit Beaving", "AhriSharp", true);
+            _menu = new Menu("AhriSharp", "DH.Ahri credit Beaving", true);
 
             HelperAhri = new HelperAhri();
 
@@ -60,6 +60,7 @@ namespace DaoHungAIO.Champions
             var miscMenu = _menu.AddSubMenu(new Menu("Misc", "Misc"));
             miscMenu.AddItem(new MenuBool("packetCast", "Packet Cast").SetValue(true));
 
+            _menu.Attach();
             _itemDFG = Game.MapId == GameMapId.TwistedTreeline ? new Items.Item(3188, 750) : new Items.Item(3128, 750);
 
             _spellQ = new Spell(SpellSlot.Q, 990);
@@ -119,7 +120,8 @@ namespace DaoHungAIO.Champions
         void LaneClear()
         {
             _spellQ.Speed = _spellQFarmSpeed;
-            var minions = GameObjects.GetMinions(ObjectManager.Player.Position, _spellQ.Range, MinionTypes.All, MinionTeam.Enemy);
+            var minions = GameObjects.EnemyMinions.Where(x => x.IsValidTarget(_spellQ.Range)).OrderBy(x => x.MaxHealth).ToList<AIBaseClient>();
+            minions = minions.Concat(GameObjects.Jungle.Where(x => x.IsValidTarget(_spellQ.Range)).OrderBy(x => x.MaxHealth).ToList<AIBaseClient>()).ToList();
 
             bool jungleMobs = minions.Any(x => x.Team == GameObjectTeam.Neutral);
 

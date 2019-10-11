@@ -16,6 +16,7 @@ using Font = SharpDX.Direct3D9.Font;
 using static EnsoulSharp.SDK.Prediction.SpellPrediction;
 using Utility = EnsoulSharp.SDK.Utility;
 using Geometry = EnsoulSharp.SDK.Geometry;
+using SharpDX.Direct3D9;
 
 namespace DaoHungAIO.Champions
 {
@@ -234,7 +235,7 @@ namespace DaoHungAIO.Champions
                     };
 
             /* [ Menus ] */
-            Config = new Menu("DH.Olaf credit xQxCPMxQx", CharacterName, true);
+            Config = new Menu(CharacterName, "DH.Olaf credit xQxCPMxQx", true);
 
             /* [ Target Selector ] */
 
@@ -273,7 +274,7 @@ namespace DaoHungAIO.Champions
             }
 
             /* [ Lane Clear ] */
-            Config.AddSubMenu(new Menu("Lane Clear", "LaneClear"));
+            Config.AddSubMenu(new Menu("LaneClear", "Lane Clear"));
             {
                 Config.SubMenu("LaneClear").AddItem(new MenuBool("UseQFarm", "Use Q"));
                 Config.SubMenu("LaneClear").AddItem(new MenuSlider("UseQFarmMinCount", Tab + "Min. Minion to Use Q").SetValue(new Slider(2, 5, 1)));
@@ -289,7 +290,7 @@ namespace DaoHungAIO.Champions
             }
 
             /* [ Jungle Clear ] */
-            Config.AddSubMenu(new Menu("Jungle Clear", "JungleFarm"));
+            Config.AddSubMenu(new Menu("JungleFarm", "Jungle Clear"));
             {
                 Config.SubMenu("JungleFarm").AddItem(new MenuBool("UseQJFarm", "Use Q"));
                 Config.SubMenu("JungleFarm").AddItem(new MenuSlider("UseQJFarmMinMana", Tab + "Min. Mana to Use Q").SetValue(new Slider(30, 100, 0)));
@@ -347,6 +348,41 @@ namespace DaoHungAIO.Champions
             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
 
             Config.SubMenu("Drawings").AddItem(new MenuBool("Draw.SpellDrawing", "Spell Drawing:"));
+            Config.SubMenu("Drawings")
+    .AddItem(
+        new MenuBool("Draw.QRange", Tab + "Q range"));
+            Config.SubMenu("Drawings")
+                .AddItem(
+                    new MenuBool("Draw.Q2Range", Tab + "Short Q range"));
+            Config.SubMenu("Drawings")
+                .AddItem(
+                    new MenuBool("Draw.ERange", Tab + "E range"));
+
+            Config.SubMenu("Drawings").AddItem(new MenuBool("Draw.AxeDrawing", "Axe Drawing:"));
+            Config.SubMenu("Drawings")
+                .AddItem(
+                    new MenuList("Draw.AxePosition", Tab + "Axe Position", new[] { "Off", "Circle", "Line", "Both" }, 3));
+            Config.SubMenu("Drawings").AddItem(new MenuBool("Draw.AxeTime", Tab + "Axe Time Remaining").SetValue(true));
+            Config.Attach();
+
+            TextAxe = new Font(
+                Drawing.Direct3DDevice,
+                new FontDescription
+                {
+                    FaceName = "Segoe UI",
+                    Height = 39,
+                    OutputPrecision = FontPrecision.Default,
+                    Quality = FontQuality.ClearTypeNatural,
+                });
+            TextLittle = new Font(
+                Drawing.Direct3DDevice,
+                new FontDescription
+                {
+                    FaceName = "Segoe UI",
+                    Height = 15,
+                    OutputPrecision = FontPrecision.Default,
+                    Quality = FontQuality.ClearTypeNatural,
+                });
 
             new Helper();
 
@@ -827,11 +863,11 @@ namespace DaoHungAIO.Champions
 
         private static void JungleFarm()
         {
-            var mobs = GameObjects.GetJungles(Player.Position, Q.Range, JungleType.All,
-                JungleOrderTypes.MaxHealth);
+            var mobs = GameObjects.Jungle.Where(x => x.IsValidTarget(Q.Range)).ToList();
 
             if (mobs.Count <= 0)
             {
+                Chat.Print("Will check for cast");
                 return;
             }
 
@@ -876,7 +912,6 @@ namespace DaoHungAIO.Champions
                     }
                 }
             }
-
             if (Config.Item("UseQJFarm").GetValue<MenuBool>() && Q.IsReady())
             {
                 if (Player.Mana < Player.MaxMana / 100 * Config.Item("UseQJFarmMinMana").GetValue<MenuSlider>().Value) return;

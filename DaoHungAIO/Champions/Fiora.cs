@@ -3454,7 +3454,7 @@ namespace DaoHungAIO.Champions
             if (JungleTrueEnemyFalse)
             {
                 var minion = GameObjects.GetMinions(Range, MinionTypes.All, MinionTeam.Enemy).Count;
-                var jung = GameObjects.GetJungles(Range, JungleType.All).Count;
+                var jung = GameObjects.Jungle.Where(x => x.IsValidTarget(Range)).ToList<AIBaseClient>().Count;
                 return minion + jung;
             } else
             {

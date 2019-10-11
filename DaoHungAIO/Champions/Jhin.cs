@@ -468,7 +468,7 @@ namespace DaoHungAIO.Champions
         {
             if (LaneClear)
             {
-                var mobs = GameObjects.GetJungles(Q.Range, JungleType.All);
+                var mobs = GameObjects.Jungle.Where(x => x.IsValidTarget(Q.Range)).OrderBy(x => x.MaxHealth).ToList<AIBaseClient>();
                 if (mobs.Count > 0)
                 {
                     var mob = mobs[0];

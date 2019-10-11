@@ -78,7 +78,7 @@ namespace DaoHungAIO.Champions
                 Game.OnTick += Game_OnUpdate;
                 Drawing.OnDraw += Drawing_OnDraw;
                 Drawing.OnEndScene += Drawing_OnEndScene;
-                AIBaseClient.OnDoCast += AIBaseClient_OnDoCast;
+                Orbwalker.OnAction += AIBaseClient_OnDoCast;
                 EnsoulSharp.Player.OnIssueOrder += CamilleOnIssueOrder;
                 AIBaseClient.OnDoCast += AIBaseClient_OnProcessSpellCast;
                 GameObject.OnCreate += EffectEmitter_OnCreate;
@@ -183,21 +183,21 @@ namespace DaoHungAIO.Champions
 
         private static void Drawing_OnEndScene(EventArgs args)
         {
-            if (RootMenu.Item("drawhpbarfill").GetValue<MenuBool>())
-            {
-                foreach (
-                    var enemy in
-                        ObjectManager.Get<AIHeroClient>()
-                            .Where(ene => ene.IsValidTarget() && !ene.IsZombie))
-                {
-                    var color = R.IsReady() && EasyKill(enemy)
-                        ? new ColorBGRA(0, 255, 0, 90)
-                        : new ColorBGRA(255, 255, 0, 90);
+            //if (RootMenu.Item("drawhpbarfill").GetValue<MenuBool>())
+            //{
+            //    foreach (
+            //        var enemy in
+            //            ObjectManager.Get<AIHeroClient>()
+            //                .Where(ene => ene.IsValidTarget() && !ene.IsZombie))
+            //    {
+            //        var color = R.IsReady() && EasyKill(enemy)
+            //            ? new ColorBGRA(0, 255, 0, 90)
+            //            : new ColorBGRA(255, 255, 0, 90);
 
-                    BarIndicator.unit = enemy;
-                    BarIndicator.drawDmg((float)Cdmg(enemy), color);
-                }
-            }
+            //        BarIndicator.unit = enemy;
+            //        BarIndicator.drawDmg((float)Cdmg(enemy), color);
+            //    }
+            //}
         }
 
         private static void Drawing_OnDraw(EventArgs args)
@@ -206,11 +206,17 @@ namespace DaoHungAIO.Champions
                 return;
             foreach (var spell in SpellList)
             {
-                var menuBool = RootMenu.Item("Draw" + spell.Slot + "Range").GetValue<MenuBool>();
-                var menuColor = RootMenu.Item("Draw" + spell.Slot + "Color").GetValue<MenuColor>();
-                if (menuBool.Enabled)
+                try
                 {
-                    Render.Circle.DrawCircle(Player.Position, spell.Range, menuColor.Color.ToSystemColor());
+                    var menuBool = RootMenu.Item("Draw" + spell.Slot + "Range").GetValue<MenuBool>();
+                    var menuColor = RootMenu.Item("Draw" + spell.Slot + "Color").GetValue<MenuColor>();
+                    if (menuBool.Enabled)
+                    {
+                        Render.Circle.DrawCircle(Player.Position, spell.Range, menuColor.Color.ToSystemColor());
+                    }
+                }
+                catch {
+                    Console.WriteLine(spell.Slot.ToString());
                 }
 
             }
@@ -323,11 +329,11 @@ namespace DaoHungAIO.Champions
         }
 
         private static void AIBaseClient_OnDoCast(
-    AIBaseClient sender,
-    AIBaseClientProcessSpellCastEventArgs args
+    Object sender,
+    OrbwalkerActionArgs args
 )
         {
-            if (sender.IsMe && args.SData.IsAutoAttack())
+            if (args.Sender != null && args.Sender.IsMe && args.Type == OrbwalkerType.AfterAttack)
             {
                 var aiHero = args.Target as AIHeroClient;
                 if (aiHero.IsValidTarget())
@@ -643,9 +649,9 @@ namespace DaoHungAIO.Champions
 
         static void SetupConfig()
         {
-            RootMenu = new Menu("DH.Camille credit Kurisu", "camille", true);
+            RootMenu = new Menu("camille", "DH.Camille credit Kurisu", true);
             
-            var kemenu = new Menu("-] Keys", "kemenu");
+            var kemenu = new Menu("kemenu", "-] Keys");
             kemenu.AddItem(new MenuKeyBind("usecombo", "Combo [active]", Keys.Space, KeyBindType.Press));
             kemenu.AddItem(new MenuKeyBind("useharass", "Harass [active]", Keys.G, KeyBindType.Press));
             kemenu.AddItem(new MenuKeyBind("usewcclear", "Wave Clear [active]", Keys.V, KeyBindType.Press));
@@ -653,13 +659,13 @@ namespace DaoHungAIO.Champions
             kemenu.AddItem(new MenuKeyBind("useflee", "Flee [active]", Keys.A, KeyBindType.Press));
             RootMenu.AddSubMenu(kemenu);
 
-            var comenu = new Menu("-] Combo", "cmenu");
+            var comenu = new Menu("cmenu", "-] Combo");
 
-            var tcmenu = new Menu("-] Extra", "tcmenu");
+            var tcmenu = new Menu("tcmenu", "-] Extra");
 
-            var abmenu = new Menu("-] Skills", "abmenu");
+            var abmenu = new Menu("abmenu", "-] Skills");
 
-            var whemenu = new Menu("R Focus Targets", "whemenu") ;
+            var whemenu = new Menu("whemenu", "R Focus Targets") ;
             foreach (var hero in HeroManager.Enemies)
                 whemenu.AddItem(new MenuBool("whR" + hero.CharacterName, hero.CharacterName)
                     .SetValue(false));
@@ -670,7 +676,7 @@ namespace DaoHungAIO.Champions
             abmenu.AddItem(new MenuBool("useecombo", "Use E"));
             abmenu.AddItem(new MenuBool("usercombo", "Use R"));
 
-            var revade = new Menu("-] Evade", "revade");
+            var revade = new Menu("revade", "-] Evade");
             revade.AddItem(new MenuBool("revade", "Use R to Evade"));
 
             foreach (var spell in from entry in Evadeable.DangerList
@@ -683,7 +689,7 @@ namespace DaoHungAIO.Champions
                     ;
             }
 
-            var mmenu = new Menu("-] Magnet", "mmenu");
+            var mmenu = new Menu("mmenu", "-] Magnet");
             mmenu.AddItem(new MenuBool("lockw", "Magnet W [Beta]"));
             mmenu.AddItem(new MenuBool("lockwcombo", "-> Combo"));
             mmenu.AddItem(new MenuBool("lockwharass", "-> Harass"));
@@ -706,22 +712,22 @@ namespace DaoHungAIO.Champions
             RootMenu.AddSubMenu(comenu);
 
 
-            var hamenu = new Menu("-] Harass", "hamenu");
+            var hamenu = new Menu("hamenu", "-] Harass");
             hamenu.AddItem(new MenuBool("useqharass", "Use Q"));
             hamenu.AddItem(new MenuBool("usewharass", "Use W"));
             hamenu.AddItem(new MenuSlider("harassmana", "Harass Mana %").SetValue(new Slider(65)));
             RootMenu.AddSubMenu(hamenu);
 
-            var clmenu = new Menu("-] Clear", "clmenu");
+            var clmenu = new Menu("clmenu", "-] Clear");
 
-            var jgmenu = new Menu("Jungle", "jgmenu");
+            var jgmenu = new Menu("jgmenu", "Jungle");
             jgmenu.AddItem(new MenuSlider("jgclearmana", "Minimum Mana %").SetValue(new Slider(35)));
             jgmenu.AddItem(new MenuBool("useqjgclear", "Use Q"));
             jgmenu.AddItem(new MenuBool("usewjgclear", "Use W"));
             jgmenu.AddItem(new MenuBool("useejgclear", "Use E"));
             clmenu.AddSubMenu(jgmenu);
 
-            var wcmenu = new Menu("WaveClear", "wcmenu");
+            var wcmenu = new Menu("wcmenu", "WaveClear");
             wcmenu.AddItem(new MenuSlider("wcclearmana", "Minimum Mana %").SetValue(new Slider(55)));
             wcmenu.AddItem(new MenuBool("useqwcclear", "Use Q"));
             wcmenu.AddItem(new MenuBool("usewwcclear", "Use W"));
@@ -733,11 +739,11 @@ namespace DaoHungAIO.Champions
 
             RootMenu.AddSubMenu(clmenu);
 
-            var fmenu = new Menu("-] Flee", "fmenu");
+            var fmenu = new Menu("fmenu", "-] Flee");
             fmenu.AddItem(new MenuBool("useeflee", "Use E"));
             RootMenu.AddSubMenu(fmenu);
 
-            var exmenu = new Menu("-] Events", "exmenu");
+            var exmenu = new Menu("exmenu", "-] Events");
             exmenu.AddItem(new MenuBool("interrupt2", "Interrupt").SetValue(false));
             exmenu.AddItem(new MenuBool("antigapcloserx", "Anti-Gapcloser").SetValue(false));
             RootMenu.AddSubMenu(exmenu);
@@ -757,12 +763,13 @@ namespace DaoHungAIO.Champions
             //skmenu.AddItem(new MenuBool("skinid", "Skin Id")).SetValue(new Slider(1, 0, 4));
             //RootMenu.AddSubMenu(skmenu);
 
-            var drmenu = new Menu("-] Draw", "drmenu");
+            var drmenu = new Menu("drmenu", "-] Draw");
             drmenu.AddSpellDraw(SpellSlot.Q);
             drmenu.AddSpellDraw(SpellSlot.W);
             drmenu.AddSpellDraw(SpellSlot.E);
             drmenu.AddSpellDraw(SpellSlot.R);
             RootMenu.AddSubMenu(drmenu);
+            RootMenu.Attach();
 
         }
 
@@ -821,8 +828,7 @@ namespace DaoHungAIO.Champions
         {
             var minions = GameObjects.GetMinions(Player.Position, W.Range,
                 MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.MaxHealth);
-            var jung = GameObjects.GetJungles(Player.Position, W.Range,
-                JungleType.All, JungleOrderTypes.MaxHealth);
+            var jung = GameObjects.Jungle.Where(x => x.IsValidTarget(W.Range)).OrderBy(x => x.MaxHealth).ToList<AIBaseClient>();
             minions = minions.Concat(jung).ToList();
 
             foreach (var unit in minions)

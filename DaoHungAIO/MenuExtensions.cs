@@ -27,8 +27,16 @@ namespace DaoHungAIO
 
         public static object AddItem(this Menu menu, MenuItem items)
         {
-            menu.Add(items);
-            return items;
+            try
+            {
+                menu.Add(items);
+                return items;
+            }
+            catch {
+                Console.WriteLine(items.Name);
+                throw new Exception();
+                return items;
+            }
         }
 
         public static MenuBool AddSpellDraw(this Menu menu, SpellSlot slot)
@@ -103,10 +111,22 @@ namespace DaoHungAIO
             //Search in submenus
             foreach (var subMenu in menu.Components.ToArray().Where(x => x.Value is Menu))
             {
-                foreach(var item in (subMenu.Value as Menu)?.Components.Where(a => a.Value.Name == name))
+                foreach(var item in (subMenu.Value as Menu)?.Components)
                 {
-                    return item.Value;
+                    if(item.Value is Menu)
+                    {
+                        var result = (item.Value as Menu).Item(name, championUnique);
+                        if(result != null)
+                        {
+                            return result;
+                        }
+                    } else if(item.Value.Name == name)
+                    {
+                        return item.Value;
+
+                    }
                 }
+
             }
 
             return null;
@@ -234,8 +254,16 @@ namespace DaoHungAIO
         public Slider(int setValue = 0, int setMinValue = 0, int setMaxValue = 100)
         {
             this.value = setValue;
-            this.minValue = setMinValue;
-            this.maxValue = setMaxValue;
+            if (setMaxValue < setMinValue) {
+
+                this.minValue = setMaxValue;
+                this.maxValue = setMinValue;
+            } else
+            {
+                this.minValue = setMinValue;
+                this.maxValue = setMaxValue;
+
+            }
         }
     }
 }

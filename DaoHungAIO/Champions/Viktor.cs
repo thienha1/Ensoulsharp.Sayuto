@@ -50,10 +50,10 @@ namespace DaoHungAIO.Champions
 
         // Menu links
         public static Dictionary<string, MenuBool> boolLinks = new Dictionary<string, MenuBool>();
-        public static Dictionary<string, MenuBool> circleLinks = new Dictionary<string, MenuBool>();
-        public static Dictionary<string, MenuBool> keyLinks = new Dictionary<string, MenuBool>();
-        public static Dictionary<string, MenuBool> sliderLinks = new Dictionary<string, MenuBool>();
-        public static Dictionary<string, MenuBool> stringLinks = new Dictionary<string, MenuBool>();
+        public static Dictionary<string, MenuColor> circleLinks = new Dictionary<string, MenuColor>();
+        public static Dictionary<string, MenuKeyBind> keyLinks = new Dictionary<string, MenuKeyBind>();
+        public static Dictionary<string, MenuSlider> sliderLinks = new Dictionary<string, MenuSlider>();
+        public static Dictionary<string, MenuList> stringLinks = new Dictionary<string, MenuList>();
 
 
         private static void OrbwalkerOnBeforeAttack(
@@ -88,12 +88,12 @@ namespace DaoHungAIO.Champions
             W = new Spell(SpellSlot.W, 700);
             E = new Spell(SpellSlot.E, rangeE);
             R = new Spell(SpellSlot.R, 700);
-            Spell item1 = new Spell(SpellSlot.Item1, 1025);
+            Spell Emax = new Spell(SpellSlot.E, 1025);
             SpellList.Add(Q);
             SpellList.Add(W);
             SpellList.Add(E);
             SpellList.Add(R);
-            SpellList.Add(item1);
+            SpellList.Add(Emax);
             // Finetune spells
             Q.SetTargetted(0.25f, 2000);
             W.SetSkillshot(0.5f, 300, float.MaxValue, false, SkillshotType.Circle);
@@ -338,7 +338,7 @@ namespace DaoHungAIO.Champions
 
             if (useQ)
             {
-                foreach (var minion in GameObjects.GetJungles(player.Position, player.AttackRange, JungleType.All, JungleOrderTypes.MaxHealth))
+                foreach (var minion in GameObjects.Jungle.Where(x => x.IsValidTarget(player.AttackRange)).OrderBy(x => x.MaxHealth).ToList())
                 {
                     Q.Cast(minion);
                 }
@@ -362,7 +362,7 @@ namespace DaoHungAIO.Champions
             }
             else
             {
-                allminions = GameObjects.GetJungles(player.Position, maxRangeE, JungleType.All);
+                allminions = GameObjects.Jungle.Where(x => x.IsValidTarget(maxRangeE)).ToList<AIBaseClient>();
             }
             var minionslist = (from mnion in allminions select mnion.Position.ToVector2()).ToList<SharpDX.Vector2>();
             var posiblePositions = new List<SharpDX.Vector2>();
@@ -741,33 +741,23 @@ namespace DaoHungAIO.Champions
 
         private static void ProcessLink(string key, object value)
         {
-            if (value is MenuBool)
+            if (value is MenuList)
             {
-                MenuBool item = (MenuBool)value;
-                try
-                {
-                    if (item.GetValue<MenuList>() != null)
-                        stringLinks.Add(key, item);
-                }
-                    catch {
-                        try
-                        {
-                            if (item.GetValue<MenuSlider>() != null)
-                                sliderLinks.Add(key, item);
-                        }
-                        catch {
-                            try
-                            {
-                                if (item.GetValue<MenuKeyBind>() != null)
-                                    keyLinks.Add(key, item);
-                            }
-                            catch
-                            {
-                                boolLinks.Add(key, item);
-                            }
-                        }
-                    }
-                }
+                stringLinks.Add(key, (MenuList)value);
+            }
+            else if (value is MenuSlider)
+            {
+                sliderLinks.Add(key, (MenuSlider)value);
+            }
+
+            else if (value is MenuKeyBind)
+            {
+                keyLinks.Add(key, (MenuKeyBind)value);
+            }
+            else
+            {
+                boolLinks.Add(key, (MenuBool)value);
+            }
             
                
         }
@@ -828,7 +818,7 @@ namespace DaoHungAIO.Champions
         private void SetupMenu()
         {
 
-            menu = new Menu("DH.Viktor credit Vasilyi", "Viktor", true);
+            menu = new Menu("Viktor", "DH.Viktor credit Vasilyi", true);
             // Combo
             var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
             var subMenu = menu.AddSubMenu(new Menu("Combo", "Combo"));
@@ -841,13 +831,13 @@ namespace DaoHungAIO.Champions
             ProcessLink("qAuto", subMenu.AddItem(new MenuBool("qAuto", "Dont autoattack without passive")));
             ProcessLink("comboActive", subMenu.AddItem(new MenuKeyBind("comboActive", "Combo active", Keys.Space, KeyBindType.Press)));
 
-            subMenu = menu.AddSubMenu(new Menu("R config", "R config"));
+            subMenu = menu.AddSubMenu(new Menu("Rconfig", "R config"));
             ProcessLink("HitR", subMenu.AddItem(new MenuList("HitR", "Auto R if: ", new string[] { "1 target", "2 targets", "3 targets", "4 targets", "5 targets" }, 3)));
             ProcessLink("AutoFollowR", subMenu.AddItem(new MenuBool("AutoFollowR", "Auto Follow R")));
             ProcessLink("rTicks", subMenu.AddItem(new MenuSlider("rTicks", "Ultimate ticks to count").SetValue(new Slider(2, 1, 14))));
 
 
-            subMenu = subMenu.AddSubMenu(new Menu("R one target", "R one target"));
+            subMenu = subMenu.AddSubMenu(new Menu("Ronetarget", "R one target"));
             ProcessLink("forceR", subMenu.AddItem(new MenuKeyBind("forceR", "Force R on target", Keys.T, KeyBindType.Press)));
             ProcessLink("rLastHit", subMenu.AddItem(new MenuBool("rLastHit", "1 target ulti")));
             foreach (var hero in HeroManager.Enemies)
@@ -856,7 +846,7 @@ namespace DaoHungAIO.Champions
             }
 
 
-            subMenu = menu.AddSubMenu(new Menu("Test features", "Test features"));
+            subMenu = menu.AddSubMenu(new Menu("Testfeatures", "Test features"));
             ProcessLink("spPriority", subMenu.AddItem(new MenuBool("spPriority", "Prioritize kill over dmg")));
 
 
@@ -896,8 +886,8 @@ namespace DaoHungAIO.Champions
             ProcessLink("drawRangeQ", subMenu.AddSpellDraw(SpellSlot.Q));
             ProcessLink("drawRangeW", subMenu.AddSpellDraw(SpellSlot.W));
             ProcessLink("drawRangeE", subMenu.AddSpellDraw(SpellSlot.E));
-            ProcessLink("drawRangeEMax", subMenu.AddSpellDraw(SpellSlot.Item1));
             ProcessLink("drawRangeR", subMenu.AddSpellDraw(SpellSlot.R));
+            menu.Attach();
         }
     }
 }

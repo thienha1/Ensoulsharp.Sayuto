@@ -611,7 +611,7 @@ namespace DaoHungAIO.Champions
         private static void Clear()
         {
             var targetW = GameObjects.GetMinions(Player.Position, WRange() + 100, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health).FirstOrDefault();
-            var targetW2 = GameObjects.GetJungles(Player.Position, WRange() + 100, JungleType.All, JungleOrderTypes.MaxHealth).FirstOrDefault();
+            var targetW2 = GameObjects.Jungle.Where(x => x.IsValidTarget(WRange() + 100)).OrderBy(x => x.MaxHealth).ToList<AIBaseClient>().FirstOrDefault();
             if (targetW != null && InWRange(targetW) && W.IsReady() && Orbwalker.CanMove() && UseWClear)
             {
                 W.Cast();

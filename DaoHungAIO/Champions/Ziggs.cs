@@ -57,7 +57,7 @@ namespace DaoHungAIO.Champions
             SpellList.Add(E);
             SpellList.Add(R);
 
-            Config = new Menu("DH.Ziggs credit Eskor#", ChampionName, true);
+            Config = new Menu(ChampionName, "DH.Ziggs credit Eskor#", true);
             
             Config.AddSubMenu(new Menu("Combo", "Combo"));
             Config.SubMenu("Combo").AddItem(new MenuBool("UseQCombo", "Use Q"));
@@ -110,11 +110,15 @@ namespace DaoHungAIO.Champions
             Config.SubMenu("Misc").AddItem(new MenuBool("Peel", "Use W defensively"));
 
 
-            Config.AddSubMenu(new Menu("Drawings", "Drawings"));
-      
+            Menu draw = Config.AddSubMenu(new Menu("Drawings", "Drawings"));
+            draw.AddSpellDraw(SpellSlot.Q);
+            draw.AddSpellDraw(SpellSlot.W);
+            draw.AddSpellDraw(SpellSlot.E);
+            draw.AddSpellDraw(SpellSlot.R);
+            Config.Attach();
 
 
-            Game.OnUpdate += Game_OnGameUpdate;
+            Game.OnTick += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Gapcloser.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Interrupter.OnInterrupterSpell += Interrupter2_OnInterruptableTarget;
@@ -142,7 +146,16 @@ namespace DaoHungAIO.Champions
 
         private static void Drawing_OnDraw(EventArgs args)
         {
+            foreach (var spell in SpellList)
+            {
+                var menuBool = Config.Item("Draw" + spell.Slot + "Range").GetValue<MenuBool>();
+                var menuColor = Config.Item("Draw" + spell.Slot + "Color").GetValue<MenuColor>();
+                if (menuBool.Enabled)
+                {
+                    Render.Circle.DrawCircle(ObjectManager.Player.Position, spell.Range, menuColor.Color.ToSystemColor());
+                }
 
+            }
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
@@ -530,9 +543,7 @@ namespace DaoHungAIO.Champions
             var useQ = Config.Item("UseQJFarm").GetValue<MenuBool>();
             var useE = Config.Item("UseEJFarm").GetValue<MenuBool>();
 
-            var mobs = GameObjects.GetJungles(
-                ObjectManager.Player.Position, Q1.Range, JungleType.All,
-                JungleOrderTypes.MaxHealth);
+            var mobs = GameObjects.Jungle.Where(x => x.IsValidTarget(Q1.Range)).OrderBy(x => x.MaxHealth).ToList<AIBaseClient>();
 
             if (mobs.Count > 0)
             {
@@ -540,13 +551,13 @@ namespace DaoHungAIO.Champions
 
                 if (useQ && Q1.IsReady())
                 {
-                    Q1.Cast(mob);
+                    Q1.Cast(mob.Position);
                 }
 
 
                 if (useE)
                 {
-                    E.Cast(mob);
+                    E.Cast(mob.Position);
                 }
             }
         }
