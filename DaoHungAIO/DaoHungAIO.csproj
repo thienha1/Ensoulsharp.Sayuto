@@ -37,9 +37,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EnsoulSharp.Common">
-      <HintPath>C:\Users\dao hung\Desktop\EnsoulSharp\Loader\EnsoulSharp\System\EnsoulSharp.Common.dll</HintPath>
-    </Reference>
     <Reference Include="EnsoulSharp.SDK">
       <HintPath>C:\Users\dao hung\Desktop\EnsoulSharp\Loader\EnsoulSharp\System\EnsoulSharp.SDK.dll</HintPath>
     </Reference>
@@ -71,9 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Champions\Ahri.cs" />
-    <Compile Include="Champions\Azir.cs" />
     <Compile Include="Champions\Camille.cs" />
-    <Compile Include="Champions\Diana.cs" />
     <Compile Include="Champions\Draven.cs" />
     <Compile Include="Champions\Ekko.cs" />
     <Compile Include="Champions\Fiora.cs" />
@@ -89,8 +84,6 @@
     <Compile Include="Champions\Olaf.cs" />
     <Compile Include="Champions\Orianna.cs" />
     <Compile Include="Champions\Renekton.cs" />
-    <Compile Include="Champions\Rengar.cs" />
-    <Compile Include="Champions\RivenKurisu.cs" />
     <Compile Include="Champions\RivenReborn.cs" />
     <Compile Include="Champions\Ryze.cs" />
     <Compile Include="Champions\Syndra.cs" />
@@ -127,6 +120,7 @@
     <Compile Include="Evade\SpellDatabase.cs" />
     <Compile Include="Evade\Utils.cs" />
     <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="MenuExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\DynamicInotoalizer.cs" />

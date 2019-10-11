@@ -3,11 +3,19 @@ using System.Collections.Generic;
 using Color = System.Drawing.Color;
 using System.Linq;
 using EnsoulSharp;
-using EnsoulSharp.Common;
 using SharpDX;
-using System.Drawing;
-using SharpDX.Direct3D9;
+using EnsoulSharp.SDK;
+using EnsoulSharp.SDK.Prediction;
+using EnsoulSharp.SDK.MenuUI;
+using EnsoulSharp.SDK.Utility;
+using EnsoulSharp.SDK.MenuUI.Values;
+using Keys = System.Windows.Forms.Keys;
+using SPrediction;
+using DaoHungAIO.Helpers;
 using Font = SharpDX.Direct3D9.Font;
+using static EnsoulSharp.SDK.Prediction.SpellPrediction;
+using Utility = EnsoulSharp.SDK.Utility;
+using Geometry = EnsoulSharp.SDK.Geometry;
 
 namespace DaoHungAIO.Champions
 {
@@ -110,7 +118,6 @@ namespace DaoHungAIO.Champions
         public static Font TextAxe, TextLittle;
         public static int LastTickTime;
         //Orbwalker instance
-        public static Orbwalking.Orbwalker Orbwalker;
         public static AutoLevelOlaf AutoLevel;
 
         //Spells
@@ -142,8 +149,8 @@ namespace DaoHungAIO.Champions
             E = new Spell(SpellSlot.E, 325);
             R = new Spell(SpellSlot.R);
 
-            Q.SetSkillshot(0.25f, 75f, 1500f, false, SkillshotType.SkillshotLine);
-            Q2.SetSkillshot(0.25f, 75f, 1600f, false, SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.25f, 75f, 1500f, false, SkillshotType.Line);
+            Q2.SetSkillshot(0.25f, 75f, 1600f, false, SkillshotType.Line);
 
             SpellList.Add(Q);
             SpellList.Add(E);
@@ -185,7 +192,7 @@ namespace DaoHungAIO.Champions
                         {
                             "Titanic Hydra Cleave",
                             new Tuple<Items.Item, EnumItemType, EnumItemTargettingType>(
-                            new Items.Item(3748, Orbwalking.GetRealAutoAttackRange(null) + 65),
+                            new Items.Item(3748, Player.GetRealAutoAttackRange(null) + 65),
                             EnumItemType.OnTarget,
                             EnumItemTargettingType.EnemyHero)
                         },
@@ -213,14 +220,14 @@ namespace DaoHungAIO.Champions
                         {
                             "Youmuu's Ghostblade",
                             new Tuple<Items.Item, EnumItemType, EnumItemTargettingType>(
-                            new Items.Item(3142, Orbwalking.GetRealAutoAttackRange(null) + 65),
+                            new Items.Item(3142, Player.GetRealAutoAttackRange(null) + 65),
                             EnumItemType.AoE,
                             EnumItemTargettingType.EnemyHero)
                         },
                         {
                             "Sword of the Divine",
                             new Tuple<Items.Item, EnumItemType, EnumItemTargettingType>(
-                            new Items.Item(3131, Orbwalking.GetRealAutoAttackRange(null) + 65),
+                            new Items.Item(3131, Player.GetRealAutoAttackRange(null) + 65),
                             EnumItemType.AoE,
                             EnumItemTargettingType.EnemyHero)
                         }
@@ -230,141 +237,103 @@ namespace DaoHungAIO.Champions
             Config = new Menu("DH.Olaf credit xQxCPMxQx", CharacterName, true);
 
             /* [ Target Selector ] */
-            var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
-            TargetSelector.AddToMenu(targetSelectorMenu);
-            Config.AddSubMenu(targetSelectorMenu);
-
-            /* [ Orbwalker ] */
-            Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
-            Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
 
             /* [ Combo ] */
             MenuCombo = new Menu("Combo", "Combo");
             Config.AddSubMenu(MenuCombo);
             {
-                MenuCombo.AddItem(new MenuItem("UseQCombo", "Use Q")).SetValue(true);
+                MenuCombo.AddItem(new MenuBool("UseQCombo", "Use Q"));
             }
             Config.AddItem(
-                new MenuItem("ComboActive", "Combo!").SetValue(
-                    new KeyBind(Config.Item("Orbwalk").GetValue<KeyBind>().Key, KeyBindType.Press)))
-                .SetFontStyle(FontStyle.Regular, SharpDX.Color.GreenYellow);
+                new MenuKeyBind("ComboActive", "Combo!", Keys.Space, KeyBindType.Press));
 
             /* [ Harass ] */
             Config.AddSubMenu(new Menu("Harass", "Harass"));
             {
-                Config.SubMenu("Harass").AddItem(new MenuItem("Spell Settings", "Spell Settings:"));
-                Config.SubMenu("Harass").AddItem(new MenuItem("UseQHarass", Tab + "Use Q").SetValue(false));
-                Config.SubMenu("Harass").AddItem(new MenuItem("UseQ2Harass", Tab + "Use Q (Short-Range)").SetValue(true));
-                Config.SubMenu("Harass").AddItem(new MenuItem("UseEHarass", Tab + "Use E").SetValue(true));
-                Config.SubMenu("Harass").AddItem(new MenuItem("Mana Settings", "Mana Settings:"));
+                Config.SubMenu("Harass").AddItem(new MenuBool("Spell Settings", "Spell Settings:"));
+                Config.SubMenu("Harass").AddItem(new MenuBool("UseQHarass", Tab + "Use Q").SetValue(false));
+                Config.SubMenu("Harass").AddItem(new MenuBool("UseQ2Harass", Tab + "Use Q (Short-Range)"));
+                Config.SubMenu("Harass").AddItem(new MenuBool("UseEHarass", Tab + "Use E"));
+                Config.SubMenu("Harass").AddItem(new MenuBool("Mana Settings", "Mana Settings:"));
                 Config.SubMenu("Harass")
                     .AddItem(
-                        new MenuItem("Harass.UseQ.MinMana", Tab + "Q Harass Min. Mana").SetValue(new Slider(30, 100, 0)));
+                        new MenuSlider("Harass.UseQ.MinMana", Tab + "Q Harass Min. Mana").SetValue(new Slider(30, 100, 0)));
 
-                Config.SubMenu("Harass").AddItem(new MenuItem("Toggle Settings", "Toggle Settings:"));
+                Config.SubMenu("Harass").AddItem(new MenuBool("Toggle Settings", "Toggle Settings:"));
                 {
                     Config.SubMenu("Harass")
                         .AddItem(
-                            new MenuItem("Harass.UseQ.Toggle", Tab + "Auto-Use Q").SetValue(
-                                new KeyBind("T".ToCharArray()[0],
-                                    KeyBindType.Toggle))).Permashow(true, "Olaf | Toggle Q");
+                            new MenuKeyBind("Harass.UseQ.Toggle", Tab + "Auto-Use Q", Keys.T,
+                                    KeyBindType.Toggle));
                 }
                 Config.SubMenu("Harass")
                     .AddItem(
-                        new MenuItem("HarassActive", "Harass!").SetValue(new KeyBind("C".ToCharArray()[0],
-                            KeyBindType.Press)));
+                        new MenuKeyBind("HarassActive", "Harass!", Keys.C,
+                            KeyBindType.Press));
             }
 
             /* [ Lane Clear ] */
             Config.AddSubMenu(new Menu("Lane Clear", "LaneClear"));
             {
-                Config.SubMenu("LaneClear").AddItem(new MenuItem("UseQFarm", "Use Q").SetValue(true)).ValueChanged +=
-                    (sender, eventArgs) =>
-                    {
-                        Config.SubMenu("LaneClear").Item("UseQFarmMinCount").Show(eventArgs.GetNewValue<bool>());
-                        Config.SubMenu("LaneClear").Item("UseQFarmMinMana").Show(eventArgs.GetNewValue<bool>());
-                    };
-                Config.SubMenu("LaneClear").AddItem(new MenuItem("UseQFarmMinCount", Tab + "Min. Minion to Use Q").SetValue(new Slider(2, 5, 1)));
-                Config.SubMenu("LaneClear").AddItem(new MenuItem("UseQFarmMinMana", Tab + "Min. Mana to Use Q").SetValue(new Slider(30, 100, 0)));
+                Config.SubMenu("LaneClear").AddItem(new MenuBool("UseQFarm", "Use Q"));
+                Config.SubMenu("LaneClear").AddItem(new MenuSlider("UseQFarmMinCount", Tab + "Min. Minion to Use Q").SetValue(new Slider(2, 5, 1)));
+                Config.SubMenu("LaneClear").AddItem(new MenuSlider("UseQFarmMinMana", Tab + "Min. Mana to Use Q").SetValue(new Slider(30, 100, 0)));
 
-                Config.SubMenu("LaneClear").AddItem(new MenuItem("UseEFarm", "Use E").SetValue(true)).ValueChanged +=
-                    (sender, eventArgs) =>
-                    {
-                        Config.SubMenu("LaneClear").Item("UseEFarmSet").Show(eventArgs.GetNewValue<bool>());
-                        Config.SubMenu("LaneClear").Item("UseEFarmMinHealth").Show(eventArgs.GetNewValue<bool>());
-                    };
+                Config.SubMenu("LaneClear").AddItem(new MenuBool("UseEFarm", "Use E"));
+                    
+                Config.SubMenu("LaneClear").AddItem(new MenuList("UseEFarmSet", Tab + "Use E:", new[] { "Last Hit", "Always" }, 0));
+                Config.SubMenu("LaneClear").AddItem(new MenuSlider("UseEFarmMinHealth", Tab + "Min. Health to Use E").SetValue(new Slider(10, 100, 0)));
 
-                Config.SubMenu("LaneClear").AddItem(new MenuItem("UseEFarmSet", Tab + "Use E:").SetValue(new StringList(new[] { "Last Hit", "Always" }, 0)));
-                Config.SubMenu("LaneClear").AddItem(new MenuItem("UseEFarmMinHealth", Tab + "Min. Health to Use E").SetValue(new Slider(10, 100, 0)));
-
-                Config.SubMenu("LaneClear").AddItem(new MenuItem("LaneClearUseItems", "Use Items ").SetValue(true));
-                Config.SubMenu("LaneClear").AddItem(new MenuItem("LaneClearActive", "Lane Clear!").SetValue(new KeyBind("V".ToCharArray()[0], KeyBindType.Press)));
+                Config.SubMenu("LaneClear").AddItem(new MenuBool("LaneClearUseItems", "Use Items "));
+                Config.SubMenu("LaneClear").AddItem(new MenuKeyBind("LaneClearActive", "Lane Clear!", Keys.V, KeyBindType.Press));
             }
 
             /* [ Jungle Clear ] */
             Config.AddSubMenu(new Menu("Jungle Clear", "JungleFarm"));
             {
-                Config.SubMenu("JungleFarm").AddItem(new MenuItem("UseQJFarm", "Use Q").SetValue(true)).ValueChanged +=
-                    (sender, eventArgs) =>
-                    {
-                        Config.SubMenu("JungleFarm").Item("UseQJFarmMinMana").Show(eventArgs.GetNewValue<bool>());
-                    };
-                Config.SubMenu("JungleFarm").AddItem(new MenuItem("UseQJFarmMinMana", Tab + "Min. Mana to Use Q").SetValue(new Slider(30, 100, 0)));
+                Config.SubMenu("JungleFarm").AddItem(new MenuBool("UseQJFarm", "Use Q"));
+                Config.SubMenu("JungleFarm").AddItem(new MenuSlider("UseQJFarmMinMana", Tab + "Min. Mana to Use Q").SetValue(new Slider(30, 100, 0)));
                 /*---------------------------*/
 
-                Config.SubMenu("JungleFarm").AddItem(new MenuItem("UseWJFarm", "Use W").SetValue(false)).ValueChanged +=
-                    (sender, eventArgs) =>
-                    {
-                        Config.SubMenu("JungleFarm").Item("UseWJFarmMinMana").Show(eventArgs.GetNewValue<bool>());
-                    };
-                Config.SubMenu("JungleFarm").AddItem(new MenuItem("UseWJFarmMinMana", Tab + "Min. Man to Use W").SetValue(new Slider(30, 100, 0)));
+                Config.SubMenu("JungleFarm").AddItem(new MenuBool("UseWJFarm", "Use W").SetValue(false));
+                Config.SubMenu("JungleFarm").AddItem(new MenuSlider("UseWJFarmMinMana", Tab + "Min. Man to Use W").SetValue(new Slider(30, 100, 0)));
                 /*---------------------------*/
 
-                Config.SubMenu("JungleFarm").AddItem(new MenuItem("UseEJFarm", "Use E").SetValue(false)).ValueChanged +=
-                    (sender, eventArgs) =>
-                    {
-                        Config.SubMenu("JungleFarm").Item("UseEJFarmSet").Show(eventArgs.GetNewValue<bool>());
-                        Config.SubMenu("JungleFarm").Item("UseEJFarmMinHealth").Show(eventArgs.GetNewValue<bool>());
-                    }; ;
-                Config.SubMenu("JungleFarm").AddItem(new MenuItem("UseEJFarmSet", Tab + "Use E:").SetValue(new StringList(new[] { "Last Hit", "Always" }, 1)));
-                Config.SubMenu("JungleFarm").AddItem(new MenuItem("UseEJFarmMinHealth", Tab + "Min. Health to Use E").SetValue(new Slider(10, 100, 0)));
+                Config.SubMenu("JungleFarm").AddItem(new MenuBool("UseEJFarm", "Use E").SetValue(false));
+                Config.SubMenu("JungleFarm").AddItem(new MenuList("UseEJFarmSet", Tab + "Use E:",new[] { "Last Hit", "Always" }, 1));
+                Config.SubMenu("JungleFarm").AddItem(new MenuSlider("UseEJFarmMinHealth", Tab + "Min. Health to Use E").SetValue(new Slider(10, 100, 0)));
 
                 /*---------------------------*/
-                Config.SubMenu("JungleFarm").AddItem(new MenuItem("JungleFarmUseItems", "Use Items ").SetValue(true)).ValueChanged +=
-                    (sender, eventArgs) =>
-                    {
-                        Config.SubMenu("JungleFarm").Item("UseJFarmYoumuuForDragon").Show(eventArgs.GetNewValue<bool>());
-                        Config.SubMenu("JungleFarm").Item("UseJFarmYoumuuForBlueRed").Show(eventArgs.GetNewValue<bool>());
-                    };
-                Config.SubMenu("JungleFarm").AddItem(new MenuItem("UseJFarmYoumuuForDragon", Tab + "Baron/Dragon:").SetValue(new StringList(new[] { "Off", "Dragon", "Baron", "Both" }, 3)));
-                Config.SubMenu("JungleFarm").AddItem(new MenuItem("UseJFarmYoumuuForBlueRed", Tab + "Blue/Red:").SetValue(new StringList(new[] { "Off", "Blue", "Red", "Both" }, 3)));
+                Config.SubMenu("JungleFarm").AddItem(new MenuBool("JungleFarmUseItems", "Use Items "));
+                Config.SubMenu("JungleFarm").AddItem(new MenuList("UseJFarmYoumuuForDragon", Tab + "Baron/Dragon:",new[] { "Off", "Dragon", "Baron", "Both" }, 3));
+                Config.SubMenu("JungleFarm").AddItem(new MenuList("UseJFarmYoumuuForBlueRed", Tab + "Blue/Red:",new[] { "Off", "Blue", "Red", "Both" }, 3));
 
-                Config.SubMenu("JungleFarm").AddItem(new MenuItem("JungleFarmActive", "Jungle Farm!").SetValue(new KeyBind("V".ToCharArray()[0], KeyBindType.Press)));
+                Config.SubMenu("JungleFarm").AddItem(new MenuKeyBind("JungleFarmActive", "Jungle Farm!", Keys.V, KeyBindType.Press));
             }
 
 
             /* [ Flee ] */
             var menuFlee = new Menu("Flee", "Flee");
             {
-                menuFlee.AddItem(new MenuItem("Flee.UseQ", "Use Q").SetValue(false));
-                menuFlee.AddItem(new MenuItem("Flee.UseYou", "Use Youmuu's Ghostblade").SetValue(false));
+                menuFlee.AddItem(new MenuBool("Flee.UseQ", "Use Q").SetValue(false));
+                menuFlee.AddItem(new MenuBool("Flee.UseYou", "Use Youmuu's Ghostblade").SetValue(false));
                 menuFlee.AddItem(
-                    new MenuItem("Flee.Active", "Flee!").SetValue(new KeyBind("A".ToCharArray()[0], KeyBindType.Press)));
+                    new MenuKeyBind("Flee.Active", "Flee!", Keys.A, KeyBindType.Press));
                 Config.AddSubMenu(menuFlee);
             }
 
             /* [ Misc ] */
             MenuMisc = new Menu("Misc", "Misc");
             {
-                MenuMisc.AddItem(new MenuItem("Misc.AutoE", "Auto-Use E (If Enemy Hit)").SetValue(false));
+                MenuMisc.AddItem(new MenuBool("Misc.AutoE", "Auto-Use E (If Enemy Hit)").SetValue(false));
                 string[] strE = new string[1000 / 250];
                 for (var i = 250; i <= 1000; i += 250)
                 {
                     strE[i / 250 - 1] = "Add " + i + " ms. delay for who visible instantly (Shaco/Rengar etc.)";
                 }
-                MenuMisc.AddItem(new MenuItem("Misc.AutoE.Delay", "E:").SetValue(new StringList(strE, 0)));
+                MenuMisc.AddItem(new MenuList("Misc.AutoE.Delay", "E:",strE, 0));
 
-                MenuMisc.AddItem(new MenuItem("Misc.AutoR", "Auto-Use R on Crowd-Control").SetValue(false));
+                MenuMisc.AddItem(new MenuBool("Misc.AutoR", "Auto-Use R on Crowd-Control").SetValue(false));
                 Config.AddSubMenu(MenuMisc);
             }
             SummonersOlaf.Initialize();
@@ -377,55 +346,15 @@ namespace DaoHungAIO.Champions
 
             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
 
-            Config.SubMenu("Drawings").AddItem(new MenuItem("Draw.SpellDrawing", "Spell Drawing:"));
-            Config.SubMenu("Drawings")
-                .AddItem(
-                    new MenuItem("Draw.QRange", Tab + "Q range").SetValue(
-                        new Circle(true, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
-            Config.SubMenu("Drawings")
-                .AddItem(
-                    new MenuItem("Draw.Q2Range", Tab + "Short Q range").SetValue(
-                        new Circle(true, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
-            Config.SubMenu("Drawings")
-                .AddItem(
-                    new MenuItem("Draw.ERange", Tab + "E range").SetValue(
-                        new Circle(false, System.Drawing.Color.FromArgb(255, 255, 255, 255))));
+            Config.SubMenu("Drawings").AddItem(new MenuBool("Draw.SpellDrawing", "Spell Drawing:"));
 
-            Config.SubMenu("Drawings").AddItem(new MenuItem("Draw.AxeDrawing", "Axe Drawing:"));
-            Config.SubMenu("Drawings")
-                .AddItem(
-                    new MenuItem("Draw.AxePosition", Tab + "Axe Position").SetValue(
-                        new StringList(new[] { "Off", "Circle", "Line", "Both" }, 3)));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("Draw.AxeTime", Tab + "Axe Time Remaining").SetValue(true));
-            
-
-            TextAxe = new Font(
-                Drawing.Direct3DDevice,
-                new FontDescription
-                {
-                    FaceName = "Segoe UI",
-                    Height = 39,
-                    OutputPrecision = FontPrecision.Default,
-                    Quality = FontQuality.ClearTypeNatural,
-                });
-            TextLittle = new Font(
-                Drawing.Direct3DDevice,
-                new FontDescription
-                {
-                    FaceName = "Segoe UI",
-                    Height = 15,
-                    OutputPrecision = FontPrecision.Default,
-                    Quality = FontQuality.ClearTypeNatural,
-                });
-            Utility.HpBarDamageIndicator.DamageToUnit = GetComboDamage;
-            Utility.HpBarDamageIndicator.Enabled = true;
             new Helper();
 
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnTick += Game_OnUpdate;
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
-            Orbwalking.BeforeAttack += OrbwalkingBeforeAttack;
+            Orbwalker.OnAction += OrbwalkerBeforeAttack;
             Chat.Print("<font color='#FFFFFF'>Olaf is Back V2</font> <font color='#70DBDB'> Loaded!</font>");
         }
 
@@ -489,9 +418,12 @@ namespace DaoHungAIO.Champions
             }
         }
 
-        private static void OrbwalkingBeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        private static void OrbwalkerBeforeAttack(
+    Object sender,
+    OrbwalkerActionArgs args
+)
         {
-            if (args.Target is AIHeroClient)
+            if (args.Type == OrbwalkerType.BeforeAttack && args.Target is AIHeroClient)
             {
                 foreach (var item in
                     ItemDb.Where(
@@ -502,7 +434,7 @@ namespace DaoHungAIO.Champions
                     item.Value.Item.Cast();
                 }
 
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && W.IsReady()
+                if (Orbwalker.ActiveMode == OrbwalkerMode.Combo && W.IsReady()
                     && args.Target.Health > Player.TotalAttackDamage * 2)
                 {
                     W.Cast();
@@ -546,7 +478,7 @@ namespace DaoHungAIO.Champions
 
             CountAa();
 
-            var drawAxePosition = Config.Item("Draw.AxePosition").GetValue<StringList>().SelectedIndex;
+            var drawAxePosition = Array.IndexOf(Config.Item("Draw.AxePosition").GetValue<MenuList>().Items, Config.Item("Draw.AxePosition").GetValue<MenuList>().SelectedValue);
             if (olafAxe.Object != null)
             {
                 var exTime = TimeSpan.FromSeconds(olafAxe.ExpireTime - Game.Time).TotalSeconds;
@@ -558,7 +490,7 @@ namespace DaoHungAIO.Champions
                         break;
                     case 2:
                         {
-                            var line = new Geometry.Polygon.Line(
+                            var line = new Geometry.Line(
                                 Player.Position,
                                 olafAxe.AxePos,
                                 Player.Distance(olafAxe.AxePos));
@@ -569,7 +501,7 @@ namespace DaoHungAIO.Champions
                         {
                             Render.Circle.DrawCircle(olafAxe.Object.Position, 150, color, 6);
 
-                            var line = new Geometry.Polygon.Line(
+                            var line = new Geometry.Line(
                                 Player.Position,
                                 olafAxe.AxePos,
                                 Player.Distance(olafAxe.AxePos));
@@ -581,7 +513,7 @@ namespace DaoHungAIO.Champions
                 }
             }
 
-            if (Config.Item("Draw.AxeTime").GetValue<bool>() && olafAxe.Object != null)
+            if (Config.Item("Draw.AxeTime").GetValue<MenuBool>() && olafAxe.Object != null)
             {
                 var time = TimeSpan.FromSeconds(olafAxe.ExpireTime - Game.Time);
                 var pos = Drawing.WorldToScreen(olafAxe.AxePos);
@@ -599,61 +531,61 @@ namespace DaoHungAIO.Champions
             //Draw the ranges of the spells.
             foreach (var spell in SpellList)
             {
-                var menuItem = Config.Item("Draw." + spell.Slot + "Range").GetValue<Circle>();
-                if (menuItem.Active)
+                var menuItem = Config.Item("Draw." + spell.Slot + "Range").GetValue<MenuBool>();
+                if (menuItem.Enabled)
                 {
-                    Render.Circle.DrawCircle(Player.Position, spell.Range, menuItem.Color, 1);
+                    Render.Circle.DrawCircle(Player.Position, spell.Range, Color.Gray, 1);
                 }
             }
-            var Q2Range = Config.Item("Draw.Q2Range").GetValue<Circle>();
-            if (Q2Range.Active)
+            var Q2Range = Config.Item("Draw.Q2Range").GetValue<MenuBool>();
+            if (Q2Range.Enabled)
             {
-                Render.Circle.DrawCircle(Player.Position, Q2.Range, Q2Range.Color, 1);
+                Render.Circle.DrawCircle(Player.Position, Q2.Range, Color.Gray, 1);
             }
         }
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo || !Player.HasBuff("Recall"))
+            if (Orbwalker.ActiveMode != OrbwalkerMode.Combo || !Player.HasBuff("Recall"))
             {
-                if (Config.Item("Harass.UseQ.Toggle").GetValue<KeyBind>().Active)
+                if (Config.Item("Harass.UseQ.Toggle").GetValue<MenuKeyBind>().Active)
                 {
                     CastQ();
                 }
             }
 
-            if (E.IsReady() && Config.Item("Misc.AutoE").GetValue<bool>())
+            if (E.IsReady() && Config.Item("Misc.AutoE").GetValue<MenuBool>())
             {
-                var t = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
+                var t = TargetSelector.GetTarget(E.Range);
                 if (t.IsValidTarget())
                     CastE(t);
                 //E.CastOnUnit(t);
             }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (Orbwalker.ActiveMode == OrbwalkerMode.Combo)
             {
                 Combo();
             }
 
-            if (Config.Item("LaneClearActive").GetValue<KeyBind>().Active)
+            if (Config.Item("LaneClearActive").GetValue<MenuKeyBind>().Active)
             {
                 LaneClear();
             }
 
-            if (Config.Item("JungleFarmActive").GetValue<KeyBind>().Active)
+            if (Config.Item("JungleFarmActive").GetValue<MenuKeyBind>().Active)
             {
                 JungleFarm();
             }
 
-            if (Config.Item("HarassActive").GetValue<KeyBind>().Active)
+            if (Config.Item("HarassActive").GetValue<MenuKeyBind>().Active)
             {
                 Harass();
             }
 
-            if (Config.Item("Flee.Active").GetValue<KeyBind>().Active)
+            if (Config.Item("Flee.Active").GetValue<MenuKeyBind>().Active)
                 Flee();
 
-            if (R.IsReady() && Config.Item("Misc.AutoR").GetValue<bool>())
+            if (R.IsReady() && Config.Item("Misc.AutoR").GetValue<MenuBool>())
             {
                 CastR();
             }
@@ -661,11 +593,11 @@ namespace DaoHungAIO.Champions
 
         private static void Combo()
         {
-            var t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+            var t = TargetSelector.GetTarget(Q.Range);
             if (!t.IsValidTarget())
                 return;
 
-            if (Config.Item("UseQCombo").GetValue<bool>() && Q.IsReady() &&
+            if (Config.Item("UseQCombo").GetValue<MenuBool>() && Q.IsReady() &&
                 Player.Distance(t.Position) <= Q.Range)
             {
                 PredictionOutput qPredictionOutput = Q.GetPrediction(t);
@@ -712,7 +644,7 @@ namespace DaoHungAIO.Champions
                 x =>
                     !x.Player.IsDead &&
                     Environment.TickCount - x.LastSeen >=
-                    (MenuMisc.Item("Misc.AutoE.Delay").GetValue<StringList>().SelectedIndex + 1) * 250 &&
+                    (Array.IndexOf(MenuMisc.Item("Misc.AutoE.Delay").GetValue<MenuList>().Items, MenuMisc.Item("Misc.AutoE.Delay").GetValue<MenuList>().SelectedValue) + 1) * 250 &&
                     x.Player.NetworkId == t.NetworkId).Select(x => x.Player).Where(enemy => enemy != null))
             {
                 E.CastOnUnit(enemy);
@@ -724,7 +656,7 @@ namespace DaoHungAIO.Champions
             if (!Q.IsReady())
                 return;
 
-            var t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+            var t = TargetSelector.GetTarget(Q.Range);
 
             if (t.IsValidTarget())
             {
@@ -750,10 +682,10 @@ namespace DaoHungAIO.Champions
             if (!Q.IsReady())
                 return;
 
-            var t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+            var t = TargetSelector.GetTarget(Q.Range);
 
             if (t.IsValidTarget() && Q.IsReady()
-                && Player.Mana > Player.MaxMana / 100 * Config.Item("Harass.UseQ.MinMana").GetValue<Slider>().Value
+                && Player.Mana > Player.MaxMana / 100 * Config.Item("Harass.UseQ.MinMana").GetValue<MenuSlider>().Value
                 && Player.Distance(t.Position) <= Q2.Range)
             {
                 PredictionOutput q2PredictionOutput = Q2.GetPrediction(t);
@@ -786,18 +718,18 @@ namespace DaoHungAIO.Champions
 
         private static void Harass()
         {
-            var t = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
-            if (Config.Item("UseQHarass").GetValue<bool>())
+            var t = TargetSelector.GetTarget(Q.Range);
+            if (Config.Item("UseQHarass").GetValue<MenuBool>())
             {
                 CastQ();
             }
 
-            if (Config.Item("UseQ2Harass").GetValue<bool>())
+            if (Config.Item("UseQ2Harass").GetValue<MenuBool>())
             {
                 CastShortQ();
             }
 
-            if (E.IsReady() && Config.Item("UseEHarass").GetValue<bool>() && Player.Distance(t.Position) <= E.Range)
+            if (E.IsReady() && Config.Item("UseEHarass").GetValue<MenuBool>() && Player.Distance(t.Position) <= E.Range)
             {
                 CastE(t);
                 //E.CastOnUnit(t);
@@ -806,7 +738,7 @@ namespace DaoHungAIO.Champions
 
         private static void LaneClear()
         {
-            var allMinions = MinionManager.GetMinions(
+            var allMinions = GameObjects.GetMinions(
                 Player.Position,
                 Q.Range,
                 MinionTypes.All,
@@ -815,7 +747,7 @@ namespace DaoHungAIO.Champions
 
             if (allMinions.Count <= 0) return;
 
-            if (Config.Item("LaneClearUseItems").GetValue<bool>())
+            if (Config.Item("LaneClearUseItems").GetValue<MenuBool>())
             {
                 foreach (var item in from item in ItemDb
                                      where
@@ -831,10 +763,10 @@ namespace DaoHungAIO.Champions
                 }
             }
 
-            if (Config.Item("UseQFarm").GetValue<bool>() && Q.IsReady()
-                && Player.HealthPercent > Config.Item("UseQFarmMinMana").GetValue<Slider>().Value)
+            if (Config.Item("UseQFarm").GetValue<MenuBool>() && Q.IsReady()
+                && Player.HealthPercent > Config.Item("UseQFarmMinMana").GetValue<MenuSlider>().Value)
             {
-                var vParamQMinionCount = Config.Item("UseQFarmMinCount").GetValue<Slider>().Value;
+                var vParamQMinionCount = Config.Item("UseQFarmMinCount").GetValue<MenuSlider>().Value;
 
                 var objAiHero = from x1 in ObjectManager.Get<AIMinionClient>()
                                 where x1.IsValidTarget() && x1.IsEnemy
@@ -850,7 +782,7 @@ namespace DaoHungAIO.Champions
 
                 var lastMinion = aiMinions.First();
 
-                var qMinions = MinionManager.GetMinions(
+                var qMinions = GameObjects.GetMinions(
                     ObjectManager.Player.Position,
                     Player.Distance(lastMinion.Position));
 
@@ -866,13 +798,13 @@ namespace DaoHungAIO.Champions
                 }
             }
 
-            if (Config.Item("UseEFarm").GetValue<bool>() && E.IsReady()
-                && Player.HealthPercent > Config.Item("UseEFarmMinHealth").GetValue<Slider>().Value)
+            if (Config.Item("UseEFarm").GetValue<MenuBool>() && E.IsReady()
+                && Player.HealthPercent > Config.Item("UseEFarmMinHealth").GetValue<MenuSlider>().Value)
             {
-                var eMinions = MinionManager.GetMinions(Player.Position, E.Range);
+                var eMinions = GameObjects.GetMinions(Player.Position, E.Range);
                 if (eMinions.Count > 0)
                 {
-                    var eFarmSet = Config.Item("UseEFarmSet").GetValue<StringList>().SelectedIndex;
+                    var eFarmSet = Array.IndexOf(Config.Item("UseEFarmSet").GetValue<MenuList>().Items, Config.Item("UseEFarmSet").GetValue<MenuList>().SelectedValue);
                     switch (eFarmSet)
                     {
                         case 0:
@@ -895,8 +827,8 @@ namespace DaoHungAIO.Champions
 
         private static void JungleFarm()
         {
-            var mobs = MinionManager.GetMinions(Player.Position, Q.Range, MinionTypes.All, MinionTeam.Neutral,
-                MinionOrderTypes.MaxHealth);
+            var mobs = GameObjects.GetJungles(Player.Position, Q.Range, JungleType.All,
+                JungleOrderTypes.MaxHealth);
 
             if (mobs.Count <= 0)
             {
@@ -905,7 +837,7 @@ namespace DaoHungAIO.Champions
 
             var mob = mobs[0];
 
-            if (Config.Item("JungleFarmUseItems").GetValue<bool>())
+            if (Config.Item("JungleFarmUseItems").GetValue<MenuBool>())
             {
                 foreach (var item in from item in ItemDb
                                      where
@@ -920,8 +852,8 @@ namespace DaoHungAIO.Champions
 
                 if (itemYoumuu.IsReady() && Player.Distance(mob) < 400)
                 {
-                    var youmuuBaron = Config.Item("UseJFarmYoumuuForDragon").GetValue<StringList>().SelectedIndex;
-                    var youmuuRed = Config.Item("UseJFarmYoumuuForBlueRed").GetValue<StringList>().SelectedIndex;
+                    var youmuuBaron = Array.IndexOf(Config.Item("UseJFarmYoumuuForDragon").GetValue<MenuList>().Items, Config.Item("UseJFarmYoumuuForDragon").GetValue<MenuList>().SelectedValue);
+                    var youmuuRed = Array.IndexOf(Config.Item("UseJFarmYoumuuForBlueRed").GetValue<MenuList>().Items, Config.Item("UseJFarmYoumuuForBlueRed").GetValue<MenuList>().SelectedValue);
 
                     if (mob.Name.Contains("Dragon") && (youmuuBaron == (int)Mobs.Dragon || youmuuBaron == (int)Mobs.All))
                     {
@@ -945,25 +877,25 @@ namespace DaoHungAIO.Champions
                 }
             }
 
-            if (Config.Item("UseQJFarm").GetValue<bool>() && Q.IsReady())
+            if (Config.Item("UseQJFarm").GetValue<MenuBool>() && Q.IsReady())
             {
-                if (Player.Mana < Player.MaxMana / 100 * Config.Item("UseQJFarmMinMana").GetValue<Slider>().Value) return;
+                if (Player.Mana < Player.MaxMana / 100 * Config.Item("UseQJFarmMinMana").GetValue<MenuSlider>().Value) return;
 
                 if (Q.IsReady()) Q.Cast(mob.Position - 20);
             }
 
-            if (Config.Item("UseWJFarm").GetValue<bool>() && W.IsReady())
+            if (Config.Item("UseWJFarm").GetValue<MenuBool>() && W.IsReady())
             {
-                if (Player.Mana < Player.MaxMana / 100 * Config.Item("UseWJFarmMinMana").GetValue<Slider>().Value) return;
+                if (Player.Mana < Player.MaxMana / 100 * Config.Item("UseWJFarmMinMana").GetValue<MenuSlider>().Value) return;
 
                 if (mobs.Count >= 2 || mob.Health > Player.TotalAttackDamage * 2.5) W.Cast();
             }
 
-            if (Config.Item("UseEJFarm").GetValue<bool>() && E.IsReady())
+            if (Config.Item("UseEJFarm").GetValue<MenuBool>() && E.IsReady())
             {
-                if (Player.Health < Player.MaxHealth / 100 * Config.Item("UseEJFarmMinHealth").GetValue<Slider>().Value) return;
+                if (Player.Health < Player.MaxHealth / 100 * Config.Item("UseEJFarmMinHealth").GetValue<MenuSlider>().Value) return;
 
-                var vParamESettings = Config.Item("UseEJFarmSet").GetValue<StringList>().SelectedIndex;
+                var vParamESettings = Array.IndexOf(Config.Item("UseEJFarmSet").GetValue<MenuList>().Items, Config.Item("UseEJFarmSet").GetValue<MenuList>().SelectedValue);
                 switch (vParamESettings)
                 {
                     case 0:
@@ -983,12 +915,12 @@ namespace DaoHungAIO.Champions
         private static void Flee()
         {
             ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
-            if (Config.Item("Flee.UseQ").GetValue<bool>())
+            if (Config.Item("Flee.UseQ").GetValue<MenuBool>())
                 if (Q.IsReady())
                 {
                     CastQ();
                 }
-            if (Config.Item("Flee.UseYou").GetValue<bool>())
+            if (Config.Item("Flee.UseYou").GetValue<MenuBool>())
             {
                 if (itemYoumuu.IsReady())
                     itemYoumuu.Cast();
@@ -1019,12 +951,10 @@ namespace DaoHungAIO.Champions
             if (Q.IsReady()) fComboDamage += Q.GetDamage(t);
 
             if (E.IsReady()) fComboDamage += E.GetDamage(t);
-
-            if (Items.CanUseItem(3146)) fComboDamage += Player.GetItemDamage(t, Damage.DamageItems.HextechGunblade);
-
+            
             if (SummonersOlaf.IgniteSlot != SpellSlot.Unknown && Player.Spellbook.CanUseSpell(SummonersOlaf.IgniteSlot) == SpellState.Ready)
             {
-                fComboDamage += Player.GetSummonerSpellDamage(t, Damage.DamageSummonerSpell.Ignite);
+                fComboDamage += Player.GetSummonerSpellDamage(t, SummonerSpell.Ignite);
             }
 
             return (float)fComboDamage;
@@ -1038,6 +968,8 @@ namespace DaoHungAIO.Champions
             //vFont.DrawText(null, vText, (int)vPosX, (int)vPosY, vColor);
         }
     }
+
+
     internal class SummonersOlaf
     {
         private static Menu menu;
@@ -1054,16 +986,16 @@ namespace DaoHungAIO.Champions
         {
             get
             {
-                if (SmiteBlue.Any(i => Items.HasItem(i)))
+                if (SmiteBlue.Any(i => Items.HasItem(ObjectManager.Player, i)))
                     return "s5_summonersmiteplayerganker";
 
-                if (SmiteRed.Any(i => Items.HasItem(i)))
+                if (SmiteRed.Any(i => Items.HasItem(ObjectManager.Player, i)))
                     return "s5_summonersmiteduel";
 
-                if (SmiteGrey.Any(i => Items.HasItem(i)))
+                if (SmiteGrey.Any(i => Items.HasItem(ObjectManager.Player, i)))
                     return "s5_summonersmitequick";
 
-                if (SmitePurple.Any(i => Items.HasItem(i)))
+                if (SmitePurple.Any(i => Items.HasItem(ObjectManager.Player, i)))
                     return "itemsmiteaoe";
 
                 return "summonersmite";
@@ -1076,13 +1008,13 @@ namespace DaoHungAIO.Champions
             menu = new Menu("Spells", "Spells");
             if (SmiteSlot != SpellSlot.Unknown)
             {
-                Olaf.MenuCombo.AddItem(new MenuItem("Spells.Smite", "Use Smite to Enemy!").SetValue(true));
+                Olaf.MenuCombo.AddItem(new MenuBool("Spells.Smite", "Use Smite to Enemy!"));
             }
 
             SetIgniteSlot();
             if (IgniteSlot != SpellSlot.Unknown)
             {
-                Olaf.MenuCombo.AddItem(new MenuItem("Spells.Ignite", "Use Ignite!").SetValue(true));
+                Olaf.MenuCombo.AddItem(new MenuBool("Spells.Ignite", "Use Ignite!"));
             }
 
             SetFlatSlot();
@@ -1091,13 +1023,13 @@ namespace DaoHungAIO.Champions
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            if (Olaf.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (Orbwalker.ActiveMode == OrbwalkerMode.Combo)
                 UseSpells();
         }
 
         private static void UseSpells()
         {
-            var t = TargetSelector.GetTarget(Olaf.Q.Range, TargetSelector.DamageType.Magical);
+            var t = TargetSelector.GetTarget(Olaf.Q.Range);
 
             if (t == null || !t.IsValidTarget())
                 return;
@@ -1140,8 +1072,8 @@ namespace DaoHungAIO.Champions
         private static void SmiteOnTarget(AIHeroClient t)
         {
             var range = 700f;
-            var use = menu.Item("Spells.Smite").GetValue<bool>();
-            var itemCheck = SmiteBlue.Any(i => Items.HasItem(i)) || SmiteRed.Any(i => Items.HasItem(i));
+            var use = menu.Item("Spells.Smite").GetValue<MenuBool>();
+            var itemCheck = SmiteBlue.Any(i => Items.HasItem(ObjectManager.Player, i)) || SmiteRed.Any(i => Items.HasItem(ObjectManager.Player, i));
             if (itemCheck && use &&
                 ObjectManager.Player.Spellbook.CanUseSpell(SmiteSlot) == SpellState.Ready &&
                 t.Distance(ObjectManager.Player.Position) < range)
@@ -1153,10 +1085,10 @@ namespace DaoHungAIO.Champions
         private static void IgniteOnTarget(AIHeroClient t)
         {
             var range = 550f;
-            var use = menu.Item("Spells.Ignite").GetValue<bool>();
+            var use = menu.Item("Spells.Ignite").GetValue<MenuBool>();
             if (use && ObjectManager.Player.Spellbook.CanUseSpell(IgniteSlot) == SpellState.Ready &&
                 t.Distance(ObjectManager.Player.Position) < range &&
-                ObjectManager.Player.GetSummonerSpellDamage(t, Damage.DamageSummonerSpell.Ignite) > t.Health)
+                ObjectManager.Player.GetSummonerSpellDamage(t, SummonerSpell.Ignite) > t.Health)
             {
                 ObjectManager.Player.Spellbook.CastSpell(IgniteSlot, t);
             }
@@ -1229,18 +1161,18 @@ namespace DaoHungAIO.Champions
             Olaf.MenuMisc.SubMenu("PotionManager").AddSubMenu(new Menu("Health", "Health"));
             Olaf.MenuMisc.SubMenu("PotionManager")
                 .SubMenu("Health")
-                .AddItem(new MenuItem("HealthPotion", "Use Health Potion").SetValue(true));
+                .AddItem(new MenuBool("HealthPotion", "Use Health Potion"));
             Olaf.MenuMisc.SubMenu("PotionManager")
                 .SubMenu("Health")
-                .AddItem(new MenuItem("HealthPercent", "HP Trigger Percent").SetValue(new Slider(50)));
+                .AddItem(new MenuSlider("HealthPercent", "HP Trigger Percent").SetValue(new Slider(50)));
 
             Olaf.MenuMisc.SubMenu("PotionManager").AddSubMenu(new Menu("Mana", "Mana"));
             Olaf.MenuMisc.SubMenu("PotionManager")
                 .SubMenu("Mana")
-                .AddItem(new MenuItem("ManaPotion", "Use Mana Potion").SetValue(true));
+                .AddItem(new MenuBool("ManaPotion", "Use Mana Potion"));
             Olaf.MenuMisc.SubMenu("PotionManager")
                 .SubMenu("Mana")
-                .AddItem(new MenuItem("ManaPercent", "MP Trigger Percent").SetValue(new Slider(50)));
+                .AddItem(new MenuSlider("ManaPercent", "MP Trigger Percent").SetValue(new Slider(50)));
 
             Game.OnUpdate += OnUpdate;
         }
@@ -1252,18 +1184,18 @@ namespace DaoHungAIO.Champions
 
             try
             {
-                if (Olaf.MenuMisc.Item("HealthPotion").GetValue<bool>())
+                if (Olaf.MenuMisc.Item("HealthPotion").GetValue<MenuBool>())
                 {
-                    if (GetPlayerHealthPercentage() <= Olaf.MenuMisc.Item("HealthPercent").GetValue<Slider>().Value)
+                    if (GetPlayerHealthPercentage() <= Olaf.MenuMisc.Item("HealthPercent").GetValue<MenuSlider>().Value)
                     {
                         var healthSlot = GetPotionSlot(PotionType.Health);
                         if (!IsBuffActive(PotionType.Health))
                             ObjectManager.Player.Spellbook.CastSpell(healthSlot.SpellSlot);
                     }
                 }
-                if (Olaf.MenuMisc.Item("ManaPotion").GetValue<bool>())
+                if (Olaf.MenuMisc.Item("ManaPotion").GetValue<MenuBool>())
                 {
-                    if (GetPlayerManaPercentage() <= Olaf.MenuMisc.Item("ManaPercent").GetValue<Slider>().Value)
+                    if (GetPlayerManaPercentage() <= Olaf.MenuMisc.Item("ManaPercent").GetValue<MenuSlider>().Value)
                     {
                         var manaSlot = GetPotionSlot(PotionType.Mana);
                         if (!IsBuffActive(PotionType.Mana))
@@ -1315,13 +1247,10 @@ namespace DaoHungAIO.Champions
 
         public AutoLevelOlaf()
         {
-            LocalMenu = new Menu("Auto Level", "Auto Level").SetFontStyle(FontStyle.Regular, SharpDX.Color.IndianRed);
+            LocalMenu = new Menu("Auto Level", "Auto Level");
             LocalMenu.AddItem(
-                new MenuItem("AutoLevel.Set", "at Start:").SetValue(
-                    new StringList(new[] { "Allways Off", "Allways On", "Remember Last Settings" }, 2)));
-            LocalMenu.AddItem(
-                new MenuItem("AutoLevel.Active", "Auto Level Active!").SetValue(new KeyBind("L".ToCharArray()[0],
-                    KeyBindType.Toggle))).Permashow(true, "Olaf | Auto Level");
+                new MenuKeyBind("AutoLevel.Active", "Auto Level Active!", Keys.L,
+                    KeyBindType.Toggle));
 
             var championName = ObjectManager.Player.CharacterName.ToLowerInvariant();
 
@@ -1329,23 +1258,11 @@ namespace DaoHungAIO.Champions
             {
                 case "olaf":
                     SpellLevels = new[] { 1, 2, 3, 1, 1, 4, 1, 3, 1, 3, 4, 3, 3, 2, 2, 4, 2, 2 };
-                    LocalMenu.AddItem(new MenuItem("AutoLevel." + championName, GetLevelList(SpellLevels)));
+                    LocalMenu.AddItem(new MenuBool("AutoLevel." + championName, GetLevelList(SpellLevels)));
                     break;
             }
 
-            switch (LocalMenu.Item("AutoLevel.Set").GetValue<StringList>().SelectedIndex)
-            {
-                case 0:
-                    LocalMenu.Item("AutoLevel.Active")
-                        .SetValue(new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle));
-                    break;
-
-                case 1:
-                    LocalMenu.Item("AutoLevel.Active")
-                        .SetValue(new KeyBind("L".ToCharArray()[0], KeyBindType.Toggle, true));
-                    break;
-            }
-
+       
             Olaf.MenuMisc.AddSubMenu(LocalMenu);
 
             Game.OnTick += Game_OnUpdate;
@@ -1361,7 +1278,7 @@ namespace DaoHungAIO.Champions
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            if (!LocalMenu.Item("AutoLevel.Active").GetValue<KeyBind>().Active)
+            if (!LocalMenu.Item("AutoLevel.Active").GetValue<MenuKeyBind>().Active)
             {
                 return;
             }
@@ -1404,341 +1321,10 @@ namespace DaoHungAIO.Champions
         }
     }
 
-    internal enum TargetSelectOlaf
-    {
-        Olaf,
-        LeagueSharp
-    }
 
     public class Captions
     {
         public static string MenuTab => "    ";
     }
 
-    internal class AssassinManagerOlaf
-    {
-        public static Menu LocalMenu;
-        public static Font Text;
-
-        private static TargetSelectOlaf Selector => LocalMenu.Item("TS").GetValue<StringList>().SelectedIndex == 0
-            ? TargetSelectOlaf.Olaf
-            : TargetSelectOlaf.LeagueSharp;
-
-        public void Initialize()
-        {
-            
-            Text = new Font(
-                Drawing.Direct3DDevice,
-                new FontDescription
-                {
-                    FaceName = "Malgun Gothic",
-                    Height = 21,
-                    OutputPrecision = FontPrecision.Default,
-                    Weight = FontWeight.Bold,
-                    Quality = FontQuality.ClearTypeNatural
-                });
-
-            LocalMenu = new Menu("Target Selector", "AssassinTargetSelector").SetFontStyle(
-                FontStyle.Regular,
-                SharpDX.Color.Cyan);
-
-            var menuTargetSelector = new Menu("Target Selector", "TargetSelector");
-            {
-                TargetSelector.AddToMenu(menuTargetSelector);
-            }
-
-            LocalMenu.AddItem(
-                new MenuItem("TS", "Active Target Selector:").SetValue(
-                    new StringList(new[] { "Olaf Target Selector", "L# Target Selector" })))
-                .SetFontStyle(FontStyle.Regular, SharpDX.Color.GreenYellow)
-                .ValueChanged += (sender, args) =>
-                {
-                    LocalMenu.Items.ForEach(
-                        i =>
-                        {
-                            i.Show();
-                            switch (args.GetNewValue<StringList>().SelectedIndex)
-                            {
-                                case 0:
-                                    {
-                                        if (i.Tag == 22)
-                                        {
-                                            i.Show(false);
-                                        }
-                                        break;
-                                    }
-
-                                case 1:
-                                    {
-                                        if (i.Tag == 11 || i.Tag == 12)
-                                        {
-                                            i.Show(false);
-                                        }
-                                        break;
-                                    }
-                            }
-                        });
-                };
-
-            menuTargetSelector.Items.ForEach(i =>
-            {
-                LocalMenu.AddItem(i);
-                i.SetTag(22);
-            });
-
-            LocalMenu.AddItem(
-                new MenuItem("Set", "Target Select Mode:").SetValue(
-                    new StringList(new[] { "Single Target Select", "Multi Target Select" })))
-                .SetFontStyle(FontStyle.Regular, SharpDX.Color.LightCoral)
-                .SetTag(11);
-            LocalMenu.AddItem(new MenuItem("Range", "Range (Recommend: Max):"))
-                .SetValue(new Slider((int)(Olaf.Q.Range * 1.5), (int)Olaf.Q.Range, (int)(Olaf.Q.Range * 2)))
-                .SetTag(11);
-
-            LocalMenu.AddItem(
-                new MenuItem("Targets", "Targets:").SetFontStyle(FontStyle.Regular, SharpDX.Color.Aqua).SetTag(11));
-            foreach (AIHeroClient e in HeroManager.Enemies)
-            {
-                LocalMenu.AddItem(
-                    new MenuItem("enemy_" + e.CharacterName, $"{Captions.MenuTab}Focus {e.CharacterName}")
-                        .SetValue(false)).SetTag(12);
-
-            }
-            //foreach (var langItem in HeroManager.Enemies.Select(e =>LocalMenu.AddItem(new MenuItem("enemy_" + e.CharacterName,string.Format("{0}Focus {1}", GameUtils.MenuTab, e.CharacterName)).SetValue(false)).SetTag(12)))
-
-            LocalMenu.AddItem(
-                new MenuItem("Draw.Title", "Drawings").SetFontStyle(FontStyle.Regular, SharpDX.Color.Aqua).SetTag(11));
-            LocalMenu.AddItem(
-                new MenuItem("Draw.Range", Captions.MenuTab + "Range").SetValue(new Circle(true,
-                    System.Drawing.Color.Gray)).SetTag(11));
-            LocalMenu.AddItem(
-                new MenuItem("Draw.Enemy", Captions.MenuTab + "ActiveJungle Enemy").SetValue(new Circle(true,
-                    System.Drawing.Color.GreenYellow)).SetTag(11));
-            LocalMenu.AddItem(
-                new MenuItem("Draw.Status", Captions.MenuTab + "Show Enemy:").SetValue(
-                    new StringList(new[] { "Off", "Text", "Picture", "Line", "All" }, 0)));
-            Olaf.Config.AddSubMenu(LocalMenu);
-
-            Game.OnWndProc += Game_OnWndProc;
-            Drawing.OnDraw += Drawing_OnDraw;
-
-            RefreshMenuItemsStatus();
-        }
-
-        private void RefreshMenuItemsStatus()
-        {
-
-            LocalMenu.Items.ForEach(
-                i =>
-                {
-                    i.Show();
-                    switch (Selector)
-                    {
-                        case TargetSelectOlaf.Olaf:
-                            if (i.Tag == 22)
-                            {
-                                i.Show(false);
-                            }
-                            break;
-                        case TargetSelectOlaf.LeagueSharp:
-                            if (i.Tag == 11)
-                            {
-                                i.Show(false);
-                            }
-                            break;
-                    }
-                });
-        }
-
-        public void ClearAssassinList()
-        {
-            foreach (AIHeroClient enemy in ObjectManager.Get<AIHeroClient>().Where(enemy => enemy.IsEnemy))
-            {
-                LocalMenu.Item("enemy_" + enemy.CharacterName).SetValue(false);
-            }
-        }
-
-        private void Game_OnWndProc(WndEventArgs args)
-        {
-            if (Selector != TargetSelectOlaf.Olaf)
-            {
-                return;
-            }
-
-            if (args.Msg == 0x201)
-            {
-                foreach (var objAiHero in from hero in HeroManager.Enemies
-                                          where
-                                              hero.Distance(Game.CursorPosRaw) < 150f && hero != null && hero.IsVisible && !hero.IsDead
-                                          orderby
-                                              hero.Distance(Game.CursorPosRaw) descending
-                                          select
-                                              hero)
-                {
-                    if (objAiHero != null && objAiHero.IsVisible && !objAiHero.IsDead)
-                    {
-                        int set = Olaf.Config.Item("Set").GetValue<StringList>().SelectedIndex;
-
-                        switch (set)
-                        {
-                            case 0:
-                                {
-                                    ClearAssassinList();
-                                    Olaf.Config.Item("enemy_" + objAiHero.CharacterName).SetValue(true);
-                                    break;
-                                }
-                            case 1:
-                                {
-                                    var menuStatus =
-                                        Olaf.Config.Item("enemy_" + objAiHero.CharacterName).GetValue<bool>();
-                                    Olaf.Config.Item("enemy_" + objAiHero.CharacterName).SetValue(!menuStatus);
-                                    break;
-                                }
-                        }
-                    }
-                }
-            }
-        }
-
-        public static bool In<T>(T source, params T[] list)
-        {
-            return list.Equals(source);
-        }
-
-        public static bool NotIn<T>(T source, params T[] list)
-        {
-            return !list.Equals(source);
-        }
-
-        public static AIHeroClient GetTarget(float vDefaultRange = 0,
-            TargetSelector.DamageType vDefaultDamageType = TargetSelector.DamageType.Physical,
-            IEnumerable<AIHeroClient> ignoredChamps = null)
-        {
-            //if (Selector != TargetSelect.Olaf)
-            //{
-            //    return TargetSelector.GetTarget(vDefaultRange, vDefaultDamageType);
-            //}
-
-            vDefaultRange = Math.Abs(vDefaultRange) < 0.00001
-                ? Olaf.Q.Range
-                : LocalMenu.Item("Range").GetValue<Slider>().Value;
-
-            if (ignoredChamps == null)
-            {
-                ignoredChamps = new List<AIHeroClient>();
-            }
-
-            var vEnemy =
-                HeroManager.Enemies.Where(hero => ignoredChamps.All(ignored => ignored.NetworkId != hero.NetworkId))
-                    .Where(e => e.IsValidTarget(vDefaultRange))
-                    .Where(e => LocalMenu.Item("enemy_" + e.CharacterName) != null)
-                    .Where(e => LocalMenu.Item("enemy_" + e.CharacterName).GetValue<bool>())
-                    .Where(e => ObjectManager.Player.Distance(e) < vDefaultRange);
-
-            if (LocalMenu.Item("Set").GetValue<StringList>().SelectedIndex == 1)
-            {
-                vEnemy = (from vEn in vEnemy select vEn).OrderByDescending(vEn => vEn.MaxHealth);
-            }
-
-            var objAiHeroes = vEnemy as AIHeroClient[] ?? vEnemy.ToArray();
-
-            var t = !objAiHeroes.Any() ? TargetSelector.GetTarget(vDefaultRange, vDefaultDamageType) : objAiHeroes[0];
-
-            return t;
-        }
-
-        private void Drawing_OnDraw(EventArgs args)
-        {
-            var drawEnemy = LocalMenu.Item("Draw.Enemy").GetValue<Circle>();
-            if (drawEnemy.Active)
-            {
-                var t = GetTarget(Olaf.Q.Range, TargetSelector.DamageType.Physical);
-                if (t.IsValidTarget())
-                {
-                    Render.Circle.DrawCircle(t.Position, (float)(t.BoundingRadius * 1.5), drawEnemy.Color);
-                }
-            }
-
-            if (Selector != TargetSelectOlaf.Olaf)
-            {
-                return;
-            }
-
-            Circle rangeColor = LocalMenu.Item("Draw.Range").GetValue<Circle>();
-            int range = LocalMenu.Item("Range").GetValue<Slider>().Value;
-            if (rangeColor.Active)
-            {
-                Render.Circle.DrawCircle(ObjectManager.Player.Position, range, rangeColor.Color);
-            }
-
-            int drawStatus = LocalMenu.Item("Draw.Status").GetValue<StringList>().SelectedIndex;
-            if (drawStatus == 1 || drawStatus == 4)
-            {
-                foreach (
-                    var e in
-                        HeroManager.Enemies.Where(
-                            e =>
-                                e.IsVisible && !e.IsDead && LocalMenu.Item("enemy_" + e.CharacterName) != null &&
-                                LocalMenu.Item("enemy_" + e.CharacterName).GetValue<bool>()))
-                {
-                    DrawText(Text, "1st Priority Target",
-                        e.HPBarPosition.X + e.BoundingRadius / 2f - (e.CharacterName.Length / 2f) - 27,
-                        e.HPBarPosition.Y - 23, SharpDX.Color.Black);
-
-                    DrawText(Text, "1st Priority Target",
-                        e.HPBarPosition.X + e.BoundingRadius / 2f - (e.CharacterName.Length / 2f) - 29,
-                        e.HPBarPosition.Y - 25, SharpDX.Color.IndianRed);
-                }
-            }
-
-            if (drawStatus == 3 || drawStatus == 4)
-            {
-                foreach (
-                    Geometry.Polygon.Line line in
-                        HeroManager.Enemies.Where(
-                            e =>
-                                e.IsVisible && !e.IsDead && LocalMenu.Item("enemy_" + e.CharacterName) != null &&
-                                LocalMenu.Item("enemy_" + e.CharacterName).GetValue<bool>())
-                            .Select(
-                                e =>
-                                    new Geometry.Polygon.Line(ObjectManager.Player.Position,
-                                        e.Position,
-                                        ObjectManager.Player.Distance(e.Position))))
-                {
-                    line.Draw(System.Drawing.Color.Wheat, 2);
-                }
-            }
-
-        }
-
-        public static void DrawText(Font vFont, string vText, float vPosX, float vPosY, ColorBGRA vColor)
-        {
-            vFont.DrawText(null, vText, (int)vPosX, (int)vPosY, vColor);
-        }
-
-        private Vector2 DrawPosition
-        {
-            get
-            {
-                var drawStatus = LocalMenu.Item("Draw.Status").GetValue<StringList>().SelectedIndex;
-                if (KillableEnemy == null || (drawStatus != 2 && drawStatus != 4)) return new Vector2(0f, 0f);
-
-                return new Vector2(
-                    KillableEnemy.HPBarPosition.X + KillableEnemy.BoundingRadius / 2f,
-                    KillableEnemy.HPBarPosition.Y - 70);
-            }
-        }
-
-        private bool DrawSprite => true;
-
-        private AIHeroClient KillableEnemy
-        {
-            get
-            {
-                AIHeroClient t = GetTarget(Olaf.Q.Range);
-
-                return t.IsValidTarget() ? t : null;
-            }
-        }
-    }
 }

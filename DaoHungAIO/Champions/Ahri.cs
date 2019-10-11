@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using Color = System.Drawing.Color;
 using System.Linq;
 using EnsoulSharp;
-using EnsoulSharp.Common;
 using SharpDX;
-using static EnsoulSharp.Common.Map;
+using EnsoulSharp.SDK;
+using EnsoulSharp.SDK.Prediction;
+using EnsoulSharp.SDK.MenuUI;
+using EnsoulSharp.SDK.Utility;
+using EnsoulSharp.SDK.MenuUI.Values;
+using Keys = System.Windows.Forms.Keys;
+using SPrediction;
 
 namespace DaoHungAIO.Champions
 {
@@ -22,61 +27,52 @@ namespace DaoHungAIO.Champions
         const float _spellQSpeedMin = 400;
         const float _spellQFarmSpeed = 1600;
 
-        private static Orbwalking.Orbwalker _orbwalker;
-
+        public static List<Spell> SpellList = new List<Spell>();
         public Ahri()
         {
 
             _menu = new Menu("DH.Ahri credit Beaving", "AhriSharp", true);
 
             HelperAhri = new HelperAhri();
-            var targetSelectorMenu = new Menu("Target Selector", "TargetSelector");
-            TargetSelector.AddToMenu(targetSelectorMenu);
-            _menu.AddSubMenu(targetSelectorMenu);
-
-            _orbwalker = new Orbwalking.Orbwalker(_menu.AddSubMenu(new Menu("Orbwalking", "Orbwalking")));
 
             var comboMenu = _menu.AddSubMenu(new Menu("Combo", "Combo"));
-            comboMenu.AddItem(new MenuItem("comboQ", "Use Q").SetValue(true));
-            comboMenu.AddItem(new MenuItem("comboW", "Use W").SetValue(true));
-            comboMenu.AddItem(new MenuItem("comboE", "Use E").SetValue(true));
-            comboMenu.AddItem(new MenuItem("comboR", "Use R").SetValue(true));
-            comboMenu.AddItem(new MenuItem("comboROnlyUserInitiate", "Use R only if user initiated").SetValue(false));
+            comboMenu.AddItem(new MenuBool("comboQ", "Use Q").SetValue(true));
+            comboMenu.AddItem(new MenuBool("comboW", "Use W").SetValue(true));
+            comboMenu.AddItem(new MenuBool("comboE", "Use E").SetValue(true));
+            comboMenu.AddItem(new MenuBool("comboR", "Use R").SetValue(true));
+            comboMenu.AddItem(new MenuBool("comboROnlyUserInitiate", "Use R only if user initiated").SetValue(false));
 
             var harassMenu = _menu.AddSubMenu(new Menu("Harass", "Harass"));
-            harassMenu.AddItem(new MenuItem("harassQ", "Use Q").SetValue(true));
-            harassMenu.AddItem(new MenuItem("harassE", "Use E").SetValue(true));
-            harassMenu.AddItem(new MenuItem("harassPercent", "Skills until Mana %").SetValue(new Slider(20)));
+            harassMenu.AddItem(new MenuBool("harassQ", "Use Q").SetValue(true));
+            harassMenu.AddItem(new MenuBool("harassE", "Use E").SetValue(true));
+            harassMenu.AddItem(new MenuSlider("harassPercent", "Skills until Mana %").SetValue(new Slider(20)));
 
             var farmMenu = _menu.AddSubMenu(new Menu("Lane Clear", "LaneClear"));
-            farmMenu.AddItem(new MenuItem("farmQ", "Use Q").SetValue(true));
-            farmMenu.AddItem(new MenuItem("farmW", "Use W").SetValue(false));
-            farmMenu.AddItem(new MenuItem("farmPercent", "Skills until Mana %").SetValue(new Slider(20)));
-            farmMenu.AddItem(new MenuItem("farmStartAtLevel", "Only AA until Level").SetValue(new Slider(8, 1, 18)));
+            farmMenu.AddItem(new MenuBool("farmQ", "Use Q").SetValue(true));
+            farmMenu.AddItem(new MenuBool("farmW", "Use W").SetValue(false));
+            farmMenu.AddItem(new MenuSlider("farmPercent", "Skills until Mana %").SetValue(new Slider(20)));
+            farmMenu.AddItem(new MenuSlider("farmStartAtLevel", "Only AA until Level").SetValue(new Slider(8, 1, 18)));
 
             var drawMenu = _menu.AddSubMenu(new Menu("Drawing", "Drawing"));
-            drawMenu.AddItem(new MenuItem("drawQE", "Draw Q, E range").SetValue(new Circle(true, System.Drawing.Color.FromArgb(125, 0, 255, 0))));
-            drawMenu.AddItem(new MenuItem("drawW", "Draw W range").SetValue(new Circle(false, System.Drawing.Color.FromArgb(125, 0, 0, 255))));
-            var dmgAfterComboItem = new MenuItem("DamageAfterCombo", "Draw Combo Damage").SetValue(true); //copied from esk0r Syndra
-            drawMenu.AddItem(dmgAfterComboItem);
+            drawMenu.AddSpellDraw(SpellSlot.Q);
+            drawMenu.AddSpellDraw(SpellSlot.W);
 
             var miscMenu = _menu.AddSubMenu(new Menu("Misc", "Misc"));
-            miscMenu.AddItem(new MenuItem("packetCast", "Packet Cast").SetValue(true));
+            miscMenu.AddItem(new MenuBool("packetCast", "Packet Cast").SetValue(true));
 
-            _itemDFG = GetMap().Type == MapType.TwistedTreeline ? new Items.Item(3188, 750) : new Items.Item(3128, 750);
+            _itemDFG = Game.MapId == GameMapId.TwistedTreeline ? new Items.Item(3188, 750) : new Items.Item(3128, 750);
 
             _spellQ = new Spell(SpellSlot.Q, 990);
             _spellW = new Spell(SpellSlot.W, 795 - 95);
             _spellE = new Spell(SpellSlot.E, 1000 - 10);
             _spellR = new Spell(SpellSlot.R, 1000 - 100);
 
-            _spellQ.SetSkillshot(.215f, 100, 1600f, false, SkillshotType.SkillshotLine);
-            _spellW.SetSkillshot(.71f, _spellW.Range, float.MaxValue, false, SkillshotType.SkillshotLine);
-            _spellE.SetSkillshot(.23f, 60, 1500f, true, SkillshotType.SkillshotLine);
+            SpellList.Add(_spellQ);
+            SpellList.Add(_spellW);
+            _spellQ.SetSkillshot(.215f, 100, 1600f, false, SkillshotType.Line);
+            _spellW.SetSkillshot(.71f, _spellW.Range, float.MaxValue, false, SkillshotType.Line);
+            _spellE.SetSkillshot(.23f, 60, 1500f, true, SkillshotType.Line);
 
-            Utility.HpBarDamageIndicator.DamageToUnit = GetComboDamage;
-            Utility.HpBarDamageIndicator.Enabled = dmgAfterComboItem.GetValue<bool>();
-            dmgAfterComboItem.ValueChanged += delegate (object sender, OnValueChangeEventArgs eventArgs) { Utility.HpBarDamageIndicator.Enabled = eventArgs.GetNewValue<bool>(); };
 
             Drawing.OnDraw += Drawing_OnDraw;
             Game.OnTick += Game_OnUpdate;
@@ -85,15 +81,15 @@ namespace DaoHungAIO.Champions
 
         void Game_OnUpdate(EventArgs args)
         {
-            switch (_orbwalker.ActiveMode)
+            switch (Orbwalker.ActiveMode)
             {
-                case Orbwalking.OrbwalkingMode.Combo:
+                case OrbwalkerMode.Combo:
                     Combo();
                     break;
-                case Orbwalking.OrbwalkingMode.Mixed:
+                case OrbwalkerMode.Harass:
                     Harass();
                     break;
-                case Orbwalking.OrbwalkingMode.LaneClear:
+                case OrbwalkerMode.LaneClear:
                     LaneClear();
                     break;
                 default:
@@ -108,41 +104,41 @@ namespace DaoHungAIO.Champions
 
         public bool PacketsNoLel()
         {
-            return _menu.Item("packetCast").GetValue<bool>();
+            return _menu.Item("packetCast").GetValue<MenuBool>();
         }
 
         void Harass()
         {
-            if (_menu.Item("harassE").GetValue<bool>() && GetManaPercent() >= _menu.Item("harassPercent").GetValue<Slider>().Value)
+            if (_menu.Item("harassE").GetValue<MenuBool>() && GetManaPercent() >= _menu.Item("harassPercent").GetValue<MenuSlider>().Value)
                 CastE();
 
-            if (_menu.Item("harassQ").GetValue<bool>() && GetManaPercent() >= _menu.Item("harassPercent").GetValue<Slider>().Value)
+            if (_menu.Item("harassQ").GetValue<MenuBool>() && GetManaPercent() >= _menu.Item("harassPercent").GetValue<MenuSlider>().Value)
                 CastQ();
         }
 
         void LaneClear()
         {
             _spellQ.Speed = _spellQFarmSpeed;
-            var minions = MinionManager.GetMinions(ObjectManager.Player.Position, _spellQ.Range, MinionTypes.All, MinionTeam.NotAlly);
+            var minions = GameObjects.GetMinions(ObjectManager.Player.Position, _spellQ.Range, MinionTypes.All, MinionTeam.Enemy);
 
             bool jungleMobs = minions.Any(x => x.Team == GameObjectTeam.Neutral);
 
-            if ((_menu.Item("farmQ").GetValue<bool>() && GetManaPercent() >= _menu.Item("farmPercent").GetValue<Slider>().Value && ObjectManager.Player.Level >= _menu.Item("farmStartAtLevel").GetValue<Slider>().Value) || jungleMobs)
+            if ((_menu.Item("farmQ").GetValue<MenuBool>() && GetManaPercent() >= _menu.Item("farmPercent").GetValue<MenuSlider>().Value && ObjectManager.Player.Level >= _menu.Item("farmStartAtLevel").GetValue<MenuSlider>().Value) || jungleMobs)
             {
-                MinionManager.FarmLocation farmLocation = _spellQ.GetLineFarmLocation(minions);
+                FarmLocation farmLocation = _spellQ.GetLineFarmLocation(minions);
 
                 if (farmLocation.Position.IsValid())
                     if (farmLocation.MinionsHit >= 2 || jungleMobs)
                         CastQ(farmLocation.Position);
             }
 
-            minions = MinionManager.GetMinions(ObjectManager.Player.Position, _spellW.Range, MinionTypes.All, MinionTeam.NotAlly);
+            minions = GameObjects.GetMinions(ObjectManager.Player.Position, _spellW.Range, MinionTypes.All, MinionTeam.Enemy);
 
             if (minions.Count() > 0)
             {
                 jungleMobs = minions.Any(x => x.Team == GameObjectTeam.Neutral);
 
-                if ((_menu.Item("farmW").GetValue<bool>() && GetManaPercent() >= _menu.Item("farmPercent").GetValue<Slider>().Value && ObjectManager.Player.Level >= _menu.Item("farmStartAtLevel").GetValue<Slider>().Value) || jungleMobs)
+                if ((_menu.Item("farmW").GetValue<MenuBool>() && GetManaPercent() >= _menu.Item("farmPercent").GetValue<MenuSlider>().Value && ObjectManager.Player.Level >= _menu.Item("farmStartAtLevel").GetValue<MenuSlider>().Value) || jungleMobs)
                     CastW(true);
             }
         }
@@ -152,7 +148,7 @@ namespace DaoHungAIO.Champions
             if (!_spellE.IsReady())
                 return;
 
-            var target = TargetSelector.GetTarget(_spellE.Range, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(_spellE.Range);
 
             if (target != null)
                 _spellE.CastIfHitchanceEquals(target, HitChance.High);
@@ -163,11 +159,11 @@ namespace DaoHungAIO.Champions
             if (!_spellQ.IsReady())
                 return;
 
-            var target = TargetSelector.GetTarget(_spellQ.Range, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(_spellQ.Range);
 
             if (target != null)
             {
-                Vector3 predictedPos = Prediction.GetPrediction(target, _spellQ.Delay).UnitPosition; //correct pos currently not possible with spell acceleration
+                Vector2 predictedPos = Prediction.GetFastUnitPosition(target, _spellQ.Delay); //correct pos currently not possible with spell acceleration
                 _spellQ.Speed = GetDynamicQSpeed(ObjectManager.Player.Distance(predictedPos));
                 _spellQ.CastIfHitchanceEquals(target, HitChance.High);
             }
@@ -186,7 +182,7 @@ namespace DaoHungAIO.Champions
             if (!_spellW.IsReady())
                 return;
 
-            var target = TargetSelector.GetTarget(_spellW.Range, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(_spellW.Range);
 
             if (target != null || ignoreTargetCheck)
                 _spellW.CastOnUnit(ObjectManager.Player);
@@ -194,16 +190,16 @@ namespace DaoHungAIO.Champions
 
         void Combo()
         {
-            if (_menu.Item("comboE").GetValue<bool>())
+            if (_menu.Item("comboE").GetValue<MenuBool>())
                 CastE();
 
-            if (_menu.Item("comboQ").GetValue<bool>())
+            if (_menu.Item("comboQ").GetValue<MenuBool>())
                 CastQ();
 
-            if (_menu.Item("comboW").GetValue<bool>())
+            if (_menu.Item("comboW").GetValue<MenuBool>())
                 CastW();
 
-            if (_menu.Item("comboR").GetValue<bool>() && _spellR.IsReady())
+            if (_menu.Item("comboR").GetValue<MenuBool>() && _spellR.IsReady())
                 if (OkToUlt())
                     _spellR.Cast(Game.CursorPosRaw);
         }
@@ -246,7 +242,7 @@ namespace DaoHungAIO.Champions
 
                 bool enoughMana = ObjectManager.Player.Mana > ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).ManaCost + ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E).ManaCost + ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).ManaCost;
 
-                if (_menu.Item("comboROnlyUserInitiate").GetValue<bool>() || !(_spellQ.IsReady() && _spellE.IsReady()) || !enoughMana) //dont initiate if user doesnt want to, also dont initiate if Q and E isnt ready or not enough mana for QER combo
+                if (_menu.Item("comboROnlyUserInitiate").GetValue<MenuBool>() || !(_spellQ.IsReady() && _spellE.IsReady()) || !enoughMana) //dont initiate if user doesnt want to, also dont initiate if Q and E isnt ready or not enough mana for QER combo
                     return false;
 
                 var friendsNearMouse = Ahri.HelperAhri.OwnTeam.Where(x => x.IsMe || x.Distance(mousePos) < 650); //me and friends near mouse (already in fight)
@@ -255,7 +251,7 @@ namespace DaoHungAIO.Champions
                 {
                     AIHeroClient enemy = enemiesNearMouse.FirstOrDefault();
 
-                    bool underTower = Utility.UnderTurret(enemy);
+                    bool underTower = enemy.IsUnderEnemyTurret();
 
                     return GetComboDamage(enemy) / enemy.Health >= (underTower ? 1.25f : 1); //if enemy under tower, only initiate if combo damage is >125% of enemy health
                 }
@@ -276,14 +272,16 @@ namespace DaoHungAIO.Champions
         {
             if (!ObjectManager.Player.IsDead)
             {
-                var drawQE = _menu.Item("drawQE").GetValue<Circle>();
-                var drawW = _menu.Item("drawW").GetValue<Circle>();
+                foreach (var spell in SpellList)
+                {
+                    var menuBool = _menu.Item("Draw" + spell.Slot + "Range").GetValue<MenuBool>();
+                    var menuColor = _menu.Item("Draw" + spell.Slot + "Color").GetValue<MenuColor>();
+                    if (menuBool.Enabled && spell.Slot != SpellSlot.R)
+                    {
+                        Render.Circle.DrawCircle(GameObjects.Player.Position, spell.Range, menuColor.Color.ToSystemColor());
+                    }
 
-                if (drawQE.Active)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, _spellQ.Range, drawQE.Color);
-
-                if (drawW.Active)
-                    Render.Circle.DrawCircle(ObjectManager.Player.Position, _spellW.Range, drawW.Color);
+                }
             }
         }
 
@@ -356,12 +354,12 @@ namespace DaoHungAIO.Champions
             return predictedhealth > playerInfo.Player.MaxHealth ? playerInfo.Player.MaxHealth : predictedhealth;
         }
 
-        public static T GetSafeMenuItem<T>(MenuItem item)
-        {
-            if (item != null)
-                return item.GetValue<T>();
+        //public static T GetSafeMenuItem<T>(MenuItem item)
+        //{
+        //    if (item != null)
+        //        return item.GetValue<T>();
 
-            return default(T);
-        }
+        //    return default(T);
+        //}
     }
 }

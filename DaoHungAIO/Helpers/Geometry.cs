@@ -1,5 +1,6 @@
 ﻿using EnsoulSharp;
 using EnsoulSharp.SDK;
+using EnsoulSharp.SDK.Clipper;
 using SharpDX;
 using System;
 using System.Collections.Generic;

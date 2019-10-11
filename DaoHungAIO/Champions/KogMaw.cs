@@ -7,7 +7,6 @@ using EnsoulSharp.SDK.Utility;
 using System;
 using System.Linq;
 using SPrediction;
-using static SPrediction.MinionManager;
 
 namespace DaoHungAIO.Champions
 {
@@ -117,7 +116,7 @@ namespace DaoHungAIO.Champions
                 attackNow = true;
                 if (Program.LaneClear && W.IsReady() && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value)
                 {
-                    var minions = MinionManager.GetMinions(Player.Position, 650);
+                    var minions = GameObjects.GetMinions(Player.Position, 650);
 
                     if (minions.Count >= Config["Farm"].GetValue<MenuSlider>("LCminions").Value)
                     {
@@ -160,7 +159,7 @@ namespace DaoHungAIO.Champions
         {
             if (Program.LaneClear && Player.Mana > RMANA + QMANA)
             {
-                var mobs = MinionManager.GetMinions(650, MinionManager.MinionTypes.All, MinionTeam.Neutral);
+                var mobs = GameObjects.GetJungles(650, JungleType.All);
                 if (mobs.Count > 0)
                 {
                     var mob = mobs[0];
@@ -286,7 +285,7 @@ namespace DaoHungAIO.Champions
                 }
                 else if (Program.LaneClear && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value && Config["Farm"].GetValue<MenuBool>("farmE") && Player.Mana > RMANA + EMANA)
                 {
-                    var minionList = MinionManager.GetMinions(Player.Position, E.Range);
+                    var minionList = GameObjects.GetMinions(Player.Position, E.Range);
                     var farmPosition = E.GetLineFarmLocation(minionList, E.Width);
 
                     if (farmPosition.MinionsHit >= Config["Farm"].GetValue<MenuSlider>("LCminions").Value)

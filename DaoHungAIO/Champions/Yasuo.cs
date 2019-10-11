@@ -24,7 +24,8 @@ using FoundIntersection = DaoHungAIO.Evade.FoundIntersection;
 using EvadeManager = DaoHungAIO.Evade.EvadeManager;
 using DetectionType = DaoHungAIO.Evade.DetectionType;
 using CollisionObjectTypes = DaoHungAIO.Evade.CollisionObjectTypes;
-
+using MinionTeam = SPrediction.MinionManager.MinionTeam;
+using MinionOrderTypes = SPrediction.MinionManager.MinionOrderTypes;
 
 namespace DaoHungAIO.Champions
 {

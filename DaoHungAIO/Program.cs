@@ -88,15 +88,12 @@ namespace DaoHungAIO
                     case "Ahri":
                         new Ahri();
                         break;
-                    case "Azir":
-                        new Azir();
-                        break;
                     case "Camille":
                         new Camille();
                         break;
-                    case "Diana":
-                        new Diana();
-                        break;
+                    //case "Diana":
+                    //    new Diana();
+                    //    break;
                     case "Draven":
                         new Draven();
                         break;
@@ -146,10 +143,10 @@ namespace DaoHungAIO
                         Orianna.initOrianna();
                         break;
                     case "Riven":
-                        new RivenKurisu();
+                        new RivenReborn();
                         break;
-                    case "Rengar":
-                        new Rengar();
+                    //case "Rengar":
+                    //    new Rengar();
                         break;
                     case "Renekton":
                         new Renekton();

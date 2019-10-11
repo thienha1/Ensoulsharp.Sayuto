@@ -46,7 +46,7 @@ namespace DaoHungAIO.Helpers
             return dmg > i.Health;
         }
 
-        public static bool IsKillable(this Spell s, AIHeroClient target)
+        public static bool IsKillable(this Spell s, AIBaseClient target)
         {
             return s.GetDamage(target) > target.Health;
         }

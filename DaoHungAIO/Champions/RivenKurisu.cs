@@ -138,8 +138,8 @@ namespace DaoHungAIO.Champions
             {
                 try
                 {
-                    w = new Spell(SpellSlot.W, 250f);
-                    e = new Spell(SpellSlot.E, 270f);
+                    w = new Spell(SpellSlot.W, 125f);
+                    e = new Spell(SpellSlot.E, 325f);
 
                     q = new Spell(SpellSlot.Q, 260f);
                     q.SetSkillshot(0.25f, 100f, 2200f, false, SkillshotType.SkillshotCircle);
@@ -1105,30 +1105,33 @@ AIBaseClientPlayAnimationEventArgs args
             Interrupters.OnInterrupter += (interrupter) =>
             {
                 var sender = interrupter.Sender;
-                if (menubool("wint") && w.IsReady())
+                if (sender.IsEnemy)
                 {
-                    if (!sender.Position.UnderTurret(true))
+                    if (menubool("wint") && w.IsReady())
                     {
-                        if (sender.IsValidTarget(w.Range))
-                            w.Cast();
-
-                        if (sender.IsValidTarget(w.Range + e.Range) && e.IsReady())
+                        if (!sender.Position.UnderTurret(true))
                         {
-                            e.Cast(sender.Position);
+                            if (sender.IsValidTarget(w.Range))
+                                w.Cast();
+
+                            if (sender.IsValidTarget(w.Range + e.Range) && e.IsReady())
+                            {
+                                e.Cast(sender.Position);
+                            }
                         }
                     }
-                }
 
-                if (menubool("qint") && q.IsReady() && cc >= 2)
-                {
-                    if (!sender.Position.UnderTurret(true))
+                    if (menubool("qint") && q.IsReady() && cc >= 2)
                     {
-                        if (sender.IsValidTarget(q.Range))
-                            q.Cast(sender.Position);
-
-                        if (sender.IsValidTarget(q.Range + e.Range) && e.IsReady())
+                        if (!sender.Position.UnderTurret(true))
                         {
-                            e.Cast(sender.Position);
+                            if (sender.IsValidTarget(q.Range))
+                                q.Cast(sender.Position);
+
+                            if (sender.IsValidTarget(q.Range + e.Range) && e.IsReady())
+                            {
+                                e.Cast(sender.Position);
+                            }
                         }
                     }
                 }
@@ -1139,28 +1142,31 @@ AIBaseClientPlayAnimationEventArgs args
         {
             Gapclosers.OnGapcloser += gapcloser =>
             {
-                if (menubool("wgap") && w.IsReady())
+                if (gapcloser.Sender.IsEnemy)
                 {
-                    if (gapcloser.Sender.IsValidTarget(w.Range))
+                    if (menubool("wgap") && w.IsReady())
                     {
-                        if (!gapcloser.Sender.Position.UnderTurret(true))
+                        if (gapcloser.Sender.IsValidTarget(w.Range))
                         {
-                            w.Cast();
+                            if (!gapcloser.Sender.Position.UnderTurret(true))
+                            {
+                                w.Cast();
+                            }
                         }
+
                     }
 
-                }
-
-                if (q.IsReady() && cc == 2)
-                {
-                    if (gapcloser.Sender.IsValidTarget(q.Range) && !player.IsFacing(gapcloser.Sender))
+                    if (q.IsReady() && cc == 2)
                     {
-                        if (Items.CanUseItem((int)Items.GetWardSlot().Id))
+                        if (gapcloser.Sender.IsValidTarget(q.Range) && !player.IsFacing(gapcloser.Sender))
                         {
-                            q.Cast(Game.CursorPosRaw);
+                            if (Items.CanUseItem((int)Items.GetWardSlot().Id))
+                            {
+                                q.Cast(Game.CursorPosRaw);
 
-                            if (didq)
-                                Items.UseItem((int)Items.GetWardSlot().Id, gapcloser.Sender.Position);
+                                if (didq)
+                                    Items.UseItem((int)Items.GetWardSlot().Id, gapcloser.Sender.Position);
+                            }
                         }
                     }
                 }

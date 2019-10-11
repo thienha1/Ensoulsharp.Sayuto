@@ -2,18 +2,22 @@
 using System.Collections.Generic;
 using Color = System.Drawing.Color;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using EnsoulSharp;
-using EnsoulSharp.Common;
 using SharpDX;
+using EnsoulSharp.SDK;
+using EnsoulSharp.SDK.Prediction;
+using EnsoulSharp.SDK.MenuUI;
+using EnsoulSharp.SDK.Utility;
+using EnsoulSharp.SDK.MenuUI.Values;
+using Keys = System.Windows.Forms.Keys;
+using SPrediction;
+using DaoHungAIO.Helpers;
 
 namespace DaoHungAIO.Champions
 {
     class Ziggs
     {
         public static string ChampionName = "Ziggs";
-        public static Orbwalking.Orbwalker Orbwalker;
         public static List<Spell> SpellList = new List<Spell>();
         public static Spell Q1;
         public static Spell Q2;
@@ -38,13 +42,13 @@ namespace DaoHungAIO.Champions
             E = new Spell(SpellSlot.E, 900f);
             R = new Spell(SpellSlot.R, 5300f);
 
-            Q1.SetSkillshot(0.3f, 130f, 1700f, false, SkillshotType.SkillshotCircle);
-            Q2.SetSkillshot(0.25f + Q1.Delay, 130f, 1700f, false, SkillshotType.SkillshotCircle);
-            Q3.SetSkillshot(0.3f + Q2.Delay, 130f, 1700f, false, SkillshotType.SkillshotCircle);
+            Q1.SetSkillshot(0.3f, 130f, 1700f, false, SkillshotType.Circle);
+            Q2.SetSkillshot(0.25f + Q1.Delay, 130f, 1700f, false, SkillshotType.Circle);
+            Q3.SetSkillshot(0.3f + Q2.Delay, 130f, 1700f, false, SkillshotType.Circle);
 
-            W.SetSkillshot(0.25f, 275f, 1750f, false, SkillshotType.SkillshotCircle);
-            E.SetSkillshot(0.5f, 100f, 1750f, false, SkillshotType.SkillshotCircle);
-            R.SetSkillshot(1f, 500f, float.MaxValue, false, SkillshotType.SkillshotCircle);
+            W.SetSkillshot(0.25f, 275f, 1750f, false, SkillshotType.Circle);
+            E.SetSkillshot(0.5f, 100f, 1750f, false, SkillshotType.Circle);
+            R.SetSkillshot(1f, 500f, float.MaxValue, false, SkillshotType.Circle);
 
             SpellList.Add(Q1);
             SpellList.Add(Q2);
@@ -54,177 +58,115 @@ namespace DaoHungAIO.Champions
             SpellList.Add(R);
 
             Config = new Menu("DH.Ziggs credit Eskor#", ChampionName, true);
-
-            var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
-            TargetSelector.AddToMenu(targetSelectorMenu);
-            Config.AddSubMenu(targetSelectorMenu);
-
-            Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
-            Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
-
+            
             Config.AddSubMenu(new Menu("Combo", "Combo"));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseQCombo", "Use Q").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "Use W").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "Use E").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "Use R").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuBool("UseQCombo", "Use Q"));
+            Config.SubMenu("Combo").AddItem(new MenuBool("UseWCombo", "Use W"));
+            Config.SubMenu("Combo").AddItem(new MenuBool("UseECombo", "Use E"));
+            Config.SubMenu("Combo").AddItem(new MenuBool("UseRCombo", "Use R"));
             Config.SubMenu("Combo")
-                .AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
+                .AddItem(new MenuKeyBind("ComboActive", "Combo!", Keys.Space, KeyBindType.Press));
 
             Config.AddSubMenu(new Menu("Harass", "Harass"));
-            Config.SubMenu("Harass").AddItem(new MenuItem("UseQHarass", "Use Q").SetValue(true));
-            Config.SubMenu("Harass").AddItem(new MenuItem("UseWHarass", "Use W").SetValue(false));
-            Config.SubMenu("Harass").AddItem(new MenuItem("UseEHarass", "Use E").SetValue(false));
+            Config.SubMenu("Harass").AddItem(new MenuBool("UseQHarass", "Use Q"));
+            Config.SubMenu("Harass").AddItem(new MenuBool("UseWHarass", "Use W").SetValue(false));
+            Config.SubMenu("Harass").AddItem(new MenuBool("UseEHarass", "Use E").SetValue(false));
             Config.SubMenu("Harass")
-                .AddItem(new MenuItem("ManaSliderHarass", "Mana To Harass").SetValue(new Slider(50, 100, 0)));
+                .AddItem(new MenuSlider("ManaSliderHarass", "Mana To Harass").SetValue(new Slider(50, 100, 0)));
             Config.SubMenu("Harass")
                 .AddItem(
-                    new MenuItem("HarassActive", "Harass!").SetValue(
-                        new KeyBind("C".ToCharArray()[0], KeyBindType.Press)));
+                    new MenuKeyBind("HarassActive", "Harass!", Keys.C, KeyBindType.Press));
 
             Config.AddSubMenu(new Menu("Farm", "Farm"));
             Config.SubMenu("Farm")
                 .AddItem(
-                    new MenuItem("UseQFarm", "Use Q").SetValue(
-                        new StringList(new[] { "Freeze", "LaneClear", "Both", "No" }, 2)));
+                    new MenuList("UseQFarm", "Use Q", new[] { "Freeze", "LaneClear", "Both", "No" }, 2));
             Config.SubMenu("Farm")
                 .AddItem(
-                    new MenuItem("UseWFarm", "Use W").SetValue(
-                        new StringList(new[] { "Freeze", "LaneClear", "Both", "No" }, 2)));
+                    new MenuList("UseWFarm", "Use W", new[] { "Freeze", "LaneClear", "Both", "No" }, 2));
             Config.SubMenu("Farm")
                 .AddItem(
-                    new MenuItem("UseEFarm", "Use E").SetValue(
-                        new StringList(new[] { "Freeze", "LaneClear", "Both", "No" }, 1)));
+                    new MenuList("UseEFarm", "Use E", new[] { "Freeze", "LaneClear", "Both", "No" }, 1));
             Config.SubMenu("Farm")
-                .AddItem(new MenuItem("ManaSliderFarm", "Mana To Farm").SetValue(new Slider(25, 100, 0)));
-            Config.SubMenu("Farm")
-                .AddItem(
-                    new MenuItem("FreezeActive", "Freeze!").SetValue(
-                        new KeyBind("C".ToCharArray()[0], KeyBindType.Press)));
+                .AddItem(new MenuSlider("ManaSliderFarm", "Mana To Farm").SetValue(new Slider(25, 100, 0)));
             Config.SubMenu("Farm")
                 .AddItem(
-                    new MenuItem("LaneClearActive", "LaneClear!").SetValue(
-                        new KeyBind("V".ToCharArray()[0], KeyBindType.Press)));
+                    new MenuKeyBind("FreezeActive", "Freeze!", Keys.C, KeyBindType.Press));
+            Config.SubMenu("Farm")
+                .AddItem(
+                    new MenuKeyBind("LaneClearActive", "LaneClear!", Keys.V, KeyBindType.Press));
 
             Config.AddSubMenu(new Menu("JungleFarm", "JungleFarm"));
-            Config.SubMenu("JungleFarm").AddItem(new MenuItem("UseQJFarm", "Use Q").SetValue(true));
-            Config.SubMenu("JungleFarm").AddItem(new MenuItem("UseEJFarm", "Use E").SetValue(true));
+            Config.SubMenu("JungleFarm").AddItem(new MenuBool("UseQJFarm", "Use Q"));
+            Config.SubMenu("JungleFarm").AddItem(new MenuBool("UseEJFarm", "Use E"));
             Config.SubMenu("JungleFarm")
                 .AddItem(
-                    new MenuItem("JungleFarmActive", "JungleFarm!").SetValue(
-                        new KeyBind("V".ToCharArray()[0], KeyBindType.Press)));
+                    new MenuKeyBind("JungleFarmActive", "JungleFarm!", Keys.V, KeyBindType.Press));
 
             Config.AddSubMenu(new Menu("Misc", "Misc"));
             Config.SubMenu("Misc")
                 .AddItem(
-                    new MenuItem("WToMouse", "W to mouse").SetValue(
-                        new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
-            Config.SubMenu("Misc").AddItem(new MenuItem("Peel", "Use W defensively").SetValue(true));
+                    new MenuKeyBind("WToMouse", "W to mouse", Keys.T, KeyBindType.Press));
+            Config.SubMenu("Misc").AddItem(new MenuBool("Peel", "Use W defensively"));
 
 
             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
-            Config.SubMenu("Drawings")
-                .AddItem(
-                    new MenuItem("DrawQRange", "Draw Q Range").SetValue(
-                        new Circle(true, Color.FromArgb(100, 255, 0, 255))));
-            Config.SubMenu("Drawings")
-                .AddItem(
-                    new MenuItem("DrawWRange", "Draw W Range").SetValue(
-                        new Circle(true, Color.FromArgb(100, 255, 255, 255))));
-            Config.SubMenu("Drawings")
-                .AddItem(
-                    new MenuItem("DrawERange", "Draw E Range").SetValue(
-                        new Circle(false, Color.FromArgb(100, 255, 255, 255))));
-            Config.SubMenu("Drawings")
-                .AddItem(
-                    new MenuItem("DrawRRange", "Draw R Range").SetValue(
-                        new Circle(false, Color.FromArgb(100, 255, 255, 255))));
-            Config.SubMenu("Drawings")
-                .AddItem(
-                    new MenuItem("DrawRRangeM", "Draw R Range (Minimap)").SetValue(
-                        new Circle(false, Color.FromArgb(100, 255, 255, 255))));
+      
 
 
             Game.OnUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            Gapclosers.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
-            Interrupters.OnInterrupter += Interrupter2_OnInterruptableTarget;
+            Gapcloser.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
+            Interrupter.OnInterrupterSpell += Interrupter2_OnInterruptableTarget;
         }
 
-        private void Interrupter2_OnInterruptableTarget(ActiveInterrupter interrupter)
+        private void Interrupter2_OnInterruptableTarget(AIHeroClient sender, Interrupter.InterruptSpellArgs args)
         {
             
-            if (interrupter.Sender.IsAlly)
+            if (args.Sender.IsAlly)
             {
                 return;
             }
 
-            W.Cast(interrupter.Sender);
+            W.Cast(args.Sender);
         }
 
-        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        private static void AntiGapcloser_OnEnemyGapcloser(AIHeroClient sender, Gapcloser.GapcloserArgs args)
         {
-            if (gapcloser.Sender.IsAlly)
+            if (sender.IsAlly)
             {
                 return;
             }
-            W.Cast(gapcloser.Sender);
+            W.Cast(sender);
         }
 
         private static void Drawing_OnDraw(EventArgs args)
         {
-            var qValue = Config.Item("DrawQRange").GetValue<Circle>();
-            if (qValue.Active)
-            {
-                Render.Circle.DrawCircle(ObjectManager.Player.Position, Q3.Range, qValue.Color);
-            }
 
-            var wValue = Config.Item("DrawWRange").GetValue<Circle>();
-            if (wValue.Active)
-            {
-                Render.Circle.DrawCircle(ObjectManager.Player.Position, W.Range, wValue.Color);
-            }
-
-            var eValue = Config.Item("DrawERange").GetValue<Circle>();
-            if (eValue.Active)
-            {
-                Render.Circle.DrawCircle(ObjectManager.Player.Position, E.Range, eValue.Color);
-            }
-
-            var rValue = Config.Item("DrawRRange").GetValue<Circle>();
-            if (rValue.Active)
-            {
-                Render.Circle.DrawCircle(ObjectManager.Player.Position, R.Range, rValue.Color);
-            }
-
-            var rValueM = Config.Item("DrawRRangeM").GetValue<Circle>();
-            if (rValueM.Active)
-            {
-                Utility.DrawCircle(ObjectManager.Player.Position, R.Range, rValueM.Color, 2, 30, true);
-            }
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
             //Combo & Harass
-            if (Config.Item("ComboActive").GetValue<KeyBind>().Active ||
-                (Config.Item("HarassActive").GetValue<KeyBind>().Active &&
+            if (Config.Item("ComboActive").GetValue<MenuKeyBind>().Active ||
+                (Config.Item("HarassActive").GetValue<MenuKeyBind>().Active &&
                  (ObjectManager.Player.Mana / ObjectManager.Player.MaxMana * 100) >
-                 Config.Item("ManaSliderHarass").GetValue<Slider>().Value))
+                 Config.Item("ManaSliderHarass").GetValue<MenuSlider>().Value))
             {
-                var target = TargetSelector.GetTarget(1200f, TargetSelector.DamageType.Magical);
+                var target = TargetSelector.GetTarget(1200f);
                 if (target != null)
                 {
-                    var comboActive = Config.Item("ComboActive").GetValue<KeyBind>().Active;
-                    var harassActive = Config.Item("HarassActive").GetValue<KeyBind>().Active;
+                    var comboActive = Config.Item("ComboActive").GetValue<MenuKeyBind>().Active;
+                    var harassActive = Config.Item("HarassActive").GetValue<MenuKeyBind>().Active;
 
-                    if (((comboActive && Config.Item("UseQCombo").GetValue<bool>()) ||
-                         (harassActive && Config.Item("UseQHarass").GetValue<bool>())) && Q1.IsReady())
+                    if (((comboActive && Config.Item("UseQCombo").GetValue<MenuBool>()) ||
+                         (harassActive && Config.Item("UseQHarass").GetValue<MenuBool>())) && Q1.IsReady())
                     {
                         CastQ(target);
                     }
 
-                    if (((comboActive && Config.Item("UseWCombo").GetValue<bool>()) ||
-                         (harassActive && Config.Item("UseWHarass").GetValue<bool>())) && W.IsReady())
+                    if (((comboActive && Config.Item("UseWCombo").GetValue<MenuBool>()) ||
+                         (harassActive && Config.Item("UseWHarass").GetValue<MenuBool>())) && W.IsReady())
                     {
                         var prediction = W.GetPrediction(target);
                         if (prediction.Hitchance >= HitChance.High)
@@ -235,22 +177,22 @@ namespace DaoHungAIO.Champions
                                 target.Distance(ObjectManager.Player))
                             {
                                 var cp =
-                                    ObjectManager.Player.Position.To2D()
-                                        .Extend(prediction.UnitPosition.To2D(), W.Range)
-                                        .To3D();
+                                    ObjectManager.Player.Position.ToVector2()
+                                        .Extend(prediction.UnitPosition.ToVector2(), W.Range)
+                                        .ToVector3();
                                 W.Cast(cp);
-                                UseSecondWT = Utils.TickCount;
+                                UseSecondWT = Variables.TickCount;
                             }
                         }
                     }
 
-                    if (((comboActive && Config.Item("UseECombo").GetValue<bool>()) ||
-                         (harassActive && Config.Item("UseEHarass").GetValue<bool>())) && E.IsReady())
+                    if (((comboActive && Config.Item("UseECombo").GetValue<MenuBool>()) ||
+                         (harassActive && Config.Item("UseEHarass").GetValue<MenuBool>())) && E.IsReady())
                     {
                         E.Cast(target, false, true);
                     }
 
-                    var useR = Config.Item("UseRCombo").GetValue<bool>();
+                    var useR = Config.Item("UseRCombo").GetValue<MenuBool>();
 
                     //R at close range
                     if (comboActive && useR && R.IsReady() &&
@@ -275,7 +217,7 @@ namespace DaoHungAIO.Champions
                                 ally.Distance(target) < 700)
                             {
                                 alliesarround++;
-                                if (Utils.TickCount - ally.LastCastedSpellT() < 1500)
+                                if (Variables.TickCount - ally.GetLastCastedSpell().EndTime < 1500)
                                 {
                                     n++;
                                 }
@@ -311,39 +253,39 @@ namespace DaoHungAIO.Champions
                 }
             }
 
-            if (Utils.TickCount - UseSecondWT < 500 &&
+            if (Variables.TickCount - UseSecondWT < 500 &&
                 ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).Name == "ziggswtoggle")
             {
                 W.Cast(ObjectManager.Player.Position, true);
             }
 
             //Farm
-            var lc = Config.Item("LaneClearActive").GetValue<KeyBind>().Active;
-            if (lc || Config.Item("FreezeActive").GetValue<KeyBind>().Active)
+            var lc = Config.Item("LaneClearActive").GetValue<MenuKeyBind>().Active;
+            if (lc || Config.Item("FreezeActive").GetValue<MenuKeyBind>().Active)
             {
                 Farm(lc);
             }
 
             //Jungle farm.
-            if (Config.Item("JungleFarmActive").GetValue<KeyBind>().Active)
+            if (Config.Item("JungleFarmActive").GetValue<MenuKeyBind>().Active)
             {
                 JungleFarm();
             }
 
             //W to mouse
-            var castToMouse = Config.Item("WToMouse").GetValue<KeyBind>().Active;
-            if (castToMouse || Utils.TickCount - LastWToMouseT < 400)
+            var castToMouse = Config.Item("WToMouse").GetValue<MenuKeyBind>().Active;
+            if (castToMouse || Variables.TickCount - LastWToMouseT < 400)
             {
-                var pos = ObjectManager.Player.Position.To2D().Extend(Game.CursorPos2D, -150).To3D();
+                var pos = ObjectManager.Player.Position.ToVector2().Extend(Game.CursorPos2D, -150).ToVector3();
                 W.Cast(pos, true);
                 if (castToMouse)
                 {
-                    LastWToMouseT = Utils.TickCount;
+                    LastWToMouseT = Variables.TickCount;
                 }
             }
 
             //Peel from melees
-            if (Config.Item("Peel").GetValue<bool>())
+            if (Config.Item("Peel").GetValue<MenuBool>())
             {
                 foreach (var pos in from enemy in ObjectManager.Get<AIHeroClient>()
                                     where
@@ -352,19 +294,19 @@ namespace DaoHungAIO.Champions
                                         enemy.BoundingRadius + enemy.AttackRange + ObjectManager.Player.BoundingRadius &&
                                         enemy.IsMelee
                                     let direction =
-                                        (enemy.Position.To2D() - ObjectManager.Player.Position.To2D()).Normalized()
-                                    let pos = ObjectManager.Player.Position.To2D()
+                                        (enemy.Position.ToVector2() - ObjectManager.Player.Position.ToVector2()).Normalized()
+                                    let pos = ObjectManager.Player.Position.ToVector2()
                                     select pos + Math.Min(200, Math.Max(50, enemy.Distance(ObjectManager.Player) / 2)) * direction)
                 {
-                    W.Cast(pos.To3D(), true);
-                    UseSecondWT = Utils.TickCount;
+                    W.Cast(pos.ToVector3(), true);
+                    UseSecondWT = Variables.TickCount;
                 }
             }
         }
 
         private static void CastQ(AIHeroClient target)
         {
-            PredictionOutput prediction;
+            SpellPrediction.PredictionOutput prediction;
 
             if (ObjectManager.Player.Distance(target) < Q1.Range)
             {
@@ -398,8 +340,8 @@ namespace DaoHungAIO.Champions
                     {
                         p = prediction.CastPosition -
                             100 *
-                            (prediction.CastPosition.To2D() - ObjectManager.Player.Position.To2D()).Normalized()
-                                .To3D();
+                            (prediction.CastPosition.ToVector2() - ObjectManager.Player.Position.ToVector2()).Normalized()
+                                .ToVector3();
                     }
                     else
                     {
@@ -411,24 +353,24 @@ namespace DaoHungAIO.Champions
                 else if (ObjectManager.Player.Position.Distance(prediction.CastPosition) <=
                          ((Q1.Range + Q2.Range) / 2))
                 {
-                    var p = ObjectManager.Player.Position.To2D()
-                        .Extend(prediction.CastPosition.To2D(), Q1.Range - 100);
+                    var p = ObjectManager.Player.Position.ToVector2()
+                        .Extend(prediction.CastPosition.ToVector2(), Q1.Range - 100);
 
-                    if (!CheckQCollision(target, prediction.UnitPosition, p.To3D()))
+                    if (!CheckQCollision(target, prediction.UnitPosition, p.ToVector3()))
                     {
-                        Q1.Cast(p.To3D());
+                        Q1.Cast(p.ToVector3());
                     }
                 }
                 else
                 {
-                    var p = ObjectManager.Player.Position.To2D() +
+                    var p = ObjectManager.Player.Position.ToVector2() +
                             Q1.Range *
-                            (prediction.CastPosition.To2D() - ObjectManager.Player.Position.To2D()).Normalized
+                            (prediction.CastPosition.ToVector2() - ObjectManager.Player.Position.ToVector2()).Normalized
                                 ();
 
-                    if (!CheckQCollision(target, prediction.UnitPosition, p.To3D()))
+                    if (!CheckQCollision(target, prediction.UnitPosition, p.ToVector3()))
                     {
-                        Q1.Cast(p.To3D());
+                        Q1.Cast(p.ToVector3());
                     }
                 }
             }
@@ -436,17 +378,17 @@ namespace DaoHungAIO.Champions
 
         private static bool CheckQCollision(AIBaseClient target, Vector3 targetPosition, Vector3 castPosition)
         {
-            var direction = (castPosition.To2D() - ObjectManager.Player.Position.To2D()).Normalized();
-            var firstBouncePosition = castPosition.To2D();
+            var direction = (castPosition.ToVector2() - ObjectManager.Player.Position.ToVector2()).Normalized();
+            var firstBouncePosition = castPosition.ToVector2();
             var secondBouncePosition = firstBouncePosition +
                                        direction * 0.4f *
-                                       ObjectManager.Player.Position.To2D().Distance(firstBouncePosition);
+                                       ObjectManager.Player.Position.ToVector2().Distance(firstBouncePosition);
             var thirdBouncePosition = secondBouncePosition +
                                       direction * 0.6f * firstBouncePosition.Distance(secondBouncePosition);
 
             //TODO: Check for wall collision.
 
-            if (thirdBouncePosition.Distance(targetPosition.To2D()) < Q1.Width + target.BoundingRadius)
+            if (thirdBouncePosition.Distance(targetPosition.ToVector2()) < Q1.Width + target.BoundingRadius)
             {
                 //Check the second one.
                 foreach (var minion in ObjectManager.Get<AIMinionClient>())
@@ -454,7 +396,7 @@ namespace DaoHungAIO.Champions
                     if (minion.IsValidTarget(3000))
                     {
                         var predictedPos = Q2.GetPrediction(minion);
-                        if (predictedPos.UnitPosition.To2D().Distance(secondBouncePosition) <
+                        if (predictedPos.UnitPosition.ToVector2().Distance(secondBouncePosition) <
                             Q2.Width + minion.BoundingRadius)
                         {
                             return true;
@@ -463,8 +405,8 @@ namespace DaoHungAIO.Champions
                 }
             }
 
-            if (secondBouncePosition.Distance(targetPosition.To2D()) < Q1.Width + target.BoundingRadius ||
-                thirdBouncePosition.Distance(targetPosition.To2D()) < Q1.Width + target.BoundingRadius)
+            if (secondBouncePosition.Distance(targetPosition.ToVector2()) < Q1.Width + target.BoundingRadius ||
+                thirdBouncePosition.Distance(targetPosition.ToVector2()) < Q1.Width + target.BoundingRadius)
             {
                 //Check the first one
                 foreach (var minion in ObjectManager.Get<AIMinionClient>())
@@ -472,7 +414,7 @@ namespace DaoHungAIO.Champions
                     if (minion.IsValidTarget(3000))
                     {
                         var predictedPos = Q1.GetPrediction(minion);
-                        if (predictedPos.UnitPosition.To2D().Distance(firstBouncePosition) <
+                        if (predictedPos.UnitPosition.ToVector2().Distance(firstBouncePosition) <
                             Q1.Width + minion.BoundingRadius)
                         {
                             return true;
@@ -488,23 +430,23 @@ namespace DaoHungAIO.Champions
 
         private static void Farm(bool laneClear)
         {
-            if (!Orbwalking.CanMove(40))
+            if (!Orbwalker.CanMove())
             {
                 return;
             }
-            if (Config.Item("ManaSliderFarm").GetValue<Slider>().Value >
+            if (Config.Item("ManaSliderFarm").GetValue<MenuSlider>().Value >
                 ObjectManager.Player.Mana / ObjectManager.Player.MaxMana * 100)
             {
                 return;
             }
 
-            var rangedMinions = MinionManager.GetMinions(
+            var rangedMinions = GameObjects.GetMinions(
                 ObjectManager.Player.Position, Q2.Range, MinionTypes.Ranged);
-            var allMinions = MinionManager.GetMinions(ObjectManager.Player.Position, Q2.Range);
+            var allMinions = GameObjects.GetMinions(ObjectManager.Player.Position, Q2.Range);
 
-            var useQi = Config.Item("UseQFarm").GetValue<StringList>().SelectedIndex;
-            var useWi = Config.Item("UseWFarm").GetValue<StringList>().SelectedIndex;
-            var useEi = Config.Item("UseEFarm").GetValue<StringList>().SelectedIndex;
+            var useQi = Array.IndexOf(Config.Item("UseQFarm").GetValue<MenuList>().Items, Config.Item("UseQFarm").GetValue<MenuList>().SelectedValue);
+            var useWi = Array.IndexOf(Config.Item("UseWFarm").GetValue<MenuList>().Items, Config.Item("UseWFarm").GetValue<MenuList>().SelectedValue);
+            var useEi = Array.IndexOf(Config.Item("UseEFarm").GetValue<MenuList>().Items, Config.Item("UseEFarm").GetValue<MenuList>().SelectedValue);
             var useQ = (laneClear && (useQi == 1 || useQi == 2)) || (!laneClear && (useQi == 0 || useQi == 2));
             var useW = (laneClear && (useWi == 1 || useWi == 2)) || (!laneClear && (useWi == 0 || useWi == 2));
             var useE = (laneClear && (useEi == 1 || useEi == 2)) || (!laneClear && (useEi == 0 || useEi == 2));
@@ -520,7 +462,7 @@ namespace DaoHungAIO.Champions
 
                     if (bLocation.MinionsHit > 0)
                     {
-                        Q2.Cast(bLocation.Position.To3D());
+                        Q2.Cast(bLocation.Position.ToVector3());
                     }
                 }
 
@@ -546,7 +488,7 @@ namespace DaoHungAIO.Champions
 
                     if (bLocation.MinionsHit > 2)
                     {
-                        E.Cast(bLocation.Position.To3D());
+                        E.Cast(bLocation.Position.ToVector3());
                     }
                 }
             }
@@ -556,7 +498,7 @@ namespace DaoHungAIO.Champions
                 {
                     foreach (var minion in allMinions)
                     {
-                        if (!Orbwalking.InAutoAttackRange(minion))
+                        if (!minion.InAutoAttackRange())
                         {
                             var Qdamage = ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q) * 0.75;
 
@@ -577,7 +519,7 @@ namespace DaoHungAIO.Champions
 
                     if (bLocation.MinionsHit > 2)
                     {
-                        E.Cast(bLocation.Position.To3D());
+                        E.Cast(bLocation.Position.ToVector3());
                     }
                 }
             }
@@ -585,12 +527,12 @@ namespace DaoHungAIO.Champions
 
         private static void JungleFarm()
         {
-            var useQ = Config.Item("UseQJFarm").GetValue<bool>();
-            var useE = Config.Item("UseEJFarm").GetValue<bool>();
+            var useQ = Config.Item("UseQJFarm").GetValue<MenuBool>();
+            var useE = Config.Item("UseEJFarm").GetValue<MenuBool>();
 
-            var mobs = MinionManager.GetMinions(
-                ObjectManager.Player.Position, Q1.Range, MinionTypes.All, MinionTeam.Neutral,
-                MinionOrderTypes.MaxHealth);
+            var mobs = GameObjects.GetJungles(
+                ObjectManager.Player.Position, Q1.Range, JungleType.All,
+                JungleOrderTypes.MaxHealth);
 
             if (mobs.Count > 0)
             {

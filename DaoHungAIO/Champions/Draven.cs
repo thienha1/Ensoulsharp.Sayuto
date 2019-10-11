@@ -575,7 +575,7 @@ namespace DaoHungAIO.Champions
                 return;
             }
 
-            var bestLocation = E.GetLineFarmLocation(MinionManager.GetMinions(E.Range));
+            var bestLocation = E.GetLineFarmLocation(GameObjects.GetMinions(E.Range));
 
             if (bestLocation.MinionsHit > 1)
             {

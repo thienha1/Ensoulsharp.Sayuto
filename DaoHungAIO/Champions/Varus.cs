@@ -13,6 +13,8 @@ using static SPrediction.MinionManager;
 using MinionTypes = EnsoulSharp.SDK.MinionTypes;
 using EnsoulSharp.SDK.Utility;
 using System.Drawing;
+using MinionTeam = SPrediction.MinionManager.MinionTeam;
+using MinionOrderTypes = SPrediction.MinionManager.MinionOrderTypes;
 
 namespace DaoHungAIO.Champions
 {

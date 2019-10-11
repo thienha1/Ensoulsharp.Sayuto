@@ -333,7 +333,7 @@ namespace DaoHungAIO.Champions
             }
             if (LaneClear && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value && Config["Farm"].GetValue<MenuBool>("farmW") && Player.Mana > RMANA + WMANA)
             {
-                var minionList = MinionManager.GetMinions(Player.Position, W.Range);
+                var minionList = GameObjects.GetMinions(Player.Position, W.Range);
                 var farmPosition = W.GetLineFarmLocation(minionList, W.Width);
 
                 if (farmPosition.MinionsHit >= Config["Farm"].GetValue<MenuSlider>("LCminions").Value)
@@ -388,7 +388,7 @@ namespace DaoHungAIO.Champions
             }
             else if (LaneClear && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value && Config["Farm"].GetValue<MenuBool>("farmE"))
             {
-                var minionList = MinionManager.GetMinions(Player.Position, E.Range);
+                var minionList = GameObjects.GetMinions(Player.Position, E.Range);
                 var farmPosition = E.GetCircularFarmLocation(minionList, E.Width);
 
                 if (farmPosition.MinionsHit >= Config["Farm"].GetValue<MenuSlider>("LCminions").Value)
@@ -435,7 +435,7 @@ namespace DaoHungAIO.Champions
             }
             if (LaneClear && Player.ManaPercent > Config["Farm"].GetValue<MenuSlider>("Mana").Value && Config["Farm"].GetValue<MenuBool>("farmQ"))
             {
-                var minionList = MinionManager.GetMinions(Player.Position, Q.Range);
+                var minionList = GameObjects.GetMinions(Player.Position, Q.Range);
 
                 if (minionList.Count >= Config["Farm"].GetValue<MenuSlider>("LCminions").Value)
                 {
@@ -468,7 +468,7 @@ namespace DaoHungAIO.Champions
         {
             if (LaneClear)
             {
-                var mobs = MinionManager.GetMinions(Q.Range, MinionManager.MinionTypes.All, MinionTeam.Neutral);
+                var mobs = GameObjects.GetJungles(Q.Range, JungleType.All);
                 if (mobs.Count > 0)
                 {
                     var mob = mobs[0];

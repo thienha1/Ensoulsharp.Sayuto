@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using Color = System.Drawing.Color;
 using System.Linq;
 using EnsoulSharp;
-using EnsoulSharp.Common;
 using SharpDX;
+using EnsoulSharp.SDK;
+using EnsoulSharp.SDK.Prediction;
+using EnsoulSharp.SDK.MenuUI;
+using EnsoulSharp.SDK.Utility;
+using EnsoulSharp.SDK.MenuUI.Values;
+using Keys = System.Windows.Forms.Keys;
 
 namespace DaoHungAIO.Champions
 {
@@ -12,7 +17,7 @@ namespace DaoHungAIO.Champions
     {
         public const string ChampionName = "Ekko";
 
-        public static Orbwalking.Orbwalker Orbwalker;
+        //public static Orbwalking.Orbwalker Orbwalker;
 
         public static List<Spell> SpellList = new List<Spell>();
 
@@ -53,8 +58,8 @@ namespace DaoHungAIO.Champions
             E = new Spell(SpellSlot.E, 400f);
             R = new Spell(SpellSlot.R, 400f);
 
-            Q.SetSkillshot(0.25f, 60f, 2200f, false, SkillshotType.SkillshotLine);
-            W.SetSkillshot(0.5f, 500f, 1000f, false, SkillshotType.SkillshotCircle);
+            Q.SetSkillshot(0.25f, 60f, 2200f, false, SkillshotType.Line);
+            W.SetSkillshot(0.5f, 500f, 1000f, false, SkillshotType.Circle);
 
             var ignite = Player.Spellbook.Spells.FirstOrDefault(spell => spell.Name == "summonerdot");
             if (ignite != null)
@@ -72,86 +77,86 @@ namespace DaoHungAIO.Champions
 
             Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
 
-            var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
-            TargetSelector.AddToMenu(targetSelectorMenu);
-            Config.AddSubMenu(targetSelectorMenu);
+            //var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
+            //TargetSelector.AddToMenu(targetSelectorMenu);
+            //Config.AddSubMenu(targetSelectorMenu);
 
-            Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
+            //Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
             Config.AddSubMenu(new Menu("Combo", "Combo"));
             Config.SubMenu("Combo").AddSubMenu(new Menu("KS Mode", "KS Mode"));
-            Config.SubMenu("Combo").SubMenu("KS Mode").AddItem(new MenuItem("Ekko.UseIgniteKS", "KS With Ignite").SetValue(true));
-            Config.SubMenu("Combo").SubMenu("KS Mode").AddItem(new MenuItem("Ekko.UseQKS", "KS With Q").SetValue(true));
-            Config.SubMenu("Combo").SubMenu("KS Mode").AddItem(new MenuItem("Ekko.UseEKS", "KS With E").SetValue(true));
+            Config.SubMenu("Combo").SubMenu("KS Mode").AddItem(new MenuBool("Ekko.UseIgniteKS", "KS With Ignite").SetValue(true));
+            Config.SubMenu("Combo").SubMenu("KS Mode").AddItem(new MenuBool("Ekko.UseQKS", "KS With Q").SetValue(true));
+            Config.SubMenu("Combo").SubMenu("KS Mode").AddItem(new MenuBool("Ekko.UseEKS", "KS With E").SetValue(true));
             Config.SubMenu("Combo").AddSubMenu(new Menu("Auto R", "Auto R"));
-            Config.SubMenu("Combo").SubMenu("Auto R").AddItem(new MenuItem("Ekko.RAuto", "Use Auto R").SetValue(true));
+            Config.SubMenu("Combo").SubMenu("Auto R").AddItem(new MenuBool("Ekko.RAuto", "Use Auto R").SetValue(true));
             Config.SubMenu("Combo").SubMenu("Auto R").AddSubMenu(new Menu("R Auto Settings", "R Auto Settings"));
-            Config.SubMenu("Combo").SubMenu("Auto R").SubMenu("R Auto Settings").AddItem(new MenuItem("Ekko.UseBurstRComboAuto", "Use Burst Mode R In Auto R").SetValue(true));
-            Config.SubMenu("Combo").SubMenu("Auto R").SubMenu("R Auto Settings").AddItem(new MenuItem("Ekko.MinimumHPBurstRAuto", "Minimum HP Percent To Use Burst Mode R In Auto R").SetValue(new Slider(40, 0, 100)));
-            Config.SubMenu("Combo").SubMenu("Auto R").SubMenu("R Auto Settings").AddItem(new MenuItem("Ekko.MinimumEnemiesBurstRAuto", "Minimum Enemies in R Range To Use Burst Mode R In Auto R").SetValue(new Slider(2, 1, 5)));
-            Config.SubMenu("Combo").SubMenu("Auto R").SubMenu("R Auto Settings").AddItem(new MenuItem("Ekko.MinimumEnemiesDrangeRAuto", "Maximum Enemies in Dangerous Range Around R Swap Position (Enemies In R Range Included)").SetValue(new Slider(3, 1, 5)));
-            Config.SubMenu("Combo").SubMenu("Auto R").SubMenu("R Auto Settings").AddItem(new MenuItem("Ekko.UseSafeRComboAuto", "Use Safe Mode R In Auto R").SetValue(true));
-            Config.SubMenu("Combo").SubMenu("Auto R").SubMenu("R Auto Settings").AddItem(new MenuItem("Ekko.MinimumHPSafeRAuto", "Minimum HP Percent To Use Safe Mode R In Auto R").SetValue(new Slider(20, 0, 100)));
-            Config.SubMenu("Combo").AddItem(new MenuItem("Ekko.UseQCombo", "Use Q In Combo").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("Ekko.UseWCombo", "Use W In Combo").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("Ekko.UseECombo", "Use E In Combo").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("Ekko.UseRCombo", "Use R In Combo").SetValue(true));
+            Config.SubMenu("Combo").SubMenu("Auto R").SubMenu("R Auto Settings").AddItem(new MenuBool("Ekko.UseBurstRComboAuto", "Use Burst Mode R In Auto R").SetValue(true));
+            Config.SubMenu("Combo").SubMenu("Auto R").SubMenu("R Auto Settings").AddItem(new MenuSlider("Ekko.MinimumHPBurstRAuto", "Minimum HP Percent To Use Burst Mode R In Auto R").SetValue(new Slider(40, 0, 100)));
+            Config.SubMenu("Combo").SubMenu("Auto R").SubMenu("R Auto Settings").AddItem(new MenuSlider("Ekko.MinimumEnemiesBurstRAuto", "Minimum Enemies in R Range To Use Burst Mode R In Auto R").SetValue(new Slider(2, 1, 5)));
+            Config.SubMenu("Combo").SubMenu("Auto R").SubMenu("R Auto Settings").AddItem(new MenuSlider("Ekko.MinimumEnemiesDrangeRAuto", "Maximum Enemies in Dangerous Range Around R Swap Position (Enemies In R Range Included)").SetValue(new Slider(3, 1, 5)));
+            Config.SubMenu("Combo").SubMenu("Auto R").SubMenu("R Auto Settings").AddItem(new MenuBool("Ekko.UseSafeRComboAuto", "Use Safe Mode R In Auto R").SetValue(true));
+            Config.SubMenu("Combo").SubMenu("Auto R").SubMenu("R Auto Settings").AddItem(new MenuSlider("Ekko.MinimumHPSafeRAuto", "Minimum HP Percent To Use Safe Mode R In Auto R").SetValue(new Slider(20, 0, 100)));
+            Config.SubMenu("Combo").AddItem(new MenuBool("Ekko.UseQCombo", "Use Q In Combo").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuBool("Ekko.UseWCombo", "Use W In Combo").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuBool("Ekko.UseECombo", "Use E In Combo").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuBool("Ekko.UseRCombo", "Use R In Combo").SetValue(true));
             Config.SubMenu("Combo").AddSubMenu(new Menu("Items Activator", "Items Activator"));
             Config.SubMenu("Combo").SubMenu("Items Activator").AddSubMenu(new Menu("Use Zhonya's Hourglass", "Use Zhonya's Hourglass"));
-            Config.SubMenu("Combo").SubMenu("Items Activator").SubMenu("Use Zhonya's Hourglass").AddItem(new MenuItem("Ekko.useZhonyasHourglass", "Use Zhonya's Hourglass").SetValue(true));
-            Config.SubMenu("Combo").SubMenu("Items Activator").SubMenu("Use Zhonya's Hourglass").AddItem(new MenuItem("Ekko.MinimumHPtoZhonyasHourglass", "Minimum Health Percent To Use Zhonya's Hourglass").SetValue(new Slider(30, 0, 100)));
+            Config.SubMenu("Combo").SubMenu("Items Activator").SubMenu("Use Zhonya's Hourglass").AddItem(new MenuBool("Ekko.useZhonyasHourglass", "Use Zhonya's Hourglass").SetValue(true));
+            Config.SubMenu("Combo").SubMenu("Items Activator").SubMenu("Use Zhonya's Hourglass").AddItem(new MenuSlider("Ekko.MinimumHPtoZhonyasHourglass", "Minimum Health Percent To Use Zhonya's Hourglass").SetValue(new Slider(30, 0, 100)));
             Config.SubMenu("Combo").SubMenu("Items Activator").AddSubMenu(new Menu("Use Wooglet's Witchcap", "Use Wooglet's Witchcap"));
-            Config.SubMenu("Combo").SubMenu("Items Activator").SubMenu("Use Wooglet's Witchcap").AddItem(new MenuItem("Ekko.useWoogletsWitchcap", "Use Wooglet's Witchcap").SetValue(true));
-            Config.SubMenu("Combo").SubMenu("Items Activator").SubMenu("Use Wooglet's Witchcap").AddItem(new MenuItem("Ekko.MinimumHPtoWoogletsWitchcap", "Minimum Health Percent To Use Wooglet's Witchcap").SetValue(new Slider(30, 0, 100)));
-            Config.SubMenu("Combo").AddItem(new MenuItem("Ekko.AutoWOnStunTarget", "Auto Use W On Stunned Target").SetValue(true));
+            Config.SubMenu("Combo").SubMenu("Items Activator").SubMenu("Use Wooglet's Witchcap").AddItem(new MenuBool("Ekko.useWoogletsWitchcap", "Use Wooglet's Witchcap").SetValue(true));
+            Config.SubMenu("Combo").SubMenu("Items Activator").SubMenu("Use Wooglet's Witchcap").AddItem(new MenuSlider("Ekko.MinimumHPtoWoogletsWitchcap", "Minimum Health Percent To Use Wooglet's Witchcap").SetValue(new Slider(30, 0, 100)));
+            Config.SubMenu("Combo").AddItem(new MenuBool("Ekko.AutoWOnStunTarget", "Auto Use W On Stunned Target").SetValue(true));
 
             Config.AddSubMenu(new Menu("Harass", "Harass"));
-            Config.SubMenu("Harass").AddItem(new MenuItem("Ekko.UseQHarass", "Use Q In Harass").SetValue(true));
-            Config.SubMenu("Harass").AddItem(new MenuItem("Ekko.QMiniManaHarass", "Minimum Mana To Use Q In Harass").SetValue(new Slider(0, 0, 100)));
-            Config.SubMenu("Harass").AddItem(new MenuItem("Ekko.QWhenEnemyCastHarass", "Use Q On Enemy AA/Spell In Harass").SetValue(true));
-            Config.SubMenu("Harass").AddItem(new MenuItem("Ekko.UseEHarass", "Use E In Harass When 2 Stack On Target").SetValue(true));
-            Config.SubMenu("Harass").AddItem(new MenuItem("Ekko.EMiniManaHarass", "Minimum Mana To Use E In Harass").SetValue(new Slider(0, 0, 100)));
-            Config.SubMenu("Harass").AddItem(new MenuItem("Ekko.HarassActive", "Harass!").SetValue(new KeyBind("C".ToCharArray()[0], KeyBindType.Press)));
-            Config.SubMenu("Harass").AddItem(new MenuItem("Ekko.HarassActiveT", "Harass (toggle)!").SetValue(new KeyBind("Y".ToCharArray()[0], KeyBindType.Toggle)));
+            Config.SubMenu("Harass").AddItem(new MenuBool("Ekko.UseQHarass", "Use Q In Harass").SetValue(true));
+            Config.SubMenu("Harass").AddItem(new MenuSlider("Ekko.QMiniManaHarass", "Minimum Mana To Use Q In Harass").SetValue(new Slider(0, 0, 100)));
+            Config.SubMenu("Harass").AddItem(new MenuBool("Ekko.QWhenEnemyCastHarass", "Use Q On Enemy AA/Spell In Harass").SetValue(true));
+            Config.SubMenu("Harass").AddItem(new MenuBool("Ekko.UseEHarass", "Use E In Harass When 2 Stack On Target").SetValue(true));
+            Config.SubMenu("Harass").AddItem(new MenuSlider("Ekko.EMiniManaHarass", "Minimum Mana To Use E In Harass").SetValue(new Slider(0, 0, 100)));
+            Config.SubMenu("Harass").AddItem(new MenuKeyBind("Ekko.HarassActive", "Harass!", Keys.C, KeyBindType.Press));
+            Config.SubMenu("Harass").AddItem(new MenuKeyBind("Ekko.HarassActiveT", "Harass (toggle)!", Keys.Y, KeyBindType.Toggle));
 
             Config.AddSubMenu(new Menu("LaneClear", "LaneClear"));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("Ekko.UseQLaneClear", "Use Q in LaneClear").SetValue(true));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("Ekko.QMiniManaLaneClear", "Minimum Mana To Use Q In LaneClear").SetValue(new Slider(30, 0, 100)));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("Ekko.QLaneClearCount", "Minimum Minion To Use Q In LaneClear").SetValue(new Slider(3, 1, 6)));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("Ekko.UseWLaneClear", "Use W in LaneClear").SetValue(true));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("Ekko.WMiniManaLaneClear", "Minimum Mana To Use W In LaneClear").SetValue(new Slider(70, 0, 100)));
-            Config.SubMenu("LaneClear").AddItem(new MenuItem("Ekko.WLaneClearCount", "Minimum Minion To Use W In LaneClear").SetValue(new Slider(4, 1, 6)));
+            Config.SubMenu("LaneClear").AddItem(new MenuBool("Ekko.UseQLaneClear", "Use Q in LaneClear").SetValue(true));
+            Config.SubMenu("LaneClear").AddItem(new MenuSlider("Ekko.QMiniManaLaneClear", "Minimum Mana To Use Q In LaneClear").SetValue(new Slider(30, 0, 100)));
+            Config.SubMenu("LaneClear").AddItem(new MenuSlider("Ekko.QLaneClearCount", "Minimum Minion To Use Q In LaneClear").SetValue(new Slider(3, 1, 6)));
+            Config.SubMenu("LaneClear").AddItem(new MenuBool("Ekko.UseWLaneClear", "Use W in LaneClear").SetValue(true));
+            Config.SubMenu("LaneClear").AddItem(new MenuSlider("Ekko.WMiniManaLaneClear", "Minimum Mana To Use W In LaneClear").SetValue(new Slider(70, 0, 100)));
+            Config.SubMenu("LaneClear").AddItem(new MenuSlider("Ekko.WLaneClearCount", "Minimum Minion To Use W In LaneClear").SetValue(new Slider(4, 1, 6)));
 
             Config.AddSubMenu(new Menu("JungleClear", "JungleClear"));
-            Config.SubMenu("JungleClear").AddItem(new MenuItem("Ekko.UseQJungleClear", "Use Q In JungleClear").SetValue(true));
-            Config.SubMenu("JungleClear").AddItem(new MenuItem("Ekko.QMiniManaJungleClear", "Minimum Mana To Use Q In JungleClear").SetValue(new Slider(0, 0, 100)));
-            Config.SubMenu("JungleClear").AddItem(new MenuItem("Ekko.UseWJungleClear", "Use W In JungleClear").SetValue(true));
-            Config.SubMenu("JungleClear").AddItem(new MenuItem("Ekko.WMiniManaJungleClear", "Minimum Mana To Use W In JungleClear").SetValue(new Slider(0, 0, 100)));
-            Config.SubMenu("JungleClear").AddItem(new MenuItem("Ekko.UseEJungleClear", "Use E In JungleClear").SetValue(true));
-            Config.SubMenu("JungleClear").AddItem(new MenuItem("Ekko.EMiniManaJungleClear", "Minimum Mana To Use E In JungleClear").SetValue(new Slider(0, 0, 100)));
-            Config.SubMenu("JungleClear").AddItem(new MenuItem("Ekko.SafeJungleClear", "Dont Use Spell In Jungle Clear If Enemy in Dangerous Range").SetValue(true));
+            Config.SubMenu("JungleClear").AddItem(new MenuBool("Ekko.UseQJungleClear", "Use Q In JungleClear").SetValue(true));
+            Config.SubMenu("JungleClear").AddItem(new MenuSlider("Ekko.QMiniManaJungleClear", "Minimum Mana To Use Q In JungleClear").SetValue(new Slider(0, 0, 100)));
+            Config.SubMenu("JungleClear").AddItem(new MenuBool("Ekko.UseWJungleClear", "Use W In JungleClear").SetValue(true));
+            Config.SubMenu("JungleClear").AddItem(new MenuSlider("Ekko.WMiniManaJungleClear", "Minimum Mana To Use W In JungleClear").SetValue(new Slider(0, 0, 100)));
+            Config.SubMenu("JungleClear").AddItem(new MenuBool("Ekko.UseEJungleClear", "Use E In JungleClear").SetValue(true));
+            Config.SubMenu("JungleClear").AddItem(new MenuSlider("Ekko.EMiniManaJungleClear", "Minimum Mana To Use E In JungleClear").SetValue(new Slider(0, 0, 100)));
+            Config.SubMenu("JungleClear").AddItem(new MenuBool("Ekko.SafeJungleClear", "Dont Use Spell In Jungle Clear If Enemy in Dangerous Range").SetValue(true));
 
             Config.AddSubMenu(new Menu("Misc", "Misc"));
-            Config.SubMenu("Misc").AddItem(new MenuItem("Ekko.WInterrupt", "Interrupt Spells With W").SetValue(true));
-            Config.SubMenu("Misc").AddItem(new MenuItem("Ekko.AutoQEGC", "Auto Q On Gapclosers").SetValue(true));
-            Config.SubMenu("Misc").AddItem(new MenuItem("Ekko.AutoWEGC", "Auto W On Gapclosers").SetValue(true));
-            Config.SubMenu("Misc").AddItem(new MenuItem("Ekko.AutoPotion", "Use Auto Potion").SetValue(true));
-            Config.SubMenu("Misc").AddItem(new MenuItem("Ekko.AutoLevelSpell", "Auto Level Spell").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuBool("Ekko.WInterrupt", "Interrupt Spells With W").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuBool("Ekko.AutoQEGC", "Auto Q On Gapclosers").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuBool("Ekko.AutoWEGC", "Auto W On Gapclosers").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuBool("Ekko.AutoPotion", "Use Auto Potion").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuBool("Ekko.AutoLevelSpell", "Auto Level Spell").SetValue(true));
 
             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q range").SetValue(new Circle(true, Color.Indigo)));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("WRange", "W range").SetValue(new Circle(true, Color.Green)));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E range").SetValue(new Circle(true, Color.Green)));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("RRange", "R range").SetValue(new Circle(true, Color.Gold)));
-            Config.SubMenu("Drawings").AddItem(new MenuItem("DrawOrbwalkTarget", "Draw Orbwalk target").SetValue(true));
+            Config.SubMenu("Drawings").AddSpellDraw(SpellSlot.Q);
+            Config.SubMenu("Drawings").AddSpellDraw(SpellSlot.W);
+            Config.SubMenu("Drawings").AddSpellDraw(SpellSlot.E);
+            Config.SubMenu("Drawings").AddSpellDraw(SpellSlot.R);
+            Config.SubMenu("Drawings").AddItem(new MenuBool("DrawOrbwalkTarget", "Draw Orbwalk target").SetValue(true));
 
 
             Game.OnTick += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             AIBaseClient.OnProcessSpellCast += AIBaseClient_OnProcessSpellCast;
-            Gapclosers.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
+            Gapcloser.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
-            CustomEvents.Unit.OnDash += Unit_OnDash;
+            Dash.OnDash += Unit_OnDash;
 
         }
 
@@ -159,7 +164,7 @@ namespace DaoHungAIO.Champions
         public static void Game_OnGameUpdate(EventArgs args)
         {
             EkkoUlt = ObjectManager.Get<EffectEmitter>().FirstOrDefault(x => x.Name.Contains("TrailEnd"));
-            if (Config.Item("Ekko.AutoLevelSpell").GetValue<bool>()) LevelUpSpells();
+            if (Config.Item("Ekko.AutoLevelSpell").GetValue<MenuBool>().Enabled) LevelUpSpells();
 
             if (Player.IsDead) return;
 
@@ -172,19 +177,19 @@ namespace DaoHungAIO.Champions
 
             #region Sort R Auto
 
-            if (Config.Item("Ekko.RAuto").GetValue<bool>() && R.IsReady())
+            if (Config.Item("Ekko.RAuto").GetValue<MenuBool>().Enabled && R.IsReady())
             {
-                if (Config.Item("Ekko.UseBurstRComboAuto").GetValue<bool>() && Player.HealthPercent >= Config.Item("Ekko.MinimumHPBurstRAuto").GetValue<Slider>().Value)
+                if (Config.Item("Ekko.UseBurstRComboAuto").GetValue<MenuBool>().Enabled && Player.HealthPercent >= Config.Item("Ekko.MinimumHPBurstRAuto").GetValue<MenuSlider>().Value)
                 {
                     var EnemiesCNoDash = HeroManager.Enemies.Where(x => x.IsValid<AIHeroClient>() && x.IsValidTarget() && !x.IsDead && x.Distance(EkkoUlt.Position) < 400 && getComboDamageUlt(x) > x.Health).Count();
                     var CountEnemiesIn800 = HeroManager.Enemies.Where(x => x.IsValid<AIHeroClient>() && x.IsValidTarget() && !x.IsDead && x.Distance(EkkoUlt.Position) < 800).Count();
-                    
+
                     //var CountAlliesIn1000 = ObjectManager.Get<AIHeroClient>().Where(i => i.IsAlly).ToList().Count(x => x.IsValid<AIHeroClient>() && x.IsValidTarget() && !x.IsDead && x.Distance(EkkoUlt.Position) < 1000);
 
-                    var target = TargetSelector.GetTarget(850, TargetSelector.DamageType.Magical);
+                    var target = TargetSelector.GetTarget(850, DamageType.Magical);
                     if (Player.CountEnemiesInRange(850) == 0 || getComboDamageNoUlt(target) < target.Health)
                     {
-                        if (EnemiesCNoDash >= Config.Item("Ekko.MinimumEnemiesBurstRAuto").GetValue<Slider>().Value && CountEnemiesIn800 <= Config.Item("Ekko.MinimumEnemiesDrangeRAuto").GetValue<Slider>().Value)
+                        if (EnemiesCNoDash >= Config.Item("Ekko.MinimumEnemiesBurstRAuto").GetValue<MenuSlider>().Value && CountEnemiesIn800 <= Config.Item("Ekko.MinimumEnemiesDrangeRAuto").GetValue<MenuSlider>().Value)
                         {
                             R.Cast();
                         }
@@ -194,27 +199,27 @@ namespace DaoHungAIO.Champions
             }
             #endregion
 
-            if (Config.Item("Ekko.AutoWOnStunTarget").GetValue<bool>())
+            if (Config.Item("Ekko.AutoWOnStunTarget").GetValue<MenuBool>().Enabled)
             {
-                var target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Magical);
+                var target = TargetSelector.GetTarget(W.Range, DamageType.Magical);
                 if (target.IsValidTarget() && target.HasBuffOfType(BuffType.Stun) && Player.Distance(target) < W.Range)
                 {
                     W.CastIfHitchanceEquals(target, HitChance.High, true);
                 }
             }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (Orbwalker.ActiveMode == OrbwalkerMode.Combo)
             {
                 Combo();
             }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
+            if (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear)
             {
                 JungleClear();
                 LaneClear();
             }
 
-            if (Config.Item("Ekko.HarassActive").GetValue<KeyBind>().Active || Config.Item("Ekko.HarassActiveT").GetValue<KeyBind>().Active)
+            if (Config.Item("Ekko.HarassActive").GetValue<MenuKeyBind>().Active || Config.Item("Ekko.HarassActiveT").GetValue<MenuKeyBind>().Active)
             {
                 Harass();
             }
@@ -223,10 +228,7 @@ namespace DaoHungAIO.Champions
         #endregion
 
         #region Interupt OnProcessSpellCast
-        public static void AIBaseClient_OnProcessSpellCast(
-    AIBaseClient unit,
-    AIBaseClientProcessSpellCastEventArgs args
-)
+        public static void AIBaseClient_OnProcessSpellCast(AIBaseClient unit, AIBaseClientProcessSpellCastEventArgs args)
         {
             if (unit == null || args == null)
                 return;
@@ -234,16 +236,16 @@ namespace DaoHungAIO.Champions
             if (unit.Team != ObjectManager.Player.Team && ShouldUseOn >= 0f && unit.IsValidTarget(Q.Range))
             {
 
-                if (Config.Item("Ekko.WInterrupt").GetValue<bool>() && W.IsReady() && Player.Mana >= WMANA && Player.Distance(unit) <= W.Range)
+                if (Config.Item("Ekko.WInterrupt").GetValue<MenuBool>().Enabled && W.IsReady() && Player.Mana >= WMANA && Player.Distance(unit) <= W.Range)
                 {
                     W.CastIfHitchanceEquals(unit, HitChance.High, true);
                 }
 
             }
 
-            if (Config.Item("Ekko.RAuto").GetValue<bool>() && R.IsReady())
+            if (Config.Item("Ekko.RAuto").GetValue<MenuBool>().Enabled && R.IsReady())
             {
-                if (Config.Item("Ekko.UseSafeRComboAuto").GetValue<bool>() && Player.HealthPercent <= Config.Item("Ekko.MinimumHPSafeRAuto").GetValue<Slider>().Value)
+                if (Config.Item("Ekko.UseSafeRComboAuto").GetValue<MenuBool>().Enabled && Player.HealthPercent <= Config.Item("Ekko.MinimumHPSafeRAuto").GetValue<MenuSlider>().Value)
                 {
                     if ((unit is AIHeroClient || unit is AITurretClient) && unit.IsEnemy && ((args.Target != null && args.Target.IsMe) || args.End.Distance(Player) < args.SData.CastRadius))
                     {
@@ -332,9 +334,9 @@ namespace DaoHungAIO.Champions
             //}
 
 
-            if (Config.Item("Ekko.HarassActive").GetValue<KeyBind>().Active || Config.Item("Ekko.HarassActiveT").GetValue<KeyBind>().Active)
+            if (Config.Item("Ekko.HarassActive").GetValue<MenuKeyBind>().Active || Config.Item("Ekko.HarassActiveT").GetValue<MenuKeyBind>().Active)
             {
-                if (Config.Item("Ekko.QWhenEnemyCastHarass").GetValue<bool>() && (unit.IsValid<AIHeroClient>() && !unit.IsValid<AITurretClient>()) && unit.IsEnemy && args.Target.IsMe && Q.IsReady() && Player.Distance(unit) <= Q.Range)
+                if (Config.Item("Ekko.QWhenEnemyCastHarass").GetValue<MenuBool>().Enabled && (unit.IsValid<AIHeroClient>() && !unit.IsValid<AITurretClient>()) && unit.IsEnemy && args.Target.IsMe && Q.IsReady() && Player.Distance(unit) <= Q.Range)
                 {
                     Q.CastIfHitchanceEquals(unit, HitChance.High, true);
                 }
@@ -347,16 +349,16 @@ namespace DaoHungAIO.Champions
         #endregion
 
         #region AntiGapCloser
-        static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
-        {
-            if (gapcloser.Sender.IsEnemy)
+        static void AntiGapcloser_OnEnemyGapcloser(AIHeroClient sender, Gapcloser.GapcloserArgs args)
+    {
+            if (sender.IsEnemy)
             {
-                if (Config.Item("Ekko.AutoQEGC").GetValue<bool>() && Q.IsReady() && (Player.Mana >= EMANA + QMANA) && Player.Distance(gapcloser.Sender) < Q.Range)
+                if (Config.Item("Ekko.AutoQEGC").GetValue<MenuBool>().Enabled && Q.IsReady() && (Player.Mana >= EMANA + QMANA) && Player.Distance(sender) < Q.Range)
                 {
-                    Q.CastIfHitchanceEquals(gapcloser.Sender, HitChance.High, true);
+                    Q.CastIfHitchanceEquals(sender, HitChance.High, true);
                 }
 
-                if (Config.Item("Ekko.AutoWEGC").GetValue<bool>() && W.IsReady() && (Player.Mana >= EMANA + WMANA) && Player.Distance(gapcloser.Sender) < Q.Range)
+                if (Config.Item("Ekko.AutoWEGC").GetValue<MenuBool>().Enabled && W.IsReady() && (Player.Mana >= EMANA + WMANA) && Player.Distance(sender) < Q.Range)
                 {
                     W.Cast(Player.Position, true);
                 }
@@ -366,10 +368,10 @@ namespace DaoHungAIO.Champions
         #endregion
 
         #region On Dash
-        static void Unit_OnDash(AIBaseClient sender, Dash.DashItem args)
+        static void Unit_OnDash(AIBaseClient sender, Dash.DashArgs args)
         {
-            var useQ = Config.Item("Ekko.UseQCombo").GetValue<bool>();
-            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+            var useQ = Config.Item("Ekko.UseQCombo").GetValue<MenuBool>().Enabled;
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
 
             if (!sender.IsEnemy) return;
 
@@ -382,7 +384,7 @@ namespace DaoHungAIO.Champions
                     var delay = (int)(args.EndTick - Game.Time - Q.Delay - 0.1f);
                     if (delay > 0)
                     {
-                        Utility.DelayAction.Add(delay * 1000, () => Q.Cast(args.EndPos));
+                        DelayAction.Add(delay * 1000, () => Q.Cast(args.EndPos));
                     }
                     else
                     {
@@ -426,10 +428,10 @@ namespace DaoHungAIO.Champions
         public static void Combo()
         {
 
-            var useQ = Config.Item("Ekko.UseQCombo").GetValue<bool>();
-            var useW = Config.Item("Ekko.UseWCombo").GetValue<bool>();
-            var useE = Config.Item("Ekko.UseECombo").GetValue<bool>();
-            var useR = Config.Item("Ekko.UseRCombo").GetValue<bool>();
+            var useQ = Config.Item("Ekko.UseQCombo").GetValue<MenuBool>().Enabled;
+            var useW = Config.Item("Ekko.UseWCombo").GetValue<MenuBool>().Enabled;
+            var useE = Config.Item("Ekko.UseECombo").GetValue<MenuBool>().Enabled;
+            var useR = Config.Item("Ekko.UseRCombo").GetValue<MenuBool>().Enabled;
 
             #region Sort R combo mode
             if (useR && R.IsReady())
@@ -438,7 +440,7 @@ namespace DaoHungAIO.Champions
             }
             #endregion
 
-            var target = TargetSelector.GetTarget(Q.Range + R.Range, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(Q.Range + R.Range, DamageType.Magical);
             if (target.IsValidTarget())
             {
 
@@ -472,12 +474,12 @@ namespace DaoHungAIO.Champions
         public static void Harass()
         {
 
-            var targetH = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+            var targetH = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
 
-            var useQ = Config.Item("Ekko.UseQHarass").GetValue<bool>();
-            var useE = Config.Item("Ekko.UseQHarass").GetValue<bool>();
-            var QMinMana = Config.Item("Ekko.QMiniManaHarass").GetValue<Slider>().Value;
-            var EMinMana = Config.Item("Ekko.EMiniManaHarass").GetValue<Slider>().Value;
+            var useQ = Config.Item("Ekko.UseQHarass").GetValue<MenuBool>().Enabled;
+            var useE = Config.Item("Ekko.UseQHarass").GetValue<MenuBool>().Enabled;
+            var QMinMana = Config.Item("Ekko.QMiniManaHarass").GetValue<MenuSlider>().Value;
+            var EMinMana = Config.Item("Ekko.EMiniManaHarass").GetValue<MenuSlider>().Value;
 
             if (useQ && Q.IsReady() && Player.Distance(targetH) <= Q.Range && Player.ManaPercent >= QMinMana)
             {
@@ -496,20 +498,20 @@ namespace DaoHungAIO.Champions
         public static void LaneClear()
         {
 
-            var useQ = Config.Item("Ekko.UseQLaneClear").GetValue<bool>();
-            var useW = Config.Item("Ekko.UseWLaneClear").GetValue<bool>();
+            var useQ = Config.Item("Ekko.UseQLaneClear").GetValue<MenuBool>().Enabled;
+            var useW = Config.Item("Ekko.UseWLaneClear").GetValue<MenuBool>().Enabled;
 
-            var QMinMana = Config.Item("Ekko.QMiniManaLaneClear").GetValue<Slider>().Value;
-            var WMinMana = Config.Item("Ekko.WMiniManaLaneClear").GetValue<Slider>().Value;
+            var QMinMana = Config.Item("Ekko.QMiniManaLaneClear").GetValue<MenuSlider>().Value;
+            var WMinMana = Config.Item("Ekko.WMiniManaLaneClear").GetValue<MenuSlider>().Value;
 
             if (useQ && Q.IsReady() && Player.Mana >= QMANA)
             {
-                var allMinionsQ = MinionManager.GetMinions(Player.Position, 1000, MinionTypes.All, MinionTeam.Enemy);
+                var allMinionsQ = GameObjects.GetMinions(Player.Position, 1000, MinionTypes.All, MinionTeam.Enemy);
 
                 if (allMinionsQ.Any())
                 {
                     var farmAll = Q.GetCircularFarmLocation(allMinionsQ, 150);
-                    if (farmAll.MinionsHit >= Config.Item("Ekko.QLaneClearCount").GetValue<Slider>().Value)
+                    if (farmAll.MinionsHit >= Config.Item("Ekko.QLaneClearCount").GetValue<MenuSlider>().Value)
                     {
                         Q.Cast(farmAll.Position, true);
                     }
@@ -518,12 +520,12 @@ namespace DaoHungAIO.Champions
 
             if (useW && W.IsReady() && Player.Mana >= WMANA && Player.ManaPercent >= WMinMana)
             {
-                var allMinionsW = MinionManager.GetMinions(Player.Position, Q.Range, MinionTypes.All, MinionTeam.Enemy);
+                var allMinionsW = GameObjects.GetMinions(Player.Position, Q.Range, MinionTypes.All, MinionTeam.Enemy);
 
                 if (allMinionsW.Any())
                 {
                     var farmAll = W.GetCircularFarmLocation(allMinionsW, 350);
-                    if (farmAll.MinionsHit >= Config.Item("Ekko.WLaneClearCount").GetValue<Slider>().Value)
+                    if (farmAll.MinionsHit >= Config.Item("Ekko.WLaneClearCount").GetValue<MenuSlider>().Value)
                     {
                         W.Cast(farmAll.Position, true);
                     }
@@ -537,15 +539,15 @@ namespace DaoHungAIO.Champions
         public static void JungleClear()
         {
 
-            var useQ = Config.Item("Ekko.UseQJungleClear").GetValue<bool>();
-            var useW = Config.Item("Ekko.UseWJungleClear").GetValue<bool>();
-            var useE = Config.Item("Ekko.UseWJungleClear").GetValue<bool>();
+            var useQ = Config.Item("Ekko.UseQJungleClear").GetValue<MenuBool>().Enabled;
+            var useW = Config.Item("Ekko.UseWJungleClear").GetValue<MenuBool>().Enabled;
+            var useE = Config.Item("Ekko.UseWJungleClear").GetValue<MenuBool>().Enabled;
 
-            var QMinMana = Config.Item("Ekko.QMiniManaJungleClear").GetValue<Slider>().Value;
-            var WMinMana = Config.Item("Ekko.WMiniManaJungleClear").GetValue<Slider>().Value;
-            var EMinMana = Config.Item("Ekko.EMiniManaJungleClear").GetValue<Slider>().Value;
+            var QMinMana = Config.Item("Ekko.QMiniManaJungleClear").GetValue<MenuSlider>().Value;
+            var WMinMana = Config.Item("Ekko.WMiniManaJungleClear").GetValue<MenuSlider>().Value;
+            var EMinMana = Config.Item("Ekko.EMiniManaJungleClear").GetValue<MenuSlider>().Value;
 
-            var MinionN = MinionManager.GetMinions(Q.Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth).FirstOrDefault();
+            var MinionN = GameObjects.GetJungles(Player.Position, Q.Range, JungleType.All, JungleOrderTypes.MaxHealth).FirstOrDefault();
 
             if (!MinionN.IsValidTarget() || MinionN == null)
             {
@@ -553,11 +555,11 @@ namespace DaoHungAIO.Champions
                 return;
             }
 
-            if (Config.Item("Ekko.SafeJungleClear").GetValue<bool>() && Player.CountEnemiesInRange(1500) > 0) return;
+            if (Config.Item("Ekko.SafeJungleClear").GetValue<MenuBool>().Enabled && Player.CountEnemiesInRange(1500) > 0) return;
 
             if (useQ && Q.IsReady() && Player.Mana >= QMANA && Player.ManaPercent >= QMinMana)
             {
-                var allMonsterQ = MinionManager.GetMinions(Player.Position, Q.Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+                var allMonsterQ = GameObjects.GetJungles(Player.Position, Q.Range, JungleType.All, JungleOrderTypes.MaxHealth);
 
                 var farmAll = Q.GetLineFarmLocation(allMonsterQ, Q.Width);
                 if (farmAll.MinionsHit >= 1)
@@ -568,7 +570,7 @@ namespace DaoHungAIO.Champions
 
             if (useW && W.IsReady() && Player.Mana >= WMANA && Player.ManaPercent >= WMinMana)
             {
-                var allMonsterW = MinionManager.GetMinions(Player.Position, Q.Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+                var allMonsterW = GameObjects.GetJungles(Player.Position, Q.Range, JungleType.All, JungleOrderTypes.MaxHealth);
 
                 var farmAll = W.GetCircularFarmLocation(allMonsterW, 350);
                 if (farmAll.MinionsHit >= 1)
@@ -580,7 +582,7 @@ namespace DaoHungAIO.Champions
 
             if (useE && E.IsReady() && Player.Mana >= EMANA && Player.ManaPercent >= EMinMana)
             {
-                var MinionE = MinionManager.GetMinions(Q.Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth).FirstOrDefault();
+                var MinionE = GameObjects.GetJungles(Player.Position, Q.Range, JungleType.All, JungleOrderTypes.MaxHealth).FirstOrDefault();
 
                 E.Cast(MinionE.Position, true);
             }
@@ -591,9 +593,9 @@ namespace DaoHungAIO.Champions
         #region KillSteal
         public static void KillSteal()
         {
-            var useIgniteKS = Config.Item("Ekko.UseIgniteKS").GetValue<bool>();
-            var useQKS = Config.Item("Ekko.UseQKS").GetValue<bool>();
-            var useEKS = Config.Item("Ekko.UseEKS").GetValue<bool>();
+            var useIgniteKS = Config.Item("Ekko.UseIgniteKS").GetValue<MenuBool>().Enabled;
+            var useQKS = Config.Item("Ekko.UseQKS").GetValue<MenuBool>().Enabled;
+            var useEKS = Config.Item("Ekko.UseEKS").GetValue<MenuBool>().Enabled;
 
             foreach (var target in ObjectManager.Get<AIHeroClient>().Where(target => !target.IsMe && target.Team != ObjectManager.Player.Team))
             {
@@ -611,7 +613,7 @@ namespace DaoHungAIO.Champions
                     return;
                 }
 
-                if (useIgniteKS && Ignite.Slot != SpellSlot.Unknown && Player.GetSummonerSpellDamage(target, Damage.DamageSummonerSpell.Ignite) > target.Health && target.IsValidTarget(Ignite.Range))
+                if (useIgniteKS && Ignite.Slot != SpellSlot.Unknown && Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite) > target.Health && target.IsValidTarget(Ignite.Range))
                 {
                     Ignite.Cast(target, true);
                 }
@@ -623,20 +625,20 @@ namespace DaoHungAIO.Champions
                     return;
                 }
 
-                if (useQKS && useIgniteKS && Ignite.Slot != SpellSlot.Unknown && Q.IsReady() && Player.Mana >= QMANA && target.Health < Q.GetDamage(target) + Player.GetSummonerSpellDamage(target, Damage.DamageSummonerSpell.Ignite) && Player.Distance(target) < 600 && !target.IsDead && target.IsValidTarget())
+                if (useQKS && useIgniteKS && Ignite.Slot != SpellSlot.Unknown && Q.IsReady() && Player.Mana >= QMANA && target.Health < Q.GetDamage(target) + Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite) && Player.Distance(target) < 600 && !target.IsDead && target.IsValidTarget())
                 {
                     Q.CastIfHitchanceEquals(target, HitChance.High, true);
                     return;
                 }
 
-                if (useEKS && useIgniteKS && Ignite.Slot != SpellSlot.Unknown && E.IsReady() && Player.Mana >= EMANA && target.Health < E.GetDamage(target) + Player.GetSummonerSpellDamage(target, Damage.DamageSummonerSpell.Ignite) && Player.Distance(target) <= E.Range + 450 && !target.IsDead && target.IsValidTarget())
+                if (useEKS && useIgniteKS && Ignite.Slot != SpellSlot.Unknown && E.IsReady() && Player.Mana >= EMANA && target.Health < E.GetDamage(target) + Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite) && Player.Distance(target) <= E.Range + 450 && !target.IsDead && target.IsValidTarget())
                 {
                     E.Cast(target.Position, true);
                     Player.IssueOrder(GameObjectOrder.AttackUnit, target);
                     return;
                 }
 
-                if (useQKS && useEKS && useIgniteKS && Ignite.Slot != SpellSlot.Unknown && Q.IsReady() && E.IsReady() && Player.Mana >= QMANA + EMANA && target.Health < Q.GetDamage(target) + E.GetDamage(target) + Player.GetSummonerSpellDamage(target, Damage.DamageSummonerSpell.Ignite) && Player.Distance(target) <= E.Range + 450 && !target.IsDead && target.IsValidTarget())
+                if (useQKS && useEKS && useIgniteKS && Ignite.Slot != SpellSlot.Unknown && Q.IsReady() && E.IsReady() && Player.Mana >= QMANA + EMANA && target.Health < Q.GetDamage(target) + E.GetDamage(target) + Player.GetSummonerSpellDamage(target, SummonerSpell.Ignite) && Player.Distance(target) <= E.Range + 450 && !target.IsDead && target.IsValidTarget())
                 {
                     E.Cast(target.Position, true);
                     Player.IssueOrder(GameObjectOrder.AttackUnit, target);
@@ -743,7 +745,7 @@ namespace DaoHungAIO.Champions
             if (Player.Level == 1 && Player.CountEnemiesInRange(1000) == 1 && Player.Health >= Player.MaxHealth * 0.35) return;
             if (Player.Level == 1 && Player.CountEnemiesInRange(1000) == 2 && Player.Health >= Player.MaxHealth * 0.50) return;
 
-            if (Config.Item("Ekko.AutoPotion").GetValue<bool>() && !Player.InFountain() && !Player.IsRecalling() && !Player.IsDead)
+            if (Config.Item("Ekko.AutoPotion").GetValue<MenuBool>().Enabled && !Player.InFountain() && !Player.IsRecalling() && !Player.IsDead)
             {
                 #region BiscuitofRejuvenation
                 if (BiscuitofRejuvenation.IsReady() && !Player.HasBuff("ItemMiniRegenPotion") && !Player.HasBuff("ItemCrystalFlask"))
@@ -830,20 +832,21 @@ namespace DaoHungAIO.Champions
 
             foreach (var spell in SpellList)
             {
-                var menuItem = Config.Item(spell.Slot + "Range").GetValue<Circle>();
-                if (menuItem.Active && spell.Slot != SpellSlot.R)
+                var menuBool = Config.Item("Draw" + spell.Slot + "Range").GetValue<MenuBool>();
+                var menuColor = Config.Item("Draw" + spell.Slot + "Color").GetValue<MenuColor>();
+                if (menuBool.Enabled && spell.Slot != SpellSlot.R)
                 {
-                    Render.Circle.DrawCircle(Player.Position, spell.Range, menuItem.Color);
+                    Render.Circle.DrawCircle(Player.Position, spell.Range, menuColor.Color.ToSystemColor());
                 }
 
-                if (menuItem.Active && spell.Slot == SpellSlot.R && R.Level > 0 && R.IsReady())
+                if (menuBool.Enabled && spell.Slot == SpellSlot.R && R.Level > 0 && R.IsReady())
                 {
-                    Render.Circle.DrawCircle(EkkoUlt.Position, spell.Range, menuItem.Color);
+                    Render.Circle.DrawCircle(EkkoUlt.Position, spell.Range, menuColor.Color.ToSystemColor());
                 }
 
             }
 
-            if (Config.Item("DrawOrbwalkTarget").GetValue<bool>())
+            if (Config.Item("DrawOrbwalkTarget").GetValue<MenuBool>().Enabled)
             {
                 var orbT = Orbwalker.GetTarget();
                 if (orbT.IsValidTarget())
@@ -879,7 +882,7 @@ namespace DaoHungAIO.Champions
         #region QLogic
         public static void QLogic()
         {
-            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
 
             if (Player.CountEnemiesInRange(1300) > 1)
             {
@@ -935,7 +938,7 @@ namespace DaoHungAIO.Champions
         #region WLogic
         public static void WLogic()
         {
-            var target = TargetSelector.GetTarget(E.Range + 450 + 200, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(E.Range + 450 + 200, DamageType.Magical);
 
             if (Player.CountEnemiesInRange(1300) > 1)
             {
@@ -1047,8 +1050,8 @@ namespace DaoHungAIO.Champions
         #region ELogic
         public static void ELogic()
         {
-            var target = TargetSelector.GetTarget(E.Range + 425, TargetSelector.DamageType.Magical);
-            if(target == null)
+            var target = TargetSelector.GetTarget(E.Range + 425, DamageType.Magical);
+            if (target == null)
                 return;
             if (Player.Distance(target) > 260)
             {
@@ -1091,7 +1094,7 @@ namespace DaoHungAIO.Champions
             var CountEnemiesIn1100 = HeroManager.Enemies.Where(x => x.IsValid<AIHeroClient>() && x.IsValidTarget() && !x.IsDead && x.Distance(EkkoUlt.Position) < 1100).Count();
             var CountAlliesIn1300 = ObjectManager.Get<AIHeroClient>().Where(x => x.IsAlly && x.IsValidTarget() && !x.IsDead && x.Distance(EkkoUlt.Position) < 1300).ToList().Count();
 
-            var target = TargetSelector.GetTarget(850, TargetSelector.DamageType.Magical);
+            var target = TargetSelector.GetTarget(850, DamageType.Magical);
             if (Player.CountEnemiesInRange(850) == 0 || getComboDamageNoUlt(target) < target.Health)
             {
                 if (EnemiesCNoDash >= 1 && CountEnemiesIn800 <= 2)
@@ -1134,7 +1137,7 @@ namespace DaoHungAIO.Champions
             }
             if (Player.Spellbook.CanUseSpell(Player.GetSpellSlot("summonerdot")) == SpellState.Ready)
             {
-                damage += (float)Player.GetSummonerSpellDamage(hero, Damage.DamageSummonerSpell.Ignite);
+                damage += (float)Player.GetSummonerSpellDamage(hero, SummonerSpell.Ignite);
             }
             return (float)damage;
         }
@@ -1144,23 +1147,23 @@ namespace DaoHungAIO.Champions
             double damage = 0;
             if (R.IsReady())
             {
-                damage += Player.GetSpellDamage( hero, SpellSlot.R);
+                damage += Player.GetSpellDamage(hero, SpellSlot.R);
             }
             if (E.IsReady())
             {
-                damage += Player.GetSpellDamage( hero, SpellSlot.E);
+                damage += Player.GetSpellDamage(hero, SpellSlot.E);
             }
             if (EMANA + QMANA >= Player.Mana)
             {
-                damage += Player.GetSpellDamage( hero, SpellSlot.Q) * 4;
+                damage += Player.GetSpellDamage(hero, SpellSlot.Q) * 4;
             }
             if (W.IsReady())
             {
-                damage += (float)Player.GetSpellDamage( hero, SpellSlot.Q);
+                damage += (float)Player.GetSpellDamage(hero, SpellSlot.Q);
             }
             if (Player.Spellbook.CanUseSpell(Player.GetSpellSlot("summonerdot")) == SpellState.Ready)
             {
-                damage += (float)Player.GetSummonerSpellDamage(hero, Damage.DamageSummonerSpell.Ignite);
+                damage += (float)Player.GetSummonerSpellDamage(hero, SummonerSpell.Ignite);
             }
             return (float)damage;
         }

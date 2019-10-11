@@ -8,7 +8,6 @@ using Utility = EnsoulSharp.SDK.Utility;
 using SharpDX;
 using SPrediction;
 using Geometry = EnsoulSharp.SDK.Geometry;
-using static SPrediction.MinionManager;
 using System.Linq;
 using EnsoulSharp.SDK.Utility;
 using Color = System.Drawing.Color;
@@ -235,7 +234,7 @@ namespace DaoHungAIO.Champions
             {
                 if (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear && Player.ManaPercent > LMinMana)
                 {
-                    var Minions = MinionManager.GetMinions(Player.GetRealAutoAttackRange(), MinionManager.MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health);
+                    var Minions = GameObjects.GetMinions(Player.GetRealAutoAttackRange(), MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health);
                     if (Minions[0].IsValid && Minions.Count != 0)
                     {
                         if (!LT) return;
@@ -243,8 +242,8 @@ namespace DaoHungAIO.Champions
                         if (E.IsReady() && !AAPassive && LE) E.Cast(Player.Position.Extend(Game.CursorPosRaw, 70));
                         if (Q.IsReady() && (!E.IsReady() || (E.IsReady() && !LE)) && LQ != 0 && !AAPassive)
                         {
-                            var QMinions = MinionManager.GetMinions(Q.Range);
-                            var exminions = MinionManager.GetMinions(Q1.Range);
+                            var QMinions = GameObjects.GetMinions(Q.Range);
+                            var exminions = GameObjects.GetMinions(Q1.Range);
                             foreach (var Minion in QMinions)
                             {
                                 var QHit = new Geometry.Rectangle(Player.Position, Player.Position.Extend(Minion.Position, Q1.Range), Q1.Width);
@@ -299,7 +298,7 @@ namespace DaoHungAIO.Champions
             {
                 if (Orbwalker.ActiveMode == OrbwalkerMode.LaneClear)
                 {
-                    var Mobs = MinionManager.GetMinions(Player.GetRealAutoAttackRange(), MinionManager.MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+                    var Mobs = GameObjects.GetMinions(Player.GetRealAutoAttackRange(), MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.MaxHealth);
                     if (Mobs[0].IsValid && Mobs.Count != 0)
                     {
                         if (E.IsReady() && !AAPassive && JE) E.Cast(Player.Position.Extend(Game.CursorPosRaw, 70));
@@ -317,7 +316,7 @@ namespace DaoHungAIO.Champions
             if (Q.IsReady() && HEXQ)
             {
                 var target = TargetSelector.GetTarget(Q1.Range);
-                var Minions = MinionManager.GetMinions(Q.Range);
+                var Minions = GameObjects.GetMinions(Q.Range);
                 foreach (var Minion in Minions)
                 {
                     var QHit = new Geometry.Rectangle(Player.Position, Player.Position.Extend(Minion.Position, Q1.Range), Q1.Width);
@@ -337,7 +336,7 @@ namespace DaoHungAIO.Champions
             if (Q.IsReady() && LHQ)
             {
                 var extarget = TargetSelector.GetTarget(Q1.Range);
-                var Minions = MinionManager.GetMinions(Q.Range);
+                var Minions = GameObjects.GetMinions(Q.Range);
                 foreach (var Minion in Minions)
                 {
                     var QHit = new Geometry.Rectangle(Player.Position, Player.Position.Extend(Minion.Position, Q1.Range), Q1.Width);
@@ -355,7 +354,7 @@ namespace DaoHungAIO.Champions
             if (Q.IsReady() && AutoQ && Player.ManaPercent > MinMana)
             {
                 var extarget = TargetSelector.GetTarget(Q1.Range);
-                var Minions = MinionManager.GetMinions(Q.Range);
+                var Minions = GameObjects.GetMinions(Q.Range);
                 foreach (var Minion in Minions)
                 {
                     var QHit = new Geometry.Rectangle(Player.Position, Player.Position.Extend(Minion.Position, Q1.Range), Q1.Width);

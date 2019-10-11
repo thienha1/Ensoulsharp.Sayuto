@@ -9,9 +9,6 @@ using SPrediction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MinionTypes = SPrediction.MinionManager.MinionTypes;
-using MinionTeam = SPrediction.MinionManager.MinionTeam;
-using MinionOrderTypes = SPrediction.MinionManager.MinionOrderTypes;
 using static DaoHungAIO.Champions.GetTargets;
 using static DaoHungAIO.Champions.Combos;
 using static DaoHungAIO.Champions.Fiora;
@@ -3454,8 +3451,17 @@ namespace DaoHungAIO.Champions
         #region Math And Extensions
         public static int CountMinionsInRange(this Vector3 Position, float Range, bool JungleTrueEnemyFalse)
         {
-            return
-                MinionManager.GetMinions(Range, MinionTypes.All, JungleTrueEnemyFalse ? MinionTeam.Neutral : MinionTeam.Enemy).Count;
+            if (JungleTrueEnemyFalse)
+            {
+                var minion = GameObjects.GetMinions(Range, MinionTypes.All, MinionTeam.Enemy).Count;
+                var jung = GameObjects.GetJungles(Range, JungleType.All).Count;
+                return minion + jung;
+            } else
+            {
+                return
+                GameObjects.GetMinions(Range, MinionTypes.All, MinionTeam.Enemy).Count;
+            }
+            
         }
         public static float AngleToRadian(this int Angle)
         {

@@ -150,7 +150,7 @@ namespace DaoHungAIO.Champions
 
         void LH()
         {
-            List<AIBaseClient> allMinions = MinionManager.GetMinions(Khazix.Position, Q.Range).OrderBy(x => x.MaxHealth).ToList();
+            List<AIBaseClient> allMinions = GameObjects.GetMinions(Khazix.Position, Q.Range).OrderBy(x => x.MaxHealth).ToList();
             if (Config.GetBool("Farm", "UseQFarm") && Q.IsReady())
             {
                 foreach (AIBaseClient minion in
@@ -173,7 +173,7 @@ namespace DaoHungAIO.Champions
             if (Config.GetBool("Farm", "UseWFarm") && W.IsReady())
             {
                   FarmLocation farmLocation = FarmPrediction.GetBestCircularFarmLocation(
-                  MinionManager.GetMinions(Khazix.Position, W.Range).Where(minion => HealthPrediction.GetPrediction(
+                  GameObjects.GetMinions(Khazix.Position, W.Range).Where(minion => HealthPrediction.GetPrediction(
                                 minion, (int)(Khazix.Distance(minion) * 1000 / 1400)) <
                             0.75 * Khazix.GetSpellDamage(minion, SpellSlot.W))
                       .Select(minion => minion.Position.ToVector2())
@@ -203,7 +203,7 @@ namespace DaoHungAIO.Champions
 
                 FarmLocation farmLocation =
                     FarmPrediction.GetBestCircularFarmLocation(
-                        MinionManager.GetMinions(Khazix.Position, E.Range).Where(minion => HealthPrediction.GetPrediction(
+                        GameObjects.GetMinions(Khazix.Position, E.Range).Where(minion => HealthPrediction.GetPrediction(
                                 minion, (int)(Khazix.Distance(minion) * 1000 / 1400)) <
                             0.75 * Khazix.GetSpellDamage(minion, SpellSlot.W))
                             .Select(minion => minion.Position.ToVector2())
@@ -221,7 +221,7 @@ namespace DaoHungAIO.Champions
             {
                FarmLocation farmLocation =
                     FarmPrediction.GetBestCircularFarmLocation(
-                        MinionManager.GetMinions(Khazix.Position, Hydra.Range)
+                        GameObjects.GetMinions(Khazix.Position, Hydra.Range)
                             .Select(minion => minion.Position.ToVector2())
                             .ToList(), Hydra.Range, Hydra.Range);
 
@@ -296,7 +296,7 @@ namespace DaoHungAIO.Champions
             {
                FarmLocation farmLocation =
                     FarmPrediction.GetBestCircularFarmLocation(
-                        MinionManager.GetMinions(Khazix.Position, E.Range)
+                        GameObjects.GetMinions(Khazix.Position, E.Range)
                             .Select(minion => minion.Position.ToVector2())
                             .ToList(), E.Width, E.Range);
                 if (Khazix.Distance(farmLocation.Position) <= E.Range)
@@ -310,7 +310,7 @@ namespace DaoHungAIO.Champions
             {
                FarmLocation farmLocation =
                     FarmPrediction.GetBestCircularFarmLocation(
-                        MinionManager.GetMinions(Khazix.Position, Hydra.Range)
+                        GameObjects.GetMinions(Khazix.Position, Hydra.Range)
                             .Select(minion => minion.Position.ToVector2())
                             .ToList(), Hydra.Range, Hydra.Range);
 
@@ -1840,7 +1840,7 @@ namespace DaoHungAIO.Champions
 
     //        var asMinion = unit as AIMinionClient;
 
-    //        if (asMinion != null && !MinionManager.IsWard(asMinion))
+    //        if (asMinion != null && !GameObjects.IsWard(asMinion))
     //        {
     //            return true;
     //        }

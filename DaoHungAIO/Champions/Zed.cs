@@ -14,9 +14,6 @@ using SharpDX;
 using EnsoulSharp.SDK.Utility;
 using Color = System.Drawing.Color;
 using SPrediction;
-using MinionTypes = SPrediction.MinionManager.MinionTypes;
-using MinionTeam = SPrediction.MinionManager.MinionTeam;
-using MinionOrderTypes = SPrediction.MinionManager.MinionOrderTypes;
 
 namespace DaoHungAIO.Champions
 {
@@ -494,8 +491,8 @@ namespace DaoHungAIO.Champions
 
         private static void Laneclear()
         {
-            var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.Position, _q.Range);
-            var allMinionsE = MinionManager.GetMinions(ObjectManager.Player.Position, _e.Range);
+            var allMinionsQ = GameObjects.GetMinions(ObjectManager.Player.Position, _q.Range);
+            var allMinionsE = GameObjects.GetMinions(ObjectManager.Player.Position, _e.Range);
             var mymana = (_player.Mana >= (_player.MaxMana * _config["Farm"]["LaneFarm"].GetValue<MenuSlider>("Energylane").Value) / 100);
 
             var useItemsl = _config["Farm"]["LaneFarm"].GetValue<MenuBool>("UseItemslane");
@@ -541,7 +538,7 @@ namespace DaoHungAIO.Champions
 
         private static void LastHit()
         {
-            var allMinions = MinionManager.GetMinions(ObjectManager.Player.Position, _q.Range, MinionTypes.All);
+            var allMinions = GameObjects.GetMinions(ObjectManager.Player.Position, _q.Range, MinionTypes.All);
             var mymana = (_player.Mana >=
                           (_player.MaxMana * _config["Farm"]["LastHit"].GetValue<MenuSlider>("Energylast").Value) / 100);
             var useQ = _config["Farm"]["LastHit"].GetValue<MenuBool>("UseQLH");
@@ -564,9 +561,8 @@ namespace DaoHungAIO.Champions
 
         private static void JungleClear()
         {
-            var mobs = MinionManager.GetMinions(_player.Position, _q.Range,
-                MinionTypes.All,
-                MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+            var mobs = GameObjects.GetJungles(_player.Position, _q.Range,
+                JungleType.All, JungleOrderTypes.MaxHealth);
             var mymana = (_player.Mana >=
                           (_player.MaxMana * _config["Farm"]["Jungle"].GetValue<MenuSlider>("Energyjungle").Value) / 100);
             var useItemsJ = _config["Farm"]["Jungle"].GetValue<MenuBool>("UseItemsjungle");

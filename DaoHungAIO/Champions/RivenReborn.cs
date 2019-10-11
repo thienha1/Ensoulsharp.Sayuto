@@ -14,9 +14,6 @@ using SharpDX;
 using EnsoulSharp.SDK.Utility;
 using Color = System.Drawing.Color;
 using SPrediction;
-using MinionTypes = SPrediction.MinionManager.MinionTypes;
-using MinionTeam = SPrediction.MinionManager.MinionTeam;
-using MinionOrderTypes = SPrediction.MinionManager.MinionOrderTypes;
 
 namespace DaoHungAIO.Champions
 {
@@ -613,8 +610,8 @@ namespace DaoHungAIO.Champions
         }
         private static void Clear()
         {
-            var targetW = MinionManager.GetMinions(Player.Position, WRange() + 100, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health).FirstOrDefault();
-            var targetW2 = MinionManager.GetMinions(Player.Position, WRange() + 100, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth).FirstOrDefault();
+            var targetW = GameObjects.GetMinions(Player.Position, WRange() + 100, MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.Health).FirstOrDefault();
+            var targetW2 = GameObjects.GetJungles(Player.Position, WRange() + 100, JungleType.All, JungleOrderTypes.MaxHealth).FirstOrDefault();
             if (targetW != null && InWRange(targetW) && W.IsReady() && Orbwalker.CanMove() && UseWClear)
             {
                 W.Cast();
