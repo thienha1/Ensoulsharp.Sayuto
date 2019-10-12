@@ -89,6 +89,9 @@ namespace DaoHungAIO
                     case "Ahri":
                         new Ahri();
                         break;
+                    case "Akali":
+                        new Akali();
+                        break;
                     case "Camille":
                         new Camille();
                         break;
