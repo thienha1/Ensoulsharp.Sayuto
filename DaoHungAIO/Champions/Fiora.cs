@@ -2373,7 +2373,7 @@ namespace DaoHungAIO.Champions
             W.MinHitChance = HitChance.High;
 
 
-            Config = new Menu(Player.CharacterName, "DH.Fiora", true);
+            Config = new Menu(Player.CharacterName, "DH.Fiora credit badao", true);
             Config.Add(new MenuKeyBind("OrbwalkPassive", "Orbwalk Passive", System.Windows.Forms.Keys.Z, KeyBindType.Toggle)).Permashow();
             MenuKeyBind lastRight = new MenuKeyBind("OrbwalkLastRightClick", "Orbwalk Last Right Click", System.Windows.Forms.Keys.A, KeyBindType.Toggle);
             Config.Add(lastRight).Permashow();

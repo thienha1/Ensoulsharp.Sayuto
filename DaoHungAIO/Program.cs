@@ -57,6 +57,7 @@ namespace DaoHungAIO
                 //SPrediction.Prediction.Initialize(pred);
                 SPredictionMenu = SPrediction.Prediction.Initialize(); //new Menu("SPREDX", "SPrediction");
                 Chat.Print("<font color=\"#05FAAC\"><b>XDreamms is just a kid stealing, disrespecting the source owner</b></font>");
+                Chat.Print("<font color=\"#f54242\"><b>HappyMajor is son of bitch trying destroy discord ensoul</b></font>");
                 //SPredictionMenu.Attach();
                 //set default to common prediction
                 //var type = Type.GetType("DaoHungAIO.Champions." + player.CharacterName);
@@ -77,7 +78,7 @@ namespace DaoHungAIO
                 //    }
                 //}
                 //IncDamages = new IncomingDamage();
-                
+
                 Game.OnTick += DelayTime;
 
                 //AIBaseClient.OnDoCast += OnProcessSpell;
