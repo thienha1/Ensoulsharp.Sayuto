@@ -140,6 +140,9 @@ namespace DaoHungAIO
                     case "Nidalee":
                         new Nidalee();
                         break;
+                    case "MasterYi":
+                        new MasterSharp();
+                        break;
                     case "Olaf":
                         new Olaf();
                         break;
