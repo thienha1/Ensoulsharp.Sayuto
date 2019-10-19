@@ -60,7 +60,6 @@ namespace DaoHungAIO.Champions
             {"maokaiunstablegrowth", "Maokai"},
             {"monkeykingnimbus", "MonkeyKing"},
             {"monkeykingspintowin", "MonkeyKing"},
-            {"summonerflash", "MonkeyKing"},
             {"nocturneparanoia", "Nocturne"},
             {"olafragnarok", "Olaf"},
             {"poppyheroiccharge", "Poppy"},

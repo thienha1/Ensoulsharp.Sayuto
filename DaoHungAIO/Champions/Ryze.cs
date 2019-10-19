@@ -199,12 +199,12 @@ namespace DaoHungAIO.Champions
             if (laneClear)
             {
                 var allMinions = GameObjects.EnemyMinions.Where(x => x.IsValidTarget(E.Range)).OrderBy(m => m.Health / m.MaxHealth * 100).Cast<AIBaseClient>().ToList();
-                var MinionLeastHp = allMinions.First();
-                if (useQ && Q.IsReady() && Player.Mana > 500)
+                var MinionLeastHp = allMinions.FirstOrDefault();
+                if (MinionLeastHp != null && useQ && Q.IsReady() && Player.Mana > 500)
                 {
                     var QCanHit = GameObjects.EnemyMinions.Where(x => x.IsValidTarget(Q.Range)).OrderBy(m => m.Health / m.MaxHealth * 100).Cast<AIBaseClient>().ToList();
-                    if (QCanHit.First() != null)
-                        Q.Cast(QCanHit.First(), true);
+                    if (QCanHit.FirstOrDefault() != null)
+                        Q.Cast(QCanHit.FirstOrDefault(), true);
                 }
                 if (useE && E.IsReady())
                 {
@@ -213,8 +213,11 @@ namespace DaoHungAIO.Champions
                 else if (useQ && Q.IsReady())
                 {
                     var MinionsHasEBuff = GameObjects.EnemyMinions.Where(x => x.IsValidTarget(Q.Range) && x.HasBuff("ryzee")).OrderBy(m => m.Distance(Player)).Cast<AIBaseClient>().ToList();
-                    var MinionHasEBuffNearst = MinionsHasEBuff.First();
-                    Q.Cast(MinionHasEBuffNearst, true);
+                    var MinionHasEBuffNearst = MinionsHasEBuff.FirstOrDefault();
+                    if(MinionHasEBuffNearst != null){
+                    
+                        Q.Cast(MinionHasEBuffNearst, true);
+                        }
                 }
                 else if (useW && W.IsReady())
                 {
