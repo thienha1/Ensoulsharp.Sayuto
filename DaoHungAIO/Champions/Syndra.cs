@@ -182,7 +182,7 @@ namespace DaoHungAIO.Champions
             Config.Attach();
 
             //Add the events we are going to use:
-            Game.OnUpdate += Game_OnGameUpdate;
+            Game.OnTick += Game_OnGameUpdate;
             Game.OnWndProc += Game_OnWndProc;
             Orbwalker.OnAction += OnActionDelegate;
 
