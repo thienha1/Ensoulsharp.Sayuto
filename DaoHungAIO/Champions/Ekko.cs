@@ -181,19 +181,23 @@ namespace DaoHungAIO.Champions
             {
                 if (Config.Item("Ekko.UseBurstRComboAuto").GetValue<MenuBool>().Enabled && Player.HealthPercent >= Config.Item("Ekko.MinimumHPBurstRAuto").GetValue<MenuSlider>().Value)
                 {
-                    var EnemiesCNoDash = HeroManager.Enemies.Where(x => x.IsValid<AIHeroClient>() && x.IsValidTarget() && !x.IsDead && x.Distance(EkkoUlt.Position) < 400 && getComboDamageUlt(x) > x.Health).Count();
-                    var CountEnemiesIn800 = HeroManager.Enemies.Where(x => x.IsValid<AIHeroClient>() && x.IsValidTarget() && !x.IsDead && x.Distance(EkkoUlt.Position) < 800).Count();
-
-                    //var CountAlliesIn1000 = ObjectManager.Get<AIHeroClient>().Where(i => i.IsAlly).ToList().Count(x => x.IsValid<AIHeroClient>() && x.IsValidTarget() && !x.IsDead && x.Distance(EkkoUlt.Position) < 1000);
-
-                    var target = TargetSelector.GetTarget(850, DamageType.Magical);
-                    if (Player.CountEnemiesInRange(850) == 0 || getComboDamageNoUlt(target) < target.Health)
+                    try
                     {
-                        if (EnemiesCNoDash >= Config.Item("Ekko.MinimumEnemiesBurstRAuto").GetValue<MenuSlider>().Value && CountEnemiesIn800 <= Config.Item("Ekko.MinimumEnemiesDrangeRAuto").GetValue<MenuSlider>().Value)
+                        var EnemiesCNoDash = HeroManager.Enemies.Where(x => x.IsValid<AIHeroClient>() && x.IsValidTarget() && !x.IsDead && x.Distance(EkkoUlt.Position) < 400 && getComboDamageUlt(x) > x.Health).Count();
+                        var CountEnemiesIn800 = HeroManager.Enemies.Where(x => x.IsValid<AIHeroClient>() && x.IsValidTarget() && !x.IsDead && x.Distance(EkkoUlt.Position) < 800).Count();
+
+                        //var CountAlliesIn1000 = ObjectManager.Get<AIHeroClient>().Where(i => i.IsAlly).ToList().Count(x => x.IsValid<AIHeroClient>() && x.IsValidTarget() && !x.IsDead && x.Distance(EkkoUlt.Position) < 1000);
+
+                        var target = TargetSelector.GetTarget(850, DamageType.Magical);
+                        if (Player.CountEnemiesInRange(850) == 0 || getComboDamageNoUlt(target) < target.Health)
                         {
-                            R.Cast();
+                            if (EnemiesCNoDash >= Config.Item("Ekko.MinimumEnemiesBurstRAuto").GetValue<MenuSlider>().Value && CountEnemiesIn800 <= Config.Item("Ekko.MinimumEnemiesDrangeRAuto").GetValue<MenuSlider>().Value)
+                            {
+                                R.Cast();
+                            }
                         }
                     }
+                    catch { }
                 }
 
             }
