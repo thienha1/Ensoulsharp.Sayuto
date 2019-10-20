@@ -35,7 +35,6 @@ namespace DaoHungAIO
             catch {
                 Console.WriteLine(items.Name);
                 throw new Exception();
-                return items;
             }
         }
 
@@ -49,31 +48,26 @@ namespace DaoHungAIO
                     menu.Add(a);
                     menu.Add(new MenuColor("DrawQColor", "^ Q Color", Color.Indigo));
                     return a;
-                    break;
                 case SpellSlot.W:
                     a = new MenuBool("DrawWRange", "Draw W Range");
                     menu.Add(a);
                     menu.Add(new MenuColor("DrawWColor", "^ W Color", Color.Yellow));
                     return a;
-                    break;
                 case SpellSlot.E:
                     a = new MenuBool("DrawERange", "Draw E Range");
                     menu.Add(a);
                     menu.Add(new MenuColor("DrawEColor", "^ E Color", Color.Green));
                     return a;
-                    break;
                 case SpellSlot.Item1:
                     a = new MenuBool("DrawEMaxRange", "Draw E Max Range");
                     menu.Add(a);
                     menu.Add(new MenuColor("DrawEMaxColor", "^ E Max Color", Color.Green));
                     return a;
-                    break;
                 case SpellSlot.R:
                     a = new MenuBool("DrawRRange", "Draw R Range");
                     menu.Add(a);
                     menu.Add(new MenuColor("DrawRColor", "^ R Color", Color.Gold));
                     return a;
-                    break;
             }
 
             return null;

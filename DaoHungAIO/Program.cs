@@ -157,7 +157,7 @@ namespace DaoHungAIO
                         break;
                     //case "Rengar":
                     //    new Rengar();
-                        break;
+                        //break;
                     case "Renekton":
                         new Renekton();
                         break;
