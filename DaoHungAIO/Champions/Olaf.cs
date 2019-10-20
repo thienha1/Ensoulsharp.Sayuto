@@ -1069,11 +1069,11 @@ namespace DaoHungAIO.Champions
             if (t == null || !t.IsValidTarget())
                 return;
 
-            if (SmiteSlot != SpellSlot.Unknown &&
-                ObjectManager.Player.Spellbook.CanUseSpell(SmiteSlot) == SpellState.Ready)
-            {
-                SmiteOnTarget(t);
-            }
+            //if (SmiteSlot != SpellSlot.Unknown &&
+            //    ObjectManager.Player.Spellbook.CanUseSpell(SmiteSlot) == SpellState.Ready)
+            //{
+            //    SmiteOnTarget(t);
+            //}
 
             if (IgniteSlot != SpellSlot.Unknown &&
                 ObjectManager.Player.Spellbook.CanUseSpell(IgniteSlot) == SpellState.Ready)
@@ -1104,18 +1104,18 @@ namespace DaoHungAIO.Champions
         }
 
 
-        private static void SmiteOnTarget(AIHeroClient t)
-        {
-            var range = 700f;
-            var use = menu.Item("Spells.Smite").GetValue<MenuBool>();
-            var itemCheck = SmiteBlue.Any(i => Items.HasItem(ObjectManager.Player, i)) || SmiteRed.Any(i => Items.HasItem(ObjectManager.Player, i));
-            if (itemCheck && use &&
-                ObjectManager.Player.Spellbook.CanUseSpell(SmiteSlot) == SpellState.Ready &&
-                t.Distance(ObjectManager.Player.Position) < range)
-            {
-                ObjectManager.Player.Spellbook.CastSpell(SmiteSlot, t);
-            }
-        }
+        //private static void SmiteOnTarget(AIHeroClient t)
+        //{
+        //    var range = 700f;
+        //    var use = menu.Item("Spells.Smite").GetValue<MenuBool>();
+        //    var itemCheck = SmiteBlue.Any(i => Items.HasItem(ObjectManager.Player, i)) || SmiteRed.Any(i => Items.HasItem(ObjectManager.Player, i));
+        //    if (itemCheck && use &&
+        //        ObjectManager.Player.Spellbook.CanUseSpell(SmiteSlot) == SpellState.Ready &&
+        //        t.Distance(ObjectManager.Player.Position) < range)
+        //    {
+        //        ObjectManager.Player.Spellbook.CastSpell(SmiteSlot, t);
+        //    }
+        //}
 
         private static void IgniteOnTarget(AIHeroClient t)
         {
