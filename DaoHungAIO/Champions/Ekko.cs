@@ -373,7 +373,7 @@ namespace DaoHungAIO.Champions
             var useQ = Config.Item("Ekko.UseQCombo").GetValue<MenuBool>().Enabled;
             var target = TargetSelector.GetTarget(Q.Range, DamageType.Magical);
 
-            if (!sender.IsEnemy) return;
+            if (!sender.IsEnemy || target == null) return;
 
             if (sender.NetworkId == target.NetworkId)
             {
