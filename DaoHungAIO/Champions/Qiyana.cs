@@ -20,14 +20,14 @@ namespace DaoHungAIO.Champions
 
         private static Spell _q, _w, _e, _r, _q2;
         private static Menu _menu;
-        private static int _wRangeCollect = 1250;
+        private static float knoclback_distance = 300f;
         private static AIHeroClient Player = ObjectManager.Player;
 
 
         #region
         private static readonly MenuBool Qcombo = new MenuBool("qcombo", "[Q] on Combo");
         private static readonly MenuBool Wcombo = new MenuBool("wcombo", "[W] on Combo");
-        private static readonly MenuList WPriority = new MenuList("wpriority", "^ Priority", new[] { "Rock", "Grass", "Water" }, 2);
+        private static readonly MenuList WPriority = new MenuList("wpriority", "^ Priority", new[] { "Rock", "Grass" }, 1); //, "Water"
         private static readonly MenuList WFindType = new MenuList("wfindtype", "^ Find type", new[] { "Around hero", "Around cursor" }, 1);
         private static readonly MenuList WDashType = new MenuList("WDashType", "^ Dash type", new[] { "Safe", "Cursor" }, 1);
         private static readonly MenuBool Wsave = new MenuBool("wsave", "^ After Q");
@@ -41,8 +41,15 @@ namespace DaoHungAIO.Champions
 
         private static readonly MenuBool Qclear = new MenuBool("qclear", "[Q] on ClearWave");
 
+        private static readonly MenuSlider MiscQGrassOnLowHp = new MenuSlider("MiscQGrassOnLowHp", "Priority Q Grass when Hp less than( 0 = Off)", 30, 0, 100);
         private static readonly MenuBool MiscWAntiGapcloser = new MenuBool("MiscWAntiGapcloser", "AntiGapcloser with W");
         private static readonly MenuBool MiscEAntiGapcloser = new MenuBool("MiscEAntiGapcloser", "AntiGapcloser with E");
+
+        private static readonly MenuBool DrawQ = new MenuBool("DrawQ", "Q range");
+        private static readonly MenuBool DrawW = new MenuBool("DrawW", "W range");
+        private static readonly MenuBool DrawE = new MenuBool("DrawE", "E range");
+        private static readonly MenuBool DrawR = new MenuBool("DrawR", "R range");
+        private static readonly MenuBool DrawRAfter = new MenuBool("DrawRA", "R knock back position");
 
 
         private static string _qType = "QiyanaQ";
@@ -60,10 +67,6 @@ namespace DaoHungAIO.Champions
 
         public Qiyana()
         {
-            if (ObjectManager.Player.CharacterName != "Qiyana")
-            {
-                return;
-            }
 
             _q = new Spell(SpellSlot.Q, 470);
             _q2 = new Spell(SpellSlot.Q, 710);
@@ -80,11 +83,98 @@ namespace DaoHungAIO.Champions
             _r.SetSkillshot(0.25f, 280, 2000, false, SkillshotType.Line);
 
             CreateMenu();
+            Chat.Print("Current, This script isnt include find Q water, will add in future");
             Game.OnTick += OnTick;
             AIHeroClient.OnProcessSpellCast += OnProcessSpellCast;
             Gapcloser.OnGapcloser += OnGapcloser;
+
+            Drawing.OnDraw += Drawing_OnDraw;
         }
 
+        private void Drawing_OnDraw(EventArgs args)
+        {
+            if (DrawQ.Enabled && _q.IsReady())
+            {
+                Render.Circle.DrawCircle(Player.Position, _q.Range, System.Drawing.Color.Red, 1);
+            }
+            if (DrawW.Enabled && _w.IsReady())
+            {
+                Render.Circle.DrawCircle(Player.Position, _w.Range, System.Drawing.Color.Red, 1);
+            }
+            if (DrawE.Enabled && _e.IsReady())
+            {
+                Render.Circle.DrawCircle(Player.Position, _e.Range, System.Drawing.Color.Red, 1);
+            }
+            if (DrawR.Enabled && _r.IsReady())
+            {
+                Render.Circle.DrawCircle(Player.Position, _r.Range, System.Drawing.Color.Red, 1);
+            }
+
+            if (DrawRAfter.Enabled && _r.IsReady())
+            {
+                var target = TargetSelector.GetTarget(_r.Range);
+                if (target == null)
+                {
+                    return;
+                }
+
+                var predicPos = target.Position.Extend(Player.Position, -knoclback_distance);
+                Render.Circle.DrawCircle(predicPos, 10, CheckPosStun(predicPos) ? System.Drawing.Color.LightGreen : System.Drawing.Color.LightGray, 5);
+            }
+        }
+
+        private static void CastR(AIHeroClient target)
+        {
+            if(target == null)
+            {
+                return;
+            }
+            var targetsNear = target.CountEnemiesInRange(120);
+
+            var predicPos = target.Position.Extend(Player.Position, -knoclback_distance);
+            if (CheckPosStun(predicPos) && targetsNear >= Rcount)
+            {
+                _r.Cast(target.Position);
+            }
+        }
+
+        private static bool CheckPosStun(Vector3 pos)
+        {
+            if (pos.IsWall())
+            {
+                return true;
+            }
+            if(pos.Extend(Player.Position, -120).IsWall())
+            {
+                return true;
+            }
+            var result = GetRockObject(200, pos);
+            if(result != null)
+            {
+                return true;
+            } else
+            {
+                result = GetGrassObject(50, pos);
+
+                if(result != null)
+                {
+                    return true;
+                } else
+                {
+                    result = GetWaterObject(50, pos);
+                    if (result != null)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private static GameObject GetWaterObject(int range, Vector3 from)
+        {
+            return OrderByPos(ObjectManager.Get<GameObject>().Where(o => o.Distance(from) <= range));
+        }
         private void CastW(AIHeroClient target)
         {
             var pos = GetPosWCast(target);
@@ -142,7 +232,7 @@ namespace DaoHungAIO.Champions
 
                 if(args.Slot == SpellSlot.R)
                 {
-                    Chat.Print(args.Target.Name);
+
                 }
             }
         }
@@ -165,24 +255,33 @@ namespace DaoHungAIO.Champions
         private static GameObject GetByPiority(int range, Vector3 from, AIHeroClient target)
         {
             GameObject obj = new GameObject();
-            switch (WPriority.SelectedValue)
+            if (MiscQGrassOnLowHp.Value > 0 && MiscQGrassOnLowHp.Value <= Player.HealthPercent)
             {
-                case "Rock": //"Rock"
-                    if (!IsRock()) {
-                        obj = GetRockObject(range, from);
-                    }
-                    break;
-                case "Grass": // "Grass"
-                    if (!IsGrass())
-                    {
-                        obj = GetGrassObject(range, from);
-                    }
-                    break;
-                case "Water": // "Water"
-                    if (!IsWater()) {
-                        obj = GetByDefault(target);
-                    }
-                    break;
+                obj = GetGrassObject(range, from);
+            }
+            else
+            {
+                switch (WPriority.SelectedValue)
+                {
+                    case "Rock": //"Rock"
+                        if (!IsRock())
+                        {
+                            obj = GetRockObject(range, from);
+                        }
+                        break;
+                    case "Grass": // "Grass"
+                        if (!IsGrass())
+                        {
+                            obj = GetGrassObject(range, from);
+                        }
+                        break;
+                    case "Water": // "Water"
+                        if (!IsWater())
+                        {
+                            obj = GetByDefault(target);
+                        }
+                        break;
+                }
             }
             if(obj == null || obj == new GameObject())
             {
@@ -232,7 +331,7 @@ namespace DaoHungAIO.Champions
         }
         private static GameObject GetRockObject(int range, Vector3 from)
         {
-            return OrderByPos(ObjectManager.Get<GameObject>().Where(o => o.Distance(from) <= range && (o.Position.IsWall() || o.Position.IsBuilding())));
+            return OrderByPos(ObjectManager.Get<GameObject>().Where(o => o.Distance(from) <= range && o.Position.IsWall()));
         }
         private static GrassObject GetGrassObject(int range, Vector3 from)
         {
@@ -246,16 +345,19 @@ namespace DaoHungAIO.Champions
 
         private static void CreateMenu()
         {
-            _menu = new Menu("dhqiyana", "DH.Qiyana(Isnt Release)", true);
+            _menu = new Menu("dhqiyana", "DH.Qiyana(Early Beta)", true);
             var _combat = new Menu("dh_qiyana_combat", "[Combo] Settings");
             var _harass = new Menu("dh_qiyana_harrass", "[Harass] Settings");
             var _farm = new Menu("dh_qiyana_farm", "[Farm] Settings");
             var _misc = new Menu("dh_qiyana_misc", "[Misc] Settings");
+            var _draw = new Menu("dh_qiyana_draw", "[Draw] Settings");
             _combat.Add(Qcombo);
             _combat.Add(Wcombo);
             _combat.Add(Wsave);
             _combat.Add(Ecombo);
             _combat.Add(Eminions);
+            _combat.Add(Rcombo);
+            _combat.Add(Rcount);
 
             _harass.Add(Qharass);
             _harass.Add(Eharass);
@@ -265,18 +367,28 @@ namespace DaoHungAIO.Champions
             _misc.Add(WPriority);
             _misc.Add(WFindType);
             _misc.Add(WDashType);
+            _misc.Add(MiscQGrassOnLowHp);
             _misc.Add(MiscWAntiGapcloser);
             _misc.Add(MiscEAntiGapcloser);
+
+            _draw.Add(DrawQ);
+            _draw.Add(DrawW);
+            _draw.Add(DrawE);
+            _draw.Add(DrawR);
+            _draw.Add(DrawRAfter);
 
             _menu.Add(_combat);
             _menu.Add(_harass);
             _menu.Add(_farm);
             _menu.Add(_misc);
+            _menu.Add(_draw);
             _menu.Attach();
         }
 
         public void OnTick(EventArgs args)
         {
+
+
 
             //Render.Circle.DrawCircle(Player.Position, 470, System.Drawing.Color.Red);
             //GameObjects.AllGameObjects.Where(o => o.CountEnemyHeroesInRange(500) <= 350 && o is GrassObject ).ForEach(o => {
@@ -306,8 +418,11 @@ namespace DaoHungAIO.Champions
             //TargetSelector.SelectedTarget.Buffs.ForEach(b => Chat.Print(b.Name));
             //"qiyanapassivecd_base"
 
-            //var abc = Render.Add(new Polygon());
+            ////var abc = Render.Add(new Polygon());
+            //var target = TargetSelector.GetTarget(1000);
+            ////Chat.Print(target.Position.Distance(ObjectManager.Player.Position));
 
+            //Render.D target.Position.Extend(target.Position, knoclback_distance);
             if (IsEnchanced())
             {
                 _q.Range = 710f;
@@ -398,12 +513,18 @@ namespace DaoHungAIO.Champions
 
                 CastW(etarget);
             }
+
+            if(Rcombo.Enabled && _r.IsReady())
+            {
+                CastR(etarget);
+            }
         }
+
 
         private static void DoHarass()
         {
-            var t = TargetSelector.GetTarget(_q.Range);
-            var etarget = TargetSelector.GetTarget(2000f);
+            var t = TargetSelector.GetTarget(_e.Range + _q.Range);
+            var etarget = TargetSelector.GetTarget(_e.Range);
             if (t == null)
                 return;
             if (Eharass.Enabled)
@@ -415,7 +536,7 @@ namespace DaoHungAIO.Champions
             {
                 _q.Cast(t);
             }
-            if (_e.IsReady() && t.IsValidTarget(_e.Range) && Eharass.Enabled && !t.HasBuff("AkaliEMis"))
+            if (_e.IsReady() && t.IsValidTarget(_e.Range) && Eharass.Enabled)
             {
                 _e.Cast(t);
             }
@@ -445,7 +566,7 @@ namespace DaoHungAIO.Champions
     .Cast<AIBaseClient>().ToList();
             if (minions.Any())
             {
-                var qfarm = _q.GetCircularFarmLocation(minions);
+                var qfarm = _q.GetLineFarmLocation(minions);
                 if (qfarm.Position.IsValid() && qfarm.MinionsHit >= 2)
                 {
                     _q.Cast(qfarm.Position);
@@ -476,7 +597,7 @@ namespace DaoHungAIO.Champions
     .Cast<AIBaseClient>().ToList();
             if (minions.Any())
             {
-                var qfarm = _q.GetCircularFarmLocation(minions);
+                var qfarm = _q.GetLineFarmLocation(minions);
                 if (qfarm.Position.IsValid() && qfarm.MinionsHit >= 1)
                 {
                     _q.Cast(qfarm.Position);
