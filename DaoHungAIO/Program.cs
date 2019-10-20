@@ -149,6 +149,9 @@ namespace DaoHungAIO
                     case "Orianna":
                         Orianna.initOrianna();
                         break;
+                    case "Qiyana":
+                        new Qiyana();
+                        break;
                     case "Riven":
                         new RivenReborn();
                         break;

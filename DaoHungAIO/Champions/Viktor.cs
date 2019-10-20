@@ -674,7 +674,7 @@ namespace DaoHungAIO.Champions
             {
                 return;
             }
-            if (boolLinks["miscGapcloser"].GetValue<MenuBool>() && W.IsInRange(args.EndPosition) && sender.IsEnemy)
+            if (boolLinks["miscGapcloser"].GetValue<MenuBool>() && W.IsInRange(args.EndPosition) && sender.IsEnemy && args.EndPosition.DistanceToPlayer() < 200)
             {
                 GapCloserPos = args.EndPosition;
                 if (args.StartPosition.Distance(args.EndPosition) > sender.Spellbook.GetSpell(args.Slot).SData.CastRangeDisplayOverride && sender.Spellbook.GetSpell(args.Slot).SData.CastRangeDisplayOverride > 100)
