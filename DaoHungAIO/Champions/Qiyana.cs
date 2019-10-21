@@ -35,9 +35,13 @@ namespace DaoHungAIO.Champions
         private static readonly MenuSlider Rcount = new MenuSlider("Rcount", "^ when hit X enemies", 1, 1, 5);
 
         private static readonly MenuBool Qharass = new MenuBool("qharass", "[Q] on Harass");
+        private static readonly MenuBool Wharass = new MenuBool("wharass", "[W] on Harass");
         private static readonly MenuBool Eharass = new MenuBool("Eharass", "[E] on Harass");
+        private static readonly MenuSlider HarassMana = new MenuSlider("HarassMana", "Minimum mana", 30);
 
         private static readonly MenuBool Qclear = new MenuBool("qclear", "[Q] on ClearWave");
+        private static readonly MenuBool Wclear = new MenuBool("Wclear", "[W] on ClearWave");
+        private static readonly MenuSlider ClearMana = new MenuSlider("ClearMana", "Minimum mana", 30);
 
         private static readonly MenuSlider MiscQGrassOnLowHp = new MenuSlider("MiscQGrassOnLowHp", "Priority Q Grass when Hp less than( 0 = Off)", 30, 0, 100);
         private static readonly MenuBool MiscWAntiGapcloser = new MenuBool("MiscWAntiGapcloser", "AntiGapcloser with W");
@@ -87,8 +91,29 @@ namespace DaoHungAIO.Champions
             AIHeroClient.OnProcessSpellCast += OnProcessSpellCast;
             Gapcloser.OnGapcloser += OnGapcloser;
             //Game.OnWndProc += OnWndProc;
+            Dash.OnDash += OnDash;
 
             Drawing.OnDraw += Drawing_OnDraw;
+        }
+
+        private void OnDash(AIBaseClient sender, Dash.DashArgs args)
+        {
+            if (sender.IsEnemy && args.EndPos.DistanceToPlayer() <= 100)
+            {
+                if (MiscWAntiGapcloser.Enabled && _w.IsReady())
+                {
+                    if (args.EndTick - Variables.TickCount > 100)
+                    {
+                        _q.Cast(args.EndPos);
+                        Utility.DelayAction.Add(50, () => CastW(Player.Position.Extend(sender.Position, -knoclback_distance)));
+                    }
+                    else
+                    {
+                        CastW(Player.Position.Extend(sender.Position, -knoclback_distance));
+                    }
+                    return;
+                }
+            }
         }
 
         private void InitRiverPolygons()
@@ -539,15 +564,26 @@ namespace DaoHungAIO.Champions
                 return;
             }
         }
+        private void CastW(Vector3 posCast)
+        {
+            var pos = GetPosWCast(posCast);
+            if (pos != null && pos != new GameObject())
+            {
+                try
+                {
+                    _w.Cast(pos.Position);
+                }
+                catch
+                {
+                }
+                return;
+            }
+        }
         private void OnGapcloser(AIHeroClient sender, Gapcloser.GapcloserArgs args)
         {
             if(sender.IsEnemy)
             {
-                if (MiscWAntiGapcloser.Enabled && _w.IsReady())
-                {
-                    CastW(sender);
-                    return;
-                }
+
             }
         }
 
@@ -555,7 +591,7 @@ namespace DaoHungAIO.Champions
         {
             if (sender.IsMe)
             {
-                if(Orbwalker.ActiveMode == OrbwalkerMode.Combo && Wsave.Enabled && args.Slot == SpellSlot.Q && _w.IsReady())
+                if(Orbwalker.ActiveMode == OrbwalkerMode.Combo && Wsave.Enabled && Wcombo.Enabled && args.Slot == SpellSlot.Q && _w.IsReady())
                 {
                     var target = TargetSelector.SelectedTarget;
                     if(target == null || !target.IsValidEnemy(_q2.Range + 200))
@@ -583,26 +619,37 @@ namespace DaoHungAIO.Champions
 
                 }
             }
+
+ 
         }
 
         private static GameObject GetPosWCast(AIHeroClient target)
         {
-            GameObject obj = new GameObject();
             switch (WFindType.Index)
             {
                 case 0: //"Around 1200 hero"
-                    obj = GetByPiority(1200, Player.Position, target);
-                    break;
+                    return GetByPiority(1200, Player.Position, target);
                 case 1: // "Around 183 cursor"
-                    obj = GetByPiority(183, Game.CursorPosRaw, target);
-                    break;
+                    return GetByPiority(183, Game.CursorPosRaw, target);
             }
-            return obj;
+            return null;
+        }
+
+        private static GameObject GetPosWCast(Vector3 pos)
+        {
+            switch (WFindType.Index)
+            {
+                case 0: //"Around 1200 hero"
+                    return GetByPiority(1200, Player.Position, pos);
+                case 1: // "Around 183 cursor"
+                    return GetByPiority(183, Game.CursorPosRaw, pos);
+            }
+            return null;
         }
 
         private static GameObject GetByPiority(int range, Vector3 from, AIHeroClient target)
         {
-            GameObject obj = GetByDefault(target);
+            GameObject obj = null;
             if (MiscQGrassOnLowHp.Value > 0 && MiscQGrassOnLowHp.Value >= Player.HealthPercent)
             {
                 obj = GetGrassObject(range, from);
@@ -631,6 +678,47 @@ namespace DaoHungAIO.Champions
                         break;
                 }
             }
+          if (obj == null)
+            {
+                obj = GetRockObject(range, from);
+            }
+            return obj;
+        }
+        private static GameObject GetByPiority(int range, Vector3 from, Vector3 target)
+        {
+            GameObject obj = null;
+            if (MiscQGrassOnLowHp.Value > 0 && MiscQGrassOnLowHp.Value >= Player.HealthPercent)
+            {
+                obj = GetGrassObject(range, from);
+            }
+            else
+            {
+                switch (WPriority.SelectedValue)
+                {
+                    case "Rock": //"Rock"
+                        if (!IsRock())
+                        {
+                            obj = GetRockObject(range, from);
+                        }
+                        break;
+                    case "Grass": // "Grass"
+                        if (!IsGrass())
+                        {
+                            obj = GetGrassObject(range, from);
+                        }
+                        break;
+                    case "Water": // "Water"
+                        if (!IsWater())
+                        {
+                            obj = GetWaterObject(range, from);
+                        }
+                        break;
+                }
+            }
+            if (obj == null)
+            {
+                obj = GetRockObject(range, from);
+            }
             return obj;
         }
 
@@ -647,6 +735,10 @@ namespace DaoHungAIO.Champions
                     if (target == null) {
                         return ienum.OrderBy(o => o.DistanceToCursor()).FirstOrDefault();
                     }
+                    if(target.Health < Player.Health)
+                    {
+                        return ienum.OrderBy(o => o.Distance(target.Position.Extend(Player.Position, -240))).FirstOrDefault();
+                    }
                     return ienum.OrderBy(o => o.Distance(target)).FirstOrDefault();
                 default:
                     return ienum.OrderBy(o => o.DistanceToCursor()).FirstOrDefault();
@@ -660,6 +752,17 @@ namespace DaoHungAIO.Champions
                     return ienum.OrderBy(o => o.CountEnemyHeroesInRange(500)).FirstOrDefault();
                 case 1:
                     return ienum.OrderBy(o => o.DistanceToCursor()).FirstOrDefault();
+                case 2:
+                    var target = TargetSelector.GetTarget(_q.Range + _w.Range);
+                    if (target == null)
+                    {
+                        return ienum.OrderBy(o => o.DistanceToCursor()).FirstOrDefault();
+                    }
+                    if (target.Health < Player.Health)
+                    {
+                        return ienum.OrderBy(o => o.Distance(target.Position.Extend(Player.Position, -240))).FirstOrDefault();
+                    }
+                    return ienum.OrderBy(o => o.Distance(target)).FirstOrDefault();
                 default:
                     return ienum.OrderBy(o => o.DistanceToCursor()).FirstOrDefault();
             }
@@ -674,6 +777,11 @@ namespace DaoHungAIO.Champions
             {
                 return OrderByPos(ObjectManager.Get<GameObject>().Where(o => o.DistanceToPlayer() <= 1200 && !(o is GrassObject)));
             }
+            //  HasWater
+            return OrderByPos(ObjectManager.Get<GameObject>().Where(o => o.DistanceToPlayer() <= 1200));
+        }
+        private static GameObject GetByDefault(Vector3 target)
+        {
             //  HasWater
             return OrderByPos(ObjectManager.Get<GameObject>().Where(o => o.DistanceToPlayer() <= 1200));
         }
@@ -709,9 +817,14 @@ namespace DaoHungAIO.Champions
             _combat.Add(Rcount);
 
             _harass.Add(Qharass);
+            _harass.Add(Wharass);
             _harass.Add(Eharass);
+            _harass.Add(HarassMana);
+
 
             _farm.Add(Qclear);
+            _farm.Add(Wclear);
+            _farm.Add(ClearMana);
 
             _misc.Add(WPriority);
             _misc.Add(WFindType);
@@ -854,10 +967,10 @@ namespace DaoHungAIO.Champions
             }
             if (Qcombo.Enabled && _q.IsReady() && etarget.IsValidTarget(_q.Range))
             {
-                _q.Cast(etarget.Position);
+                _q.Cast(etarget);
             }
 
-            if (((Wsave.Enabled && !_q.IsReady()) || !Wsave.Enabled) && _w.IsReady() && (etarget.IsValidTarget(_q.Range) && ((!Qcombo.Enabled || !Player.Spellbook.GetSpell(SpellSlot.Q).IsLearned) || _q.CooldownTime > 1.5)))
+            if (((Wsave.Enabled && !_q.IsReady()) || !Wsave.Enabled) && Wcombo.Enabled && _w.IsReady() && (etarget.IsValidTarget(_q.Range) && ((!Qcombo.Enabled || !Player.Spellbook.GetSpell(SpellSlot.Q).IsLearned) || _q.CooldownTime > 1.5)))
             {
                 CastW(etarget);
             }
@@ -869,15 +982,15 @@ namespace DaoHungAIO.Champions
         }
 
 
-        private static void DoHarass()
+        private void DoHarass()
         {
             var t = TargetSelector.GetTarget(_e.Range + _q.Range);
             var etarget = TargetSelector.GetTarget(_e.Range);
             if (t == null)
                 return;
-            if (Eharass.Enabled)
+            if(Player.ManaPercent < HarassMana)
             {
-                _e.Cast();
+                return;
             }
 
             if (_q.IsReady() && t.IsValidTarget(_q.Range) && Qharass.Enabled)
@@ -887,6 +1000,10 @@ namespace DaoHungAIO.Champions
             if (_e.IsReady() && t.IsValidTarget(_e.Range) && Eharass.Enabled)
             {
                 _e.Cast(t);
+            }
+            if (_w.IsReady() && Wharass.Enabled && (etarget.IsValidTarget(_q.Range) && ((!Qharass.Enabled || !Player.Spellbook.GetSpell(SpellSlot.Q).IsLearned) || _q.CooldownTime > 1.5)))
+            {
+                CastW(etarget);
             }
         }
 
@@ -904,9 +1021,14 @@ namespace DaoHungAIO.Champions
             return d;
         }
 
-        private static void DoClear()
+        private void DoClear()
         {
-            if (!Qclear.Enabled)
+
+            if (Player.ManaPercent < ClearMana)
+            {
+                return;
+            }
+            if (!Qclear.Enabled && !Wclear.Enabled)
             {
                 return;
             }
@@ -919,13 +1041,23 @@ namespace DaoHungAIO.Champions
                 {
                     _q.Cast(qfarm.Position);
                 }
+                if (_w.IsReady() && (qfarm.Position.DistanceToPlayer() <= _q.Range && ((!Qclear.Enabled || !Player.Spellbook.GetSpell(SpellSlot.Q).IsLearned) || _q.CooldownTime > 1.5)))
+                {
+                    CastW(qfarm.Position.ToVector3());
+                }
             }
         }
-        private static void DoJungleClear()
+        private void DoJungleClear()
         {
-            var mob = GameObjects.Jungle
-                .Where(x => x.IsValidTarget(_q.Range) && x.GetJungleType() != JungleType.Unknown)
-                .OrderByDescending(x => x.MaxHealth).FirstOrDefault();
+            if (Player.ManaPercent < ClearMana)
+            {
+                return;
+            }
+            if (!Qclear.Enabled && !Wclear.Enabled)
+            {
+                return;
+            }
+            var mob = GameObjects.GetJungles(_q.Range, JungleType.All, JungleOrderTypes.MaxHealth).FirstOrDefault();
 
             if (mob != null)
             {
@@ -933,6 +1065,10 @@ namespace DaoHungAIO.Champions
                     _q.Cast(mob);
                 if (_e.IsReady() && mob.IsValidTarget(_e.Range))
                     _e.Cast(mob);
+                if (_w.IsReady() && (mob.IsValidTarget(_q.Range) && ((!Qclear.Enabled || !Player.Spellbook.GetSpell(SpellSlot.Q).IsLearned) || _q.CooldownTime > 1.5)))
+                {
+                    CastW((AIHeroClient)mob);
+                }
             }
         }
         private static void DoFarm()
@@ -941,12 +1077,22 @@ namespace DaoHungAIO.Champions
             //{
             //    return;
             //}
+
+            if (Player.ManaPercent < ClearMana)
+            {
+                return;
+            }
+            if (!Qclear.Enabled)
+            {
+                return;
+            }
             var minions = GameObjects.EnemyMinions.Where(x => x.IsValidTarget(_q.Range) && x.IsMinion() && x.Health < _q.GetDamage(x) && x.DistanceToPlayer() > ObjectManager.Player.GetRealAutoAttackRange())
     .Cast<AIBaseClient>().ToList();
             if (minions.Any())
             {
                 var qfarm = _q.GetLineFarmLocation(minions);
-                if (qfarm.Position.IsValid() && qfarm.MinionsHit >= 1)
+                var m = minions.FirstOrDefault();
+                if (qfarm.Position.IsValid() && qfarm.MinionsHit >= 1 && _q.GetDamage(m) > m.Health )
                 {
                     _q.Cast(qfarm.Position);
                 }
