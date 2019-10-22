@@ -53,13 +53,13 @@ namespace DaoHungAIO.Champions
         public Pantheon()
         {
 
-            _q = new Spell(SpellSlot.Q, 575);
-            _q2 = new Spell(SpellSlot.Q, 1200);
+            _q = new Spell(SpellSlot.Q, 550);
+            _q2 = new Spell(SpellSlot.Q, 1150);
             _w = new Spell(SpellSlot.W, 600);
             _e = new Spell(SpellSlot.E, 400);
             _r = new Spell(SpellSlot.R, 5500);
-            _q.SetSkillshot(0.25f, 120, 1500, false, SkillshotType.Line);
-            _q2.SetSkillshot(0.25f, 120, 1500, false, SkillshotType.Line);
+            _q.SetSkillshot(0.25f, 80, 1300, false, SkillshotType.Line);
+            _q2.SetSkillshot(0.25f, 80, 1300, false, SkillshotType.Line);
             _w.SetTargetted(0.25f, float.MaxValue);
             _e.SetSkillshot(0.25f, 120, float.MaxValue, false, SkillshotType.Cone);
 
@@ -258,11 +258,11 @@ namespace DaoHungAIO.Champions
 
         public void OnTick(EventArgs args)
         {
-            if (!_q.IsReady())
+            if (!_q.IsReady() || !_q.IsCharging)
             {
-                _q.Range = 575;
+                _q.Range = 550;
             }
-            _q2.Range = 1200;
+            _q2.Range = 1150;
             switch (Orbwalker.ActiveMode)
             {
                 case (OrbwalkerMode.Combo):
@@ -286,11 +286,11 @@ namespace DaoHungAIO.Champions
         {
 
             if (Qsave.Enabled) {
-                _q2.Range = 575;
+                _q2.Range = 550;
 
             } else
             {
-                _q2.Range = 1200;
+                _q2.Range = 1150;
             }
             var target = TargetSelector.SelectedTarget;
             if (target == null || target.IsValidTarget(_q2.Range))
@@ -305,18 +305,18 @@ namespace DaoHungAIO.Champions
             {
                 if (target.IsValidTarget(_q.Range))
                 {
-                    var pred = SpellPrediction.GetPrediction(target, target.DistanceToPlayer()/_q.Speed + 1000);
+                    var pred = SpellPrediction.GetPrediction(target, 1);
                     var wall = SpellPrediction.GetYasuoWallCollision(Player.Position, pred.UnitPosition);
                     if (wall == Vector3.Zero)
                     {
-                        _q.ShootChargedSpell(pred.UnitPosition);
+                        _q.ShootChargedSpell(SPrediction.Prediction.GetFastUnitPosition(target, 1));
                     }
                 } else
                 {
                     if (!_q.IsCharging)
                     {
                         _q.StartCharging();
-                        Utility.DelayAction.Add(350, () => _q.Range = 1200);
+                        Utility.DelayAction.Add(350, () => _q.Range = 1150);
                     }
 
                 }
@@ -356,7 +356,7 @@ namespace DaoHungAIO.Champions
                     if (!_q.IsCharging)
                     {
                         _q.StartCharging();
-                        Utility.DelayAction.Add(350, () => _q.Range = 1200);
+                        Utility.DelayAction.Add(350, () => _q.Range = 1150);
                     }
 
                 }
@@ -394,7 +394,7 @@ namespace DaoHungAIO.Champions
                         if (!_q.IsCharging)
                         {
                             _q.StartCharging();
-                            Utility.DelayAction.Add(350, () => _q.Range = 1200);
+                            Utility.DelayAction.Add(350, () => _q.Range = 1150);
                         }
 
                     }
@@ -432,7 +432,7 @@ namespace DaoHungAIO.Champions
                         if (!_q.IsCharging)
                         {
                             _q.StartCharging();
-                            Utility.DelayAction.Add(350, () => _q.Range = 1200);
+                            Utility.DelayAction.Add(350, () => _q.Range = 1150);
                         }
 
                     }
