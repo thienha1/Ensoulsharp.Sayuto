@@ -19,7 +19,7 @@ namespace DaoHungAIO.Champions
         private static Spell _q, _w, _e, _r, _q2;
         private static Menu _menu;
         private static AIHeroClient Player = ObjectManager.Player;
-        private static bool EnchanceSkill => Player.HasBuff("hihi");
+        private static bool IsCharging() => Player.HasBuff("PantheonQ");
 
 
         #region
@@ -54,7 +54,7 @@ namespace DaoHungAIO.Champions
         {
 
             _q = new Spell(SpellSlot.Q, 550);
-            _q2 = new Spell(SpellSlot.Q, 1150);
+            _q2 = new Spell(SpellSlot.Q, 1100);
             _w = new Spell(SpellSlot.W, 600);
             _e = new Spell(SpellSlot.E, 400);
             _r = new Spell(SpellSlot.R, 5500);
@@ -90,21 +90,22 @@ namespace DaoHungAIO.Champions
 
         private void OnDoCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
         {
+            Render.Circle.DrawCircle(args.End, 20, System.Drawing.Color.Red, 10);
             if (sender.IsEnemy && !args.SData.Name.IsAutoAttack())
             {
                 if (args.Target != null)
                 {
-                    if ((args.Target.IsMe || args.End.DistanceToPlayer() <= args.SData.CastRadius) && EnableBlock(sender, args.Slot))
+                    if ((args.Target.IsMe || args.End.DistanceToPlayer() <= 200 || args.Start.DistanceToPlayer() + args.End.DistanceToPlayer() == args.Start.Distance(args.End)) && EnableBlock(sender, args.Slot))
                     {
-                        _e.Cast(sender);
+                        _e.Cast(sender.Position);
                     }
 
                 }
                 else
                 {
-                    if (args.End.DistanceToPlayer() <= args.SData.CastRadius && EnableBlock(sender, args.Slot))
+                    if ((args.End.DistanceToPlayer() <= 200 || args.Start.DistanceToPlayer() + args.End.DistanceToPlayer() == args.Start.Distance(args.End)) && EnableBlock(sender, args.Slot))
                     {
-                        _e.Cast(sender);
+                        _e.Cast(sender.Position);
 
                     }
                 }
@@ -151,6 +152,10 @@ namespace DaoHungAIO.Champions
         private void InitBlockSkill()
         {
             HeroManager.Enemies.ForEach(hero => {
+                if(hero.CharacterName == "PracticeTool_TargetDummy")
+                {
+                    return;
+                }
                 Menu newMenu = new Menu(hero.CharacterName, hero.CharacterName);
                 newMenu.Add(new MenuBool(hero.CharacterName + SpellSlot.Q.ToString(), "Q", false));
                 newMenu.Add(new MenuBool(hero.CharacterName + SpellSlot.W.ToString(), "W", false));
@@ -162,20 +167,22 @@ namespace DaoHungAIO.Champions
 
         private void OnProcessSpellCast(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
         {
+
+            Render.Circle.DrawCircle(args.End, 20, System.Drawing.Color.Red, 10);
             if (sender.IsEnemy && !args.SData.Name.IsAutoAttack())
             {
                 if(args.Target != null)
                 {
-                    if ((args.Target.IsMe || args.End.DistanceToPlayer() <= args.SData.CastRadius) && EnableBlock(sender, args.Slot))
+                    if ((args.Target.IsMe || args.End.DistanceToPlayer() <= 200 || args.Start.DistanceToPlayer() + args.End.DistanceToPlayer() == args.Start.Distance(args.End)) && EnableBlock(sender, args.Slot))
                     {
-                        _e.Cast(sender);
+                        _e.Cast(sender.Position);
                     }
 
                 } else
                 {
-                    if (args.End.DistanceToPlayer() <= args.SData.CastRadius && EnableBlock(sender, args.Slot))
+                    if ((args.End.DistanceToPlayer() <= 200 || args.Start.DistanceToPlayer() + args.End.DistanceToPlayer() == args.Start.Distance(args.End)) && EnableBlock(sender, args.Slot))
                     {
-                        _e.Cast(sender);
+                        _e.Cast(sender.Position);
 
                     }
                 }
@@ -258,11 +265,14 @@ namespace DaoHungAIO.Champions
 
         public void OnTick(EventArgs args)
         {
-            if (!_q.IsReady() || !_q.IsCharging)
+         
+            if (!_q.IsReady() || !IsCharging())
             {
                 _q.Range = 550;
             }
-            _q2.Range = 1150;
+
+
+            _q2.Range = 1100;
             switch (Orbwalker.ActiveMode)
             {
                 case (OrbwalkerMode.Combo):
@@ -290,7 +300,7 @@ namespace DaoHungAIO.Champions
 
             } else
             {
-                _q2.Range = 1150;
+                _q2.Range = 1100;
             }
             var target = TargetSelector.SelectedTarget;
             if (target == null || target.IsValidTarget(_q2.Range))
@@ -305,23 +315,18 @@ namespace DaoHungAIO.Champions
             {
                 if (target.IsValidTarget(_q.Range))
                 {
-                    var pred = SpellPrediction.GetPrediction(target, 1);
-                    var wall = SpellPrediction.GetYasuoWallCollision(Player.Position, pred.UnitPosition);
-                    if (wall == Vector3.Zero)
-                    {
-                        _q.ShootChargedSpell(SPrediction.Prediction.GetFastUnitPosition(target, 1));
-                    }
+                    _q.ShootChargedSpell(target.Position);
                 } else
                 {
-                    if (!_q.IsCharging)
+                    if (!IsCharging())
                     {
                         _q.StartCharging();
-                        Utility.DelayAction.Add(350, () => _q.Range = 1150);
+                        Utility.DelayAction.Add(400, () => _q.Range = 1100);
                     }
 
                 }
             }
-            if (Wcombo.Enabled && _w.IsReady())
+            if (Wcombo.Enabled && _w.IsReady() && !IsCharging() && target.IsValidTarget(_q.Range))
             {
                 _w.Cast(target);
             }
@@ -344,19 +349,14 @@ namespace DaoHungAIO.Champions
             {
                 if (target.IsValidTarget(_q.Range))
                 {
-                    var pred = SpellPrediction.GetPrediction(target, target.DistanceToPlayer() / _q.Speed + 1000);
-                    var wall = SpellPrediction.GetYasuoWallCollision(Player.Position, pred.UnitPosition);
-                    if (wall == Vector3.Zero)
-                    {
-                        _q.ShootChargedSpell(pred.UnitPosition);
-                    }
+                    _q.ShootChargedSpell(target.Position);
                 }
                 else
                 {
-                    if (!_q.IsCharging)
+                    if (!IsCharging())
                     {
                         _q.StartCharging();
-                        Utility.DelayAction.Add(350, () => _q.Range = 1150);
+                        Utility.DelayAction.Add(350, () => _q.Range = 1100);
                     }
 
                 }
@@ -382,19 +382,14 @@ namespace DaoHungAIO.Champions
                 {
                     if (minions.IsValidTarget(_q.Range))
                     {
-                        var pred = SpellPrediction.GetPrediction(minions, minions.DistanceToPlayer() / _q.Speed + 1000);
-                        var wall = SpellPrediction.GetYasuoWallCollision(Player.Position, pred.UnitPosition);
-                        if (wall == Vector3.Zero)
-                        {
-                            _q.ShootChargedSpell(pred.UnitPosition);
-                        }
+                        _q.ShootChargedSpell(SPrediction.Prediction.GetFastUnitPosition(minions, 1));
                     }
                     else
                     {
-                        if (!_q.IsCharging)
+                        if (!IsCharging())
                         {
                             _q.StartCharging();
-                            Utility.DelayAction.Add(350, () => _q.Range = 1150);
+                            Utility.DelayAction.Add(350, () => _q.Range = 1100);
                         }
 
                     }
@@ -420,19 +415,14 @@ namespace DaoHungAIO.Champions
                 {
                     if (mob.IsValidTarget(_q.Range))
                     {
-                        var pred = SpellPrediction.GetPrediction(mob, mob.DistanceToPlayer() / _q.Speed + 1000);
-                        var wall = SpellPrediction.GetYasuoWallCollision(Player.Position, pred.UnitPosition);
-                        if (wall == Vector3.Zero)
-                        {
-                            _q.ShootChargedSpell(pred.UnitPosition);
-                        }
+                        _q.ShootChargedSpell(SPrediction.Prediction.GetFastUnitPosition(mob, 1));
                     }
                     else
                     {
-                        if (!_q.IsCharging)
+                        if (!IsCharging())
                         {
                             _q.StartCharging();
-                            Utility.DelayAction.Add(350, () => _q.Range = 1150);
+                            Utility.DelayAction.Add(350, () => _q.Range = 1100);
                         }
 
                     }
