@@ -965,9 +965,17 @@ namespace DaoHungAIO.Champions
                     }
                 }
             }
-            if (Qcombo.Enabled && _q.IsReady() && etarget.IsValidTarget(_q.Range))
+            if (Qcombo.Enabled && _q.IsReady())
             {
-                _q.Cast(etarget);
+                var col = _q.GetCollision(Player.Position.ToVector2(), new List<Vector2>() { etarget.Position.ToVector2() });
+                if(col.Count > 0)
+                {
+                    _q.Range = 240f + col.OrderBy(o => o.DistanceToPlayer()).FirstOrDefault().DistanceToPlayer();
+                }
+                if (etarget.IsValidTarget(_q.Range))
+                {
+                    _q.Cast(etarget);
+                }
             }
 
             if (((Wsave.Enabled && !_q.IsReady()) || !Wsave.Enabled) && Wcombo.Enabled && _w.IsReady() && (etarget.IsValidTarget(_q.Range) && ((!Qcombo.Enabled || !Player.Spellbook.GetSpell(SpellSlot.Q).IsLearned) || _q.CooldownTime > 1.5)))

@@ -146,6 +146,9 @@ namespace DaoHungAIO
                     case "Olaf":
                         new Olaf();
                         break;
+                    case "Pantheon":
+                        new Pantheon();
+                        break;
                     case "Orianna":
                         Orianna.initOrianna();
                         break;
