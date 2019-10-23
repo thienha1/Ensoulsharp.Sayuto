@@ -58,8 +58,8 @@ namespace DaoHungAIO.Champions
             _w = new Spell(SpellSlot.W, 600);
             _e = new Spell(SpellSlot.E, 400);
             _r = new Spell(SpellSlot.R, 5500);
-            _q.SetSkillshot(0.25f, 80, 1300, false, SkillshotType.Line);
-            _q2.SetSkillshot(0.25f, 80, 1300, false, SkillshotType.Line);
+            _q.SetSkillshot(0.25f, 120, 1200, false, SkillshotType.Line);
+            _q2.SetSkillshot(0.25f, 120, 1200, false, SkillshotType.Line);
             _w.SetTargetted(0.25f, float.MaxValue);
             _e.SetSkillshot(0.25f, 120, float.MaxValue, false, SkillshotType.Cone);
 
