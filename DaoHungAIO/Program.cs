@@ -143,6 +143,9 @@ namespace DaoHungAIO
                     case "MasterYi":
                         new MasterSharp();
                         break;
+                    case "Mordekaiser":
+                        new Mordekaiser();
+                        break;
                     case "Olaf":
                         new Olaf();
                         break;

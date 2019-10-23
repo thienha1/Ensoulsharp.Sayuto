@@ -16,6 +16,7 @@
     <PostBuildEvent />
     <OutputPath>bin\Release</OutputPath>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -28,7 +29,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -97,6 +97,7 @@
     <Compile Include="Champions\KogMaw.cs" />
     <Compile Include="Champions\Malphite.cs" />
     <Compile Include="Champions\MasterYi.cs" />
+    <Compile Include="Champions\Mordekaiser.cs" />
     <Compile Include="Champions\Nidalee.cs" />
     <Compile Include="Champions\Olaf.cs" />
     <Compile Include="Champions\Orianna.cs" />
