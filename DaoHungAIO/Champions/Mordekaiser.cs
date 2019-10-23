@@ -102,11 +102,14 @@ namespace DaoHungAIO.Champions
         {
             if(sender.IsMe && !args.SData.IsAutoAttack() && args.Slot == SpellSlot.E && MiscQOnE.Enabled && q.IsReady())
             {
-                var t = TargetSelector.GetTargets(q.Range).Where(target => target.HasBuffOfType(BuffType.Stun) && !target.HaveSpellShield()).OrderByDescending(target => TargetSelector.GetPriority(target)).FirstOrDefault();
-                if(t != null)
+                Utility.DelayAction.Add((int)(args.Time - Variables.GameTimeTickCount), () =>
                 {
-                    q.Cast(t, true);
-                }
+                    var t = TargetSelector.GetTargets(q.Range).Where(target => target.HasBuffOfType(BuffType.Stun) && !target.HaveSpellShield()).OrderByDescending(target => TargetSelector.GetPriority(target)).FirstOrDefault();
+                    if (t != null)
+                    {
+                        q.Cast(t, true);
+                    }
+                });
             }
         }
 
