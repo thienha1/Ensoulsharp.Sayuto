@@ -27,10 +27,10 @@ namespace DaoHungAIO.Champions
 
         public static Spellbook sBook = player.Spellbook;
 
-        public static SpellDataInstClient Qdata = sBook.GetSpell(SpellSlot.Q);
-        public static SpellDataInstClient Wdata = sBook.GetSpell(SpellSlot.W);
-        public static SpellDataInstClient Edata = sBook.GetSpell(SpellSlot.E);
-        public static SpellDataInstClient Rdata = sBook.GetSpell(SpellSlot.R);
+        public static SpellDataInst Qdata = sBook.GetSpell(SpellSlot.Q);
+        public static SpellDataInst Wdata = sBook.GetSpell(SpellSlot.W);
+        public static SpellDataInst Edata = sBook.GetSpell(SpellSlot.E);
+        public static SpellDataInst Rdata = sBook.GetSpell(SpellSlot.R);
         public static Spell Q = new Spell(SpellSlot.Q, 600);
         public static Spell W = new Spell(SpellSlot.W, 0);
         public static Spell E = new Spell(SpellSlot.E, 0);
@@ -190,7 +190,7 @@ namespace DaoHungAIO.Champions
         {
             if (useQ != 0 && Q.IsReady() && jumpEnesAround() != 0 && MasterSharp.Config.Item("smartQDogue").GetValue<MenuBool>())
             {
-                //Chat.Print("Cast Q");
+                //Game.Print("Cast Q");
                 if (delay != 0)
                     Utility.DelayAction.Add(delay, useQonBest);
                 else
@@ -219,7 +219,7 @@ namespace DaoHungAIO.Champions
         {
             try
             {
-                //Chat.Print("use Q on Best");
+                //Game.Print("use Q on Best");
 
                 if (!Q.IsReady())
                 {
@@ -258,11 +258,11 @@ namespace DaoHungAIO.Champions
                                 ob =>
                                     ob.IsEnemy && (ob is AIMinionClient || ob is AIHeroClient) &&
                                     ob.Distance(player) < 600 && !ob.IsDead)
-                            .OrderBy(ob => ob.Distance(Game.CursorPosRaw, true)).FirstOrDefault();
+                            .OrderBy(ob => ob.Distance(Game.CursorPos, true)).FirstOrDefault();
                     //Console.WriteLine("do shit? " + bestOther.Name);
                     if (bestOther != null)
                     {
-                        //Chat.Print("use Q on Bested");
+                        //Game.Print("use Q on Bested");
                         Q.Cast(bestOther);
                     }
                 }
@@ -294,7 +294,7 @@ namespace DaoHungAIO.Champions
         public MasterSharp()
         {
 
-            Chat.Print("MasterYi -  by DeTuKs");
+            Game.Print("MasterYi -  by DeTuKs");
             MasterYi.setSkillShots();
 
             TargetedSkills.setUpSkills();
@@ -331,7 +331,7 @@ namespace DaoHungAIO.Champions
                 Config.Attach();
                 Drawing.OnDraw += onDraw;
 
-                Game.OnTick += OnGameUpdate;
+                EnsoulSharp.SDK.Events.Tick.OnTick += OnGameUpdate;
 
                 AIBaseClient.OnDoCast += OnProcessSpell;
 
@@ -510,7 +510,7 @@ namespace DaoHungAIO.Champions
             if (obj.IsEnemy && obj is AIHeroClient)
             {
 
-                //Chat.Print("Casted: " + arg.SData.Name);
+                //Game.Print("Casted: " + arg.SData.Name);
             if (arg.Target != null && arg.Target.NetworkId == MasterYi.player.NetworkId)
             {
                 //Console.WriteLine(arg.SData.Name);
@@ -518,12 +518,12 @@ namespace DaoHungAIO.Champions
                 {
 
                     var hero = (AIHeroClient)obj;
-                    //Chat.Print("Has1: " + arg.SData.Name);
+                    //Game.Print("Has1: " + arg.SData.Name);
                     var spellSlot = (hero.GetSpellSlot(arg.SData.Name));
                     TargetedSkills.TargSkill skill = TargetedSkills.targetedSkillsAll.FirstOrDefault(ob => ob.sName == arg.SData.Name);
                     if (skill != null)
                     {
-                        //Chat.Print("Evade: " + arg.SData.Name);
+                        //Game.Print("Evade: " + arg.SData.Name);
                         MasterYi.evadeDamage(skill.useQ, skill.useW, arg, skill.delay);
                         return;
                     }
@@ -534,11 +534,11 @@ namespace DaoHungAIO.Champions
             {
 
                 var hero = (AIHeroClient)obj;
-                //Chat.Print("Has: " + arg.SData.Name);
+                //Game.Print("Has: " + arg.SData.Name);
                 TargetedSkills.TargSkill skill = TargetedSkills.targetedSkillsAll.FirstOrDefault(ob => ob.sName == arg.SData.Name);
                 if (skill != null)
                 {
-                    //Chat.Print("Evade: " + arg.SData.Name);
+                    //Game.Print("Evade: " + arg.SData.Name);
                     MasterYi.evadeDamage(skill.useQ, skill.useW, arg, skill.delay);
                     return;
                 }

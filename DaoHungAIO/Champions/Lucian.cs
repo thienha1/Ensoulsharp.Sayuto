@@ -212,7 +212,7 @@ namespace DaoHungAIO.Champions
         {
             if (KillstealQ && Q.IsReady())
             {
-                var targets = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget(Q.Range) && !x.IsZombie);
+                var targets = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget(Q.Range) && !x.IsDead);
                 foreach (var target in targets)
                 {
                     if (target.Health < Q.GetDamage(target) && (!target.HasBuff("kindrednodeathbuff") && !target.HasBuff("Undying Rage") && !target.HasBuff("JudicatorIntervention")))
@@ -239,7 +239,7 @@ namespace DaoHungAIO.Champions
                     {
                         if (!LT) return;
 
-                        if (E.IsReady() && !AAPassive && LE) E.Cast(Player.Position.Extend(Game.CursorPosRaw, 70));
+                        if (E.IsReady() && !AAPassive && LE) E.Cast(Player.Position.Extend(Game.CursorPos, 70));
                         if (Q.IsReady() && (!E.IsReady() || (E.IsReady() && !LE)) && LQ != 0 && !AAPassive)
                         {
                             var QMinions = GameObjects.GetMinions(Q.Range);
@@ -288,7 +288,7 @@ namespace DaoHungAIO.Champions
                     if (Player.ManaPercent < HHMinMana) return;
 
                     if (E.IsReady() && !AAPassive && HE == "Side") E.Cast((Deviation(Player.Position.ToVector2(), target.Position.ToVector2(), 65).ToVector3()));
-                    if (E.IsReady() && !AAPassive && HE == "Cursor") E.Cast(Player.Position.Extend(Game.CursorPosRaw, 50));
+                    if (E.IsReady() && !AAPassive && HE == "Cursor") E.Cast(Player.Position.Extend(Game.CursorPos, 50));
                     if (E.IsReady() && !AAPassive && HE == "Enemy") E.Cast(Player.Position.Extend(target.Position, 50));
                     if (Q.IsReady() && (!E.IsReady() || (E.IsReady() && HE == "Never")) && HQ && !AAPassive) Q.Cast(target);
                     if ((!E.IsReady() || (E.IsReady() && HE == "Never")) && (!Q.IsReady() || (Q.IsReady() && !HQ)) && HW && W.IsReady() && !AAPassive) W.Cast(target.Position);
@@ -301,7 +301,7 @@ namespace DaoHungAIO.Champions
                     var Mobs = GameObjects.GetMinions(Player.GetRealAutoAttackRange(), MinionTypes.All, MinionTeam.Enemy, MinionOrderTypes.MaxHealth);
                     if (Mobs[0].IsValid && Mobs.Count != 0)
                     {
-                        if (E.IsReady() && !AAPassive && JE) E.Cast(Player.Position.Extend(Game.CursorPosRaw, 70));
+                        if (E.IsReady() && !AAPassive && JE) E.Cast(Player.Position.Extend(Game.CursorPos, 70));
                         if (Q.IsReady() && (!E.IsReady() || (E.IsReady() && !JE)) && JQ && !AAPassive) Q.Cast(Mobs[0]);
                         if ((!E.IsReady() || (E.IsReady() && !JE)) && (!Q.IsReady() || (Q.IsReady() && !JQ)) && JW && W.IsReady() && !AAPassive) W.Cast(Mobs[0].Position);
                     }
@@ -400,7 +400,7 @@ namespace DaoHungAIO.Champions
                             );
                         if (CE == "Cursor")
                             Utility.DelayAction.Add((int)Math.Ceiling(Player.AttackCastDelay * 1000), () => {
-                                E.Cast(Game.CursorPosRaw);
+                                E.Cast(Game.CursorPos);
                             });
                         if (CE == "Enemy")
                             Utility.DelayAction.Add((int)Math.Ceiling(Player.AttackCastDelay * 1000), () => {
@@ -470,7 +470,7 @@ namespace DaoHungAIO.Champions
         //        foreach (
         //            var enemy in
         //                ObjectManager.Get<AIHeroClient>()
-        //                    .Where(ene => ene.IsValidTarget() && !ene.IsZombie))
+        //                    .Where(ene => ene.IsValidTarget() && !ene.IsDead))
         //        {
         //            Indicator.unit = enemy;
         //            Indicator.drawDmg(getComboDamage(enemy), new ColorBGRA(255, 204, 0, 160));

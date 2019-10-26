@@ -186,7 +186,7 @@ namespace DaoHungAIO.Champions
             var ulted = GetUltedTarget();
             if (ulted.IsValidTarget(PriorityRange))
                 return ulted;
-            return HeroManager.Enemies.Where(x => x.IsValidTarget(PriorityRange) && !x.IsZombie)
+            return HeroManager.Enemies.Where(x => x.IsValidTarget(PriorityRange) && !x.IsDead)
                                     .OrderByDescending(x => PriorityValue(x))
                                     .ThenBy(x => x.Health)
                                     .FirstOrDefault();
@@ -200,7 +200,7 @@ namespace DaoHungAIO.Champions
             if (ulted.IsValidTarget(SelectedRange))
                 return ulted;
             var tar = TargetSelector.SelectedTarget;
-            var tarD = tar.IsValidTarget(SelectedRange) && !tar.IsZombie ? tar : null;
+            var tarD = tar.IsValidTarget(SelectedRange) && !tar.IsDead ? tar : null;
             if (tarD != null)
                 return tarD;
             else
@@ -225,13 +225,13 @@ namespace DaoHungAIO.Champions
                 OptionalTarget = ulted;
                 return OptionalTarget;
             }
-            if (OptionalTarget.IsValidTarget(OptionalRange) && !OptionalTarget.IsZombie)
+            if (OptionalTarget.IsValidTarget(OptionalRange) && !OptionalTarget.IsDead)
                 return OptionalTarget;
-            OptionalTarget = HeroManager.Enemies.Where(x => x.IsValidTarget(OptionalRange) && !x.IsZombie)
+            OptionalTarget = HeroManager.Enemies.Where(x => x.IsValidTarget(OptionalRange) && !x.IsDead)
                                 .OrderBy(x => Player.Distance(x.Position)).FirstOrDefault();
             return OptionalTarget;
         }
-        public static void Game_OnWndProc(WndEventArgs args)
+        public static void Game_OnWndProc(GameWndProcEventArgs args)
         {
             if (args.Msg == (uint)WindowsMessages.KEYDOWN)
             {
@@ -240,7 +240,7 @@ namespace DaoHungAIO.Champions
                     OptionalTarget = GetOptionalTarget();
                     if (OptionalTarget == null)
                     {
-                        PreOptionalTarget = HeroManager.Enemies.Where(x => x.IsValidTarget(OptionalRange) && !x.IsZombie)
+                        PreOptionalTarget = HeroManager.Enemies.Where(x => x.IsValidTarget(OptionalRange) && !x.IsDead)
                                                        .OrderBy(x => OldOptionalTarget != null ? x.NetworkId == OldOptionalTarget.NetworkId : x.IsEnemy)
                                                        .ThenBy(x => Player.Distance(x.Position)).FirstOrDefault();
                         if (PreOptionalTarget != null)
@@ -249,7 +249,7 @@ namespace DaoHungAIO.Champions
                         }
                         return;
                     }
-                    PreOptionalTarget = HeroManager.Enemies.Where(x => x.IsValidTarget(OptionalRange) && !x.IsZombie && x.NetworkId != OptionalTarget.NetworkId)
+                    PreOptionalTarget = HeroManager.Enemies.Where(x => x.IsValidTarget(OptionalRange) && !x.IsDead && x.NetworkId != OptionalTarget.NetworkId)
                                                    .OrderBy(x => OldOptionalTarget != null ? x.NetworkId == OldOptionalTarget.NetworkId : x.IsEnemy)
                                                    .ThenBy(x => Player.Distance(x.Position)).FirstOrDefault();
                     if (PreOptionalTarget != null)
@@ -266,8 +266,8 @@ namespace DaoHungAIO.Champions
                 if (OptionalTarget == null)
                 {
                     PreOptionalTarget = HeroManager.Enemies.Where(x => x.IsValidTarget(OptionalRange)
-                                                    && x.IsValidTarget(400, true, Game.CursorPosRaw) && !x.IsZombie)
-                                                   .OrderBy(x => Game.CursorPosRaw.ToVector2().Distance(x.Position.ToVector2())).FirstOrDefault();
+                                                    && x.IsValidTarget(400, true, Game.CursorPos) && !x.IsDead)
+                                                   .OrderBy(x => Game.CursorPos.ToVector2().Distance(x.Position.ToVector2())).FirstOrDefault();
                     if (PreOptionalTarget != null)
                     {
                         OptionalTarget = PreOptionalTarget;
@@ -275,8 +275,8 @@ namespace DaoHungAIO.Champions
                     return;
                 }
                 PreOptionalTarget = HeroManager.Enemies.Where(x => x.IsValidTarget(OptionalRange)
-                                                && x.IsValidTarget(400, true, Game.CursorPosRaw) && !x.IsZombie)
-                                               .OrderBy(x => Game.CursorPosRaw.ToVector2().Distance(x.Position.ToVector2())).FirstOrDefault();
+                                                && x.IsValidTarget(400, true, Game.CursorPos) && !x.IsDead)
+                                               .OrderBy(x => Game.CursorPos.ToVector2().Distance(x.Position.ToVector2())).FirstOrDefault();
                 if (PreOptionalTarget != null)
                 {
                     OldOptionalTarget = OptionalTarget;
@@ -353,7 +353,7 @@ namespace DaoHungAIO.Champions
                 }
             }
             Fiora.Config.Add(evadeMenu);
-            Game.OnTick += OnUpdateTarget;
+            EnsoulSharp.SDK.Events.Tick.OnTick += OnUpdateTarget;
             GameObject.OnMissileCreate += ObjSpellMissileOnCreate;
             GameObject.OnDelete += ObjSpellMissileOnDelete;
         }
@@ -520,7 +520,7 @@ namespace DaoHungAIO.Champions
             //{
             //    return;
             //}
-            //Chat.Print("has caster");
+            //Game.Print("has caster");
             var spellData =
                 Spells.FirstOrDefault(
                     i =>
@@ -839,7 +839,7 @@ namespace DaoHungAIO.Champions
             FioraPrePassiveObjects = new List<EffectEmitter>();
             FioraPassiveObjects = new List<EffectEmitter>();
             FioraUltiPassiveObjects = new List<EffectEmitter>();
-            //ObjectManager.Get<EffectEmitter>().Where(ee => ee.Name.Contains("Fiora")).ForEach(ee => Chat.Print(ee.Name));
+            //ObjectManager.Get<EffectEmitter>().Where(ee => ee.Name.Contains("Fiora")).ForEach(ee => Game.Print(ee.Name));
             var ObjectEmitter = ObjectManager.Get<EffectEmitter>()
                                              .Where(a => a.Name.IsPassiveMark(FioraPassiveName.Concat(FioraPrePassiveName).ToList())
                                              || (a.Name.Contains("_R_Mark") && a.Name.Contains("Fiora"))
@@ -859,24 +859,27 @@ namespace DaoHungAIO.Champions
         private static Vector2 LastClickPoint = new Vector2();
         public static void Init()
         {
-            Game.OnTick += Game_OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnUpdate;
             Game.OnWndProc += Game_OnWndProc;
-            Player.OnIssueOrder += AIBaseClient_OnIssueOrder;
+            AIBaseClient.OnIssueOrder += AIBaseClient_OnIssueOrder;
         }
 
         private static void AIBaseClient_OnIssueOrder(
     AIBaseClient sender,
-    PlayerIssueOrderEventArgs args
+    AIBaseClientIssueOrderEventArgs args
 )
         {
-            if (!OrbwalkLastClickActive)
-                return;
-            if (!sender.IsMe)
-                return;
-            if (args.Order != GameObjectOrder.MoveTo)
-                return;
-            if (!Orbwalker.CanMove())// || Player.IsCastingInterruptableSpell())
-                args.Process = false;
+            if (sender.IsMe)
+            {
+                if (!OrbwalkLastClickActive)
+                    return;
+                if (!sender.IsMe)
+                    return;
+                if (args.Order != GameObjectOrder.MoveTo)
+                    return;
+                if (!Orbwalker.CanMove())// || Player.IsCastingInterruptableSpell())
+                    args.Process = false;
+            }
         }
 
         public static void OrbwalkLRCLK_ValueChanged(
@@ -887,7 +890,7 @@ namespace DaoHungAIO.Champions
             var key = sender as MenuKeyBind;
             if (key.Active)
             {
-                LastClickPoint = Game.CursorPosRaw.ToVector2();
+                LastClickPoint = Game.CursorPos.ToVector2();
             }
         }
         private static void Game_OnUpdate(EventArgs args)
@@ -898,14 +901,14 @@ namespace DaoHungAIO.Champions
             var target = TargetSelector.GetTarget(500);
             Orbwalker.Orbwalk(
                         target.InAutoAttackRange() ? target : null,
-                        LastClickPoint.IsValid() ? LastClickPoint.ToVector3() : Game.CursorPosRaw);
+                        LastClickPoint.IsValid() ? LastClickPoint.ToVector3() : Game.CursorPos);
         }
 
-        private static void Game_OnWndProc(WndEventArgs args)
+        private static void Game_OnWndProc(GameWndProcEventArgs args)
         {
             if (args.Msg == (uint)WindowsMessages.RBUTTONDOWN)
             {
-                LastClickPoint = Game.CursorPosRaw.ToVector2();
+                LastClickPoint = Game.CursorPos.ToVector2();
             }
         }
     }
@@ -968,7 +971,7 @@ namespace DaoHungAIO.Champions
                 }
             }
             Fiora.Config.Add(evadeMenu);
-            Game.OnTick += Game_OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnUpdate;
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
             AIBaseClient.OnDoCast += AIHeroClient_OnProcessSpellCast;
@@ -1436,7 +1439,7 @@ namespace DaoHungAIO.Champions
                     if (hero != null)
                         Player.Spellbook.CastSpell(SpellSlot.W, hero.Position);
                     else
-                        Player.Spellbook.CastSpell(SpellSlot.W, Player.Position.Extend(Game.CursorPosRaw, 100));
+                        Player.Spellbook.CastSpell(SpellSlot.W, Player.Position.Extend(Game.CursorPos, 100));
                 }
             }
         }
@@ -1454,7 +1457,7 @@ namespace DaoHungAIO.Champions
                 if (hero != null)
                     Player.Spellbook.CastSpell(SpellSlot.W, hero.Position);
                 else
-                    Player.Spellbook.CastSpell(SpellSlot.W, Player.Position.Extend(Game.CursorPosRaw, 100));
+                    Player.Spellbook.CastSpell(SpellSlot.W, Player.Position.Extend(Game.CursorPos, 100));
             }
         }
         private static void LoadSpellData()
@@ -1703,7 +1706,7 @@ namespace DaoHungAIO.Champions
                     }
                 }
                 Fiora.Config.Add(evadeMenu);
-                Game.OnTick += OnUpdateDashes;
+                EnsoulSharp.SDK.Events.Tick.OnTick += OnUpdateDashes;
                 AIHeroClient.OnDoCast += AIHeroClient_OnProcessSpellCast;
             }
 
@@ -1758,7 +1761,7 @@ namespace DaoHungAIO.Champions
                         var hero = HeroManager.Enemies.FirstOrDefault(x => x.IsValidTarget(W.Range));
                         if (hero != null)
                         {
-                            //Chat.Print("Will Cast W3");
+                            //Game.Print("Will Cast W3");
                             //W.Cast(hero.Position);
                             Player.Spellbook.CastSpell(SpellSlot.W, hero.Position);
 
@@ -1766,7 +1769,7 @@ namespace DaoHungAIO.Champions
                         else
                         {
 
-                            //Chat.Print("Will Cast W4");
+                            //Game.Print("Will Cast W4");
                             //W.Cast(Player.Position.Extend(caster.Position, 100));
                             Player.Spellbook.CastSpell(SpellSlot.W, Player.Position.Extend(caster.Position, 100));
                         }
@@ -2479,7 +2482,7 @@ namespace DaoHungAIO.Champions
             Drawing.OnEndScene += Drawing_OnEndScene;
 
             GameObject.OnCreate += GameObject_OnCreate;
-            Game.OnTick += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Orbwalker.OnAction += OnActionDelegate;
             //AfterAttackNoTarget += Orbwalker_AfterAttackNoTarget; it is afterAttack with target null
             //OnAttack += OnAttack;
@@ -2653,7 +2656,7 @@ namespace DaoHungAIO.Champions
         {
             //GameObjects.AllGameObjects.Where(g => g.Name.Contains("FioraPassive")).ForEach(e =>
             //{
-            //    Chat.Print(e.Name);
+            //    Game.Print(e.Name);
             //});
             if (Player.IsDead)
                 return;
@@ -2814,12 +2817,12 @@ namespace DaoHungAIO.Champions
             }
             if (activewalljump)
             {
-                var Fstwall = GetFirstWallPoint(Player.Position.ToVector2(), Game.CursorPosRaw.ToVector2());
+                var Fstwall = GetFirstWallPoint(Player.Position.ToVector2(), Game.CursorPos.ToVector2());
                 if (Fstwall != null)
                 {
                     var firstwall = ((Vector2)Fstwall);
-                    var pos = firstwall.Extend(Game.CursorPosRaw.ToVector2(), 100);
-                    var Lstwall = GetLastWallPoint(firstwall, Game.CursorPosRaw.ToVector2());
+                    var pos = firstwall.Extend(Game.CursorPos.ToVector2(), 100);
+                    var Lstwall = GetLastWallPoint(firstwall, Game.CursorPos.ToVector2());
                     if (Lstwall != null)
                     {
                         var lastwall = ((Vector2)Lstwall);
@@ -2829,7 +2832,7 @@ namespace DaoHungAIO.Champions
                             {
                                 var pos1 = pos.RotateAround(firstwall, i);
                                 var pos2 = firstwall.Extend(pos1, 400);
-                                if (pos1.InTheCone(firstwall, Game.CursorPosRaw.ToVector2(), 60) && pos1.IsWall() && !pos2.IsWall())
+                                if (pos1.InTheCone(firstwall, Game.CursorPos.ToVector2(), 60) && pos1.IsWall() && !pos2.IsWall())
                                 {
                                     Render.Circle.DrawCircle(firstwall.ToVector3(), 50, Color.Green);
                                     goto Finish;
@@ -2856,40 +2859,40 @@ namespace DaoHungAIO.Champions
         {
             if (usewalljump && activewalljump)
             {
-                var Fstwall = GetFirstWallPoint(Player.Position.ToVector2(), Game.CursorPosRaw.ToVector2());
+                var Fstwall = GetFirstWallPoint(Player.Position.ToVector2(), Game.CursorPos.ToVector2());
                 if (Fstwall != null)
                 {
                     var firstwall = ((Vector2)Fstwall);
-                    var Lstwall = GetLastWallPoint(firstwall, Game.CursorPosRaw.ToVector2());
+                    var Lstwall = GetLastWallPoint(firstwall, Game.CursorPos.ToVector2());
                     if (Lstwall != null)
                     {
                         var lastwall = ((Vector2)Lstwall);
                         if (InMiddileWall(firstwall, lastwall))
                         {
-                            var y = Player.Position.Extend(Game.CursorPosRaw, 30);
+                            var y = Player.Position.Extend(Game.CursorPos, 30);
                             for (int i = 20; i <= 300; i = i + 20)
                             {
                                 if (Variables.GameTimeTickCount - movetick < (70 + Math.Min(60, Game.Ping)))
                                     break;
-                                if (Player.Distance(Game.CursorPosRaw) <= 1200 && Player.Position.ToVector2().Extend(Game.CursorPosRaw.ToVector2(), i).IsWall())
+                                if (Player.Distance(Game.CursorPos) <= 1200 && Player.Position.ToVector2().Extend(Game.CursorPos.ToVector2(), i).IsWall())
                                 {
-                                    Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.ToVector2().Extend(Game.CursorPosRaw.ToVector2(), i - 20).ToVector3());
+                                    Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.ToVector2().Extend(Game.CursorPos.ToVector2(), i - 20).ToVector3());
                                     movetick = Variables.GameTimeTickCount;
                                     break;
                                 }
                                 Player.IssueOrder(GameObjectOrder.MoveTo,
-                                    Player.Distance(Game.CursorPosRaw) <= 1200 ?
-                                    Player.Position.ToVector2().Extend(Game.CursorPosRaw.ToVector2(), 200).ToVector3() :
-                                    Game.CursorPosRaw);
+                                    Player.Distance(Game.CursorPos) <= 1200 ?
+                                    Player.Position.ToVector2().Extend(Game.CursorPos.ToVector2(), 200).ToVector3() :
+                                    Game.CursorPos);
                             }
                             if (y.IsWall() && Prediction.GetFastUnitPosition(Player, 500).Distance(Player.Position) <= 10 && Q.IsReady())
                             {
-                                var pos = Player.Position.ToVector2().Extend(Game.CursorPosRaw.ToVector2(), 100);
+                                var pos = Player.Position.ToVector2().Extend(Game.CursorPos.ToVector2(), 100);
                                 for (int i = 0; i <= 359; i++)
                                 {
                                     var pos1 = pos.RotateAround(Player.Position.ToVector2(), i);
                                     var pos2 = Player.Position.ToVector2().Extend(pos1, 400);
-                                    if (pos1.InTheCone(Player.Position.ToVector2(), Game.CursorPosRaw.ToVector2(), 60) && pos1.IsWall() && !pos2.IsWall())
+                                    if (pos1.InTheCone(Player.Position.ToVector2(), Game.CursorPos.ToVector2(), 60) && pos1.IsWall() && !pos2.IsWall())
                                     {
                                         Q.Cast(pos2);
                                     }
@@ -2899,19 +2902,19 @@ namespace DaoHungAIO.Champions
                         }
                         else if (Variables.GameTimeTickCount - movetick >= (70 + Math.Min(60, Game.Ping)))
                         {
-                            Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
+                            Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                             movetick = Variables.GameTimeTickCount;
                         }
                     }
                     else if (Variables.GameTimeTickCount - movetick >= (70 + Math.Min(60, Game.Ping)))
                     {
-                        Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
+                        Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                         movetick = Variables.GameTimeTickCount;
                     }
                 }
                 else if (Variables.GameTimeTickCount - movetick >= (70 + Math.Min(60, Game.Ping)))
                 {
-                    Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
+                    Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                     movetick = Variables.GameTimeTickCount;
                 }
             }
@@ -2956,7 +2959,7 @@ namespace DaoHungAIO.Champions
         private static bool InMiddileWall(Vector2 firstwall, Vector2 lastwall)
         {
             var midwall = new Vector2((firstwall.X + lastwall.X) / 2, (firstwall.Y + lastwall.Y) / 2);
-            var point = midwall.Extend(Game.CursorPosRaw.ToVector2(), 50);
+            var point = midwall.Extend(Game.CursorPos.ToVector2(), 50);
             for (int i = 0; i <= 350; i = i + 10)
             {
                 var testpoint = point.RotateAround(midwall, i);
@@ -2974,7 +2977,7 @@ namespace DaoHungAIO.Champions
             if (Config.GetValue<MenuKeyBind>("OrbwalkPassive").Active)
             {
                 var target = TargetSelector.GetTarget(OrbwalkToPassiveRange);
-                if (target.IsValidTarget(OrbwalkToPassiveRange) && !target.IsZombie)
+                if (target.IsValidTarget(OrbwalkToPassiveRange) && !target.IsDead)
                 {
                     var status = target.GetPassiveStatus(0);
                     if (Player.Position.ToVector2().Distance(target.Position.ToVector2()) <= OrbwalkToPassiveRange && status.HasPassive
@@ -2983,7 +2986,7 @@ namespace DaoHungAIO.Champions
                         || (TargetingMode == GetTargets.TargetMode.Priority && OrbwalkToPassivePriority && (OrbwalkPriorityUnderTower || !Player.IsUnderEnemyTurret()))))
                     {
                         var point = status.PassivePredictedPositions.OrderBy(x => x.Distance(Player.Position.ToVector2())).FirstOrDefault();
-                        point = point.IsValid() ? target.Position.ToVector2().Extend(point, 150) : Game.CursorPosRaw.ToVector2();
+                        point = point.IsValid() ? target.Position.ToVector2().Extend(point, 150) : Game.CursorPos.ToVector2();
                         Orbwalker.Orbwalk(target, point.ToVector3());
                         // humanizer
                         //if (InAutoAttackRange(target)
@@ -2994,9 +2997,9 @@ namespace DaoHungAIO.Champions
                         //    return;
                         //}
                     }
-                    else Orbwalker.Orbwalk(target, Game.CursorPosRaw);
+                    else Orbwalker.Orbwalk(target, Game.CursorPos);
                 }
-                else Orbwalker.Orbwalk(target, Game.CursorPosRaw);
+                else Orbwalker.Orbwalk(target, Game.CursorPos);
             }
             
             //Orbwalker.SetMovement(true);
@@ -3020,7 +3023,7 @@ namespace DaoHungAIO.Champions
                 {
                     if (TargetingMode == GetTargets.TargetMode.Normal)
                     {
-                        foreach (var hero in HeroManager.Enemies.Where(x => x.IsValidTarget() && !x.IsZombie)
+                        foreach (var hero in HeroManager.Enemies.Where(x => x.IsValidTarget() && !x.IsDead)
                             .OrderBy(x => x.Distance(Player.Position)))
                         {
                             var status = hero.GetPassiveStatus(0);
@@ -3075,7 +3078,7 @@ namespace DaoHungAIO.Champions
                 {
                     if (TargetingMode == GetTargets.TargetMode.Normal)
                     {
-                        foreach (var hero in HeroManager.Enemies.Where(x => x.IsValidTarget() && !x.IsZombie)
+                        foreach (var hero in HeroManager.Enemies.Where(x => x.IsValidTarget() && !x.IsDead)
                             .OrderBy(x => x.Distance(Player.Position)))
                         {
                             if (castQtoGapClose(hero, getQGapClosedelay(hero)))
@@ -3114,7 +3117,7 @@ namespace DaoHungAIO.Champions
                 {
                     if (TargetingMode == GetTargets.TargetMode.Normal)
                     {
-                        foreach (var hero in HeroManager.Enemies.Where(x => x.IsValidTarget() && !x.IsZombie)
+                        foreach (var hero in HeroManager.Enemies.Where(x => x.IsValidTarget() && !x.IsDead)
                             .OrderBy(x => x.Distance(Player.Position)))
                         {
                             var status = hero.GetPassiveStatus(0);
@@ -3169,7 +3172,7 @@ namespace DaoHungAIO.Champions
                 {
                     if (TargetingMode == GetTargets.TargetMode.Normal)
                     {
-                        foreach (var hero in HeroManager.Enemies.Where(x => x.IsValidTarget() && !x.IsZombie)
+                        foreach (var hero in HeroManager.Enemies.Where(x => x.IsValidTarget() && !x.IsDead)
                             .OrderBy(x => x.Distance(Player.Position)))
                         {
                             if (castQtoGapClose(hero, getQGapClosedelay(hero)))
@@ -3209,7 +3212,7 @@ namespace DaoHungAIO.Champions
             if (Fiora.R.IsReady() && Fiora.Rcombo)
             {
                 var hero = GetTargets.GetTarget();
-                if (hero.IsValidTarget(500) && !hero.IsZombie)
+                if (hero.IsValidTarget(500) && !hero.IsDead)
                 {
                     var status = hero.GetPassiveStatus(0);
                     if (!status.HasPassive || (status.HasPassive && !(hero.InAutoAttackRange()

@@ -155,7 +155,7 @@ namespace DaoHungAIO.Champions
                 ((Menu)_config["Misc"]).Add(new MenuBool("rdodge", "R Dodge Dangerous"));
                 foreach (var e in enemy)
                 {
-                    SpellDataInstClient rdata = e.Spellbook.GetSpell(SpellSlot.R);
+                    SpellDataInst rdata = e.Spellbook.GetSpell(SpellSlot.R);
                     if (DangerDB.DangerousList.Any(spell => spell.Contains(rdata.SData.Name)))
                         ((Menu)_config["Misc"]).Add(new MenuBool("ds" + e.CharacterName, rdata.SData.Name));
                 }
@@ -184,13 +184,13 @@ namespace DaoHungAIO.Champions
                 //Game.PrintChat("<font color='#f2881d'>if you wanna help me to pay my internet bills^^ paypal= bulut@live.co.uk</font>");
 
                 Drawing.OnDraw += Drawing_OnDraw;
-                Game.OnTick += Game_OnUpdate;
+                EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnUpdate;
                 AIBaseClient.OnDoCast += OnProcessSpell;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Chat.Print("Error something went wrong");
+                Game.Print("Error something went wrong");
             }
 
 
@@ -206,7 +206,7 @@ namespace DaoHungAIO.Champions
                 return;
             if (sender.IsEnemy)
             {
-                //Chat.Print(castedSpell.SData.Name);
+                //Game.Print(castedSpell.SData.Name);
                 try
                 {
                     if (_config["Misc"].GetValue<MenuBool>("rdodge") && (_r.IsReady() || _r.Name == "ZedR2") &&
@@ -234,10 +234,10 @@ namespace DaoHungAIO.Champions
 
                 }
                 
-                //Chat.Print(ShadowStage);
+                //Game.Print(ShadowStage);
                 //if (ShadowStage == ShadowCastStage.Second && DangerDB.DodgeW.Any(spell => spell.Contains(castedSpell.SData.Name)))
                 //{
-                //    //Chat.Print("Cast W");
+                //    //Game.Print("Cast W");
                 //    _w.Cast();
                 //    return;
 
@@ -395,7 +395,7 @@ namespace DaoHungAIO.Champions
 
             if (target == null)
             {
-                _player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
+                _player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                 return;
             }
             else

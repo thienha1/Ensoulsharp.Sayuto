@@ -65,7 +65,7 @@ namespace DaoHungAIO.Champions
 
             CreateMenu();
             InitBlockSkill();
-            Game.OnTick += OnTick;
+            EnsoulSharp.SDK.Events.Tick.OnTick += OnTick;
             AIHeroClient.OnProcessSpellCast += OnProcessSpellCast;
             AIHeroClient.OnDoCast += OnDoCast;
             //Game.OnWndProc += OnWndProc;
@@ -73,8 +73,8 @@ namespace DaoHungAIO.Champions
             Drawing.OnDraw += Drawing_OnDraw;
             //AIBaseClient.OnBuffGain += OnBuffGain;
             //Orbwalker.OnAction += OnAction;
-            AITurretClient.OnBasicAttack += OnBasicAttack;
-            Chat.Print("Dont forget setup Block List skill in Misc menu");
+            AIBaseClient.OnDoCast += OnBasicAttack;
+            Game.Print("Dont forget setup Block List skill in Misc menu");
         }
 
         private void OnBasicAttack(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
@@ -116,7 +116,7 @@ namespace DaoHungAIO.Champions
         {
             if (sender.IsMe)
             {
-                Chat.Print(args.Buff.Name);
+                Game.Print(args.Buff.Name);
             }
         }
 

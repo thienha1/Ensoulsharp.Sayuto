@@ -32,8 +32,8 @@ namespace DaoHungAIO.Champions
             InitRenekton();
             InitMenu();
 
-            Chat.Print("<font color=\"#05FAAC\"><b>DH.Renekton:</b></font> Feedback send to facebook yts.1996 Sayuto");
-            Chat.Print("<font color=\"#FF9900\"><b>Credits: Soresu and Exory</b></font>");
+            Game.Print("<font color=\"#05FAAC\"><b>DH.Renekton:</b></font> Feedback send to facebook yts.1996 Sayuto");
+            Game.Print("<font color=\"#FF9900\"><b>Credits: Soresu and Exory</b></font>");
             Game.OnUpdate += Game_OnGameUpdate;
             Orbwalker.OnAction += OnActionDelegate;
             Drawing.OnDraw += Game_OnDraw;
@@ -120,7 +120,7 @@ namespace DaoHungAIO.Champions
                 args.Target is AIHeroClient && checkFuryMode(SpellSlot.W, (AIBaseClient)args.Target) &&
                 config["csettings"].GetValue<MenuBool>("usew") && player.Mana > 50)
                 {
-                    //Chat.Print("use w before go");
+                    //Game.Print("use w before go");
                     if ((player.Mana > 40 && !fury) || (Q.IsReady() && canBeOpWIthQ(player.Position)))
                     {
                         return;

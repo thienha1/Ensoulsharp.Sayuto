@@ -86,8 +86,8 @@ namespace DaoHungAIO.Champions
 
             CreateMenu();
             InitRiverPolygons();
-            Chat.Print("Current, This script is BETA");
-            Game.OnTick += OnTick;
+            Game.Print("Current, This script is BETA");
+            EnsoulSharp.SDK.Events.Tick.OnTick += OnTick;
             AIHeroClient.OnProcessSpellCast += OnProcessSpellCast;
             Gapcloser.OnGapcloser += OnGapcloser;
             //Game.OnWndProc += OnWndProc;
@@ -438,11 +438,11 @@ namespace DaoHungAIO.Champions
             rivers.Add(polygon2);
         }
         //private List<Vector2> rivers = new List<Vector2>();
-        //private void OnWndProc(WndEventArgs args)
+        //private void OnWndProc(GameWndProcEventArgs args)
         //{
         //    if (args.Msg == (uint)WindowsMessages.LBUTTONDOWN)
         //    {
-        //        rivers.Add(Game.CursorPosRaw.ToVector2());
+        //        rivers.Add(Game.CursorPos.ToVector2());
         //    }
         //    if(args.Msg == (uint)WindowsMessages.MBUTTONDOWN)
         //    {
@@ -458,9 +458,9 @@ namespace DaoHungAIO.Champions
             //rivers.ForEach(p => text += p.X + ", " + p.Y + "|");
             //Clipboard.SetText(text);
             //river.Draw(System.Drawing.Color.Pink);
-            //if (IsWater(Game.CursorPosRaw))
+            //if (IsWater(Game.CursorPos))
             //{
-            //    Render.Circle.DrawCircle(Game.CursorPosRaw, 10, System.Drawing.Color.Pink, 5);
+            //    Render.Circle.DrawCircle(Game.CursorPos, 10, System.Drawing.Color.Pink, 5);
             //}
             if (DrawQ.Enabled && _q.IsReady())
             {
@@ -630,7 +630,7 @@ namespace DaoHungAIO.Champions
                 case 0: //"Around 1200 hero"
                     return GetByPiority(1200, Player.Position, target);
                 case 1: // "Around 183 cursor"
-                    return GetByPiority(183, Game.CursorPosRaw, target);
+                    return GetByPiority(183, Game.CursorPos, target);
             }
             return null;
         }
@@ -642,7 +642,7 @@ namespace DaoHungAIO.Champions
                 case 0: //"Around 1200 hero"
                     return GetByPiority(1200, Player.Position, pos);
                 case 1: // "Around 183 cursor"
-                    return GetByPiority(183, Game.CursorPosRaw, pos);
+                    return GetByPiority(183, Game.CursorPos, pos);
             }
             return null;
         }
@@ -862,29 +862,29 @@ namespace DaoHungAIO.Champions
             //    Render.Circle.DrawCircle(o.Position, 20, System.Drawing.Color.Red, 10);
             //});
             //ObjectManager.Player.Buffs.ForEach(b => {
-            //    Chat.Print(b.Name);
+            //    Game.Print(b.Name);
             //});
             //if (IsGrass())
             //{
-            //    Chat.Print("Is Grass");
+            //    Game.Print("Is Grass");
             //}
             //if (IsRock())
             //{
-            //    Chat.Print("Is Rock");
+            //    Game.Print("Is Rock");
             //}
             //if (IsWater())
             //{
-            //    Chat.Print("Is Water");
+            //    Game.Print("Is Water");
             //}
-            //TargetSelector.SelectedTarget.Buffs.ForEach(b => Chat.Print(b.Name));
+            //TargetSelector.SelectedTarget.Buffs.ForEach(b => Game.Print(b.Name));
             //"qiyanapassivecd_base"
 
             ////var abc = Render.Add(new Polygon());
             //var target = TargetSelector.GetTarget(1000);
-            ////Chat.Print(target.Position.Distance(ObjectManager.Player.Position));
+            ////Game.Print(target.Position.Distance(ObjectManager.Player.Position));
 
             //Render.D target.Position.Extend(target.Position, knoclback_distance);
-            //Chat.Print(Player.Position.ToVector2());
+            //Game.Print(Player.Position.ToVector2());
             if (IsEnchanced())
             {
                 _q.Range = 710f;
@@ -899,7 +899,7 @@ namespace DaoHungAIO.Champions
                     //    _w.CastOnUnit(o);
                     //    Render.Circle.DrawCircle(o.Position, 20, System.Drawing.Color.HotPink, 10);
                     //});
-                    //Chat.Print(NavMesh.GetCollisionFlags(Game.CursorPosRaw).ToString());
+                    //Game.Print(NavMesh.GetCollisionFlags(Game.CursorPos).ToString());
                     DoCombo();
                     break;
                 case OrbwalkerMode.Harass:

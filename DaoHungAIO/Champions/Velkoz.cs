@@ -134,13 +134,13 @@ namespace DaoHungAIO.Champions
             Config.Attach();
 
             //Add the events we are going to use:
-            Game.OnTick += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Interrupter.OnInterrupterSpell += InterrupterSpellHandler;
             GameObject.OnCreate += Obj_SpellMissile_OnCreate;
-            Spellbook.OnUpdateChargeableSpell += SpellbookUpdateChargeableSpell;
-            Chat.Print("<font color=\"#FF9900\"><b>DH.Velkoz:</b></font> Feedback send to facebook yts.1996 Sayuto");
-            Chat.Print("<font color=\"#FF9900\"><b>Credits: Kortatu</b></font>");
+            Spellbook.OnUpdateChargedSpell += SpellbookUpdateChargeableSpell;
+            Game.Print("<font color=\"#FF9900\"><b>DH.Velkoz:</b></font> Feedback send to facebook yts.1996 Sayuto");
+            Game.Print("<font color=\"#FF9900\"><b>Credits: Kortatu</b></font>");
         }
 
         static void InterrupterSpellHandler(AIHeroClient sender, Interrupter.InterruptSpellArgs args)
@@ -160,7 +160,7 @@ namespace DaoHungAIO.Champions
             }
         }
 
-        static void SpellbookUpdateChargeableSpell(Spellbook sender, SpellbookUpdateChargeableSpellEventArgs args)
+        static void SpellbookUpdateChargeableSpell(Spellbook sender, SpellbookUpdateChargedSpellEventArgs args)
         {
             if (sender.Owner.IsMe)
             {
@@ -360,11 +360,11 @@ namespace DaoHungAIO.Champions
                     if (targets.Count > 0)
                     {
                         var target = targets.OrderBy(t => t.Health / Q.GetDamage(t)).ToList()[0];
-                        ObjectManager.Player.Spellbook.UpdateChargeableSpell(SpellSlot.R, target.Position, false, false);
+                        ObjectManager.Player.Spellbook.UpdateChargedSpell(SpellSlot.R, target.Position, false, false);
                     }
                     else
                     {
-                        ObjectManager.Player.Spellbook.UpdateChargeableSpell(SpellSlot.R, Game.CursorPosRaw, false, false);
+                        ObjectManager.Player.Spellbook.UpdateChargedSpell(SpellSlot.R, Game.CursorPos, false, false);
                     }
                 }
 

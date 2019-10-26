@@ -88,7 +88,7 @@ namespace DaoHungAIO.Champions
             menu.Attach();
 
 
-            Game.OnTick += OnTick;
+            EnsoulSharp.SDK.Events.Tick.OnTick += OnTick;
             //Game.OnWndProc += OnWndProc;
             Dash.OnDash += OnDash;
             AIHeroClient.OnBuffGain += OnBuffGain;

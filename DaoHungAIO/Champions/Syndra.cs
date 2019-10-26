@@ -182,7 +182,7 @@ namespace DaoHungAIO.Champions
             Config.Attach();
 
             //Add the events we are going to use:
-            Game.OnTick += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Game.OnWndProc += Game_OnWndProc;
             Orbwalker.OnAction += OnActionDelegate;
 
@@ -190,11 +190,11 @@ namespace DaoHungAIO.Champions
             Interrupter.OnInterrupterSpell += InterrupterSpellHandler;
 
             Drawing.OnDraw += Drawing_OnDraw;
-            Chat.Print("<font color=\"#FF9900\"><b>DH.Syndra:</b></font> Feedback send to facebook yts.1996 Sayuto");
-            Chat.Print("<font color=\"#FF9900\"><b>Credits: Kortatu</b></font>");
+            Game.Print("<font color=\"#FF9900\"><b>DH.Syndra:</b></font> Feedback send to facebook yts.1996 Sayuto");
+            Game.Print("<font color=\"#FF9900\"><b>Credits: Kortatu</b></font>");
         }
 
-        private static void Game_OnWndProc(WndEventArgs args)
+        private static void Game_OnWndProc(GameWndProcEventArgs args)
         {
             if (args.Msg != 520) return;
 
@@ -231,7 +231,7 @@ namespace DaoHungAIO.Champions
 
         private static void InstantQe2Enemy()
         {
-            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
+            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
             var t = TargetSelector.GetTarget(Eq.Range);
             if (t.IsValidTarget() && E.IsReady() && Q.IsReady())
             {
@@ -390,7 +390,7 @@ namespace DaoHungAIO.Champions
                         && Config["Misc"]["DontUlt"].GetValue<MenuBool>("DontUlt" + rTarget.CharacterName) == false);
             }
 
-            if (rTarget != null && useR && R.IsReady() && comboDamage > rTarget.Health && !rTarget.IsZombie)
+            if (rTarget != null && useR && R.IsReady() && comboDamage > rTarget.Health && !rTarget.IsDead)
             {
                 R.Cast(rTarget);
             }
@@ -578,7 +578,7 @@ namespace DaoHungAIO.Champions
                         GameObjects.EnemyHeroes
                             .Where(
                                 enemy =>
-                                enemy.IsValidTarget(Eq.Range) && Game.CursorPosRaw.Distance(enemy.Position) < 300))
+                                enemy.IsValidTarget(Eq.Range) && Game.CursorPos.Distance(enemy.Position) < 300))
                 {
                     UseQe(enemy);
                 }

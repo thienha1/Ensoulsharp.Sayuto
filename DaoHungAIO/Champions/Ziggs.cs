@@ -118,7 +118,7 @@ namespace DaoHungAIO.Champions
             Config.Attach();
 
 
-            Game.OnTick += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Gapcloser.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Interrupter.OnInterrupterSpell += Interrupter2_OnInterruptableTarget;
@@ -289,7 +289,7 @@ namespace DaoHungAIO.Champions
             var castToMouse = Config.Item("WToMouse").GetValue<MenuKeyBind>().Active;
             if (castToMouse || Variables.TickCount - LastWToMouseT < 400)
             {
-                var pos = ObjectManager.Player.Position.ToVector2().Extend(Game.CursorPos2D, -150).ToVector3();
+                var pos = ObjectManager.Player.Position.ToVector2().Extend(Game.CursorPos, -150).ToVector3();
                 W.Cast(pos, true);
                 if (castToMouse)
                 {

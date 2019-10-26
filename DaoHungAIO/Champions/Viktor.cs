@@ -104,7 +104,7 @@ namespace DaoHungAIO.Champions
             SetupMenu();
 
             // Register events
-            Game.OnTick += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Gapcloser.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Orbwalker.OnAction += OrbwalkerOnBeforeAttack;
@@ -260,7 +260,7 @@ namespace DaoHungAIO.Champions
 
         private static void Flee()
         {
-            Orbwalker.Move(Game.CursorPosRaw);
+            Orbwalker.Move(Game.CursorPos);
             if (!Q.IsReady() || !(player.HasBuff("viktorqaug") || player.HasBuff("viktorqeaug") || player.HasBuff("viktorqwaug") || player.HasBuff("viktorqweaug")))
             {
                 return;
@@ -315,7 +315,7 @@ namespace DaoHungAIO.Champions
             {
                 foreach (var minion in GameObjects.GetMinions(player.Position, player.AttackRange))
                 {
-                    if (Q.IsKillable(minion) && minion.CharacterData.SkinName.Contains("Siege"))
+                    if (Q.IsKillable(minion) && minion.CharacterName.Contains("Siege"))
                     {
                         QLastHit(minion);
                         break;

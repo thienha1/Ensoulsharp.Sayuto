@@ -143,7 +143,7 @@ namespace DaoHungAIO.Plugins
                 string MenuName = ItemId.GetName(typeof(ItemId), ItemID);
                 if (config["Cleaners"][MenuName] == null)
                 {
-                    Chat.Print("Not Found menu " + MenuName);
+                    Game.Print("Not Found menu " + MenuName);
                     return;
                 }
                 foreach (var buffType in DebuffList2)

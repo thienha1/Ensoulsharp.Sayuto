@@ -143,16 +143,17 @@ namespace DaoHungAIO.Champions
 
         }
 
-        private static void SpellbookStopCast(AIBaseClient sender, SpellbookStopCastEventArgs args)
+
+        private static void SpellbookStopCast(Spellbook sender, SpellbookStopCastEventArgs args)
         {
             if (sender != null)
                 return;
-            Chat.Print("DestroyMissile " + args.DestroyMissile.ToString());
-            Chat.Print("HasBeenCast " + args.HasBeenCast.ToString());
-            Chat.Print("KeepAnimationPlaying " + args.KeepAnimationPlaying.ToString());
-            Chat.Print("MissileToDestroy " + args.MissileToDestroy.ToString());
-            Chat.Print("SpellCastID " + args.SpellCastID.ToString());
-            Chat.Print("SpellStopCancelled " + args.SpellStopCancelled.ToString());
+            Game.Print("DestroyMissile " + args.DestroyMissile.ToString());
+            Game.Print("HasBeenCast " + args.HasBeenCast.ToString());
+            Game.Print("KeepAnimationPlaying " + args.KeepAnimationPlaying.ToString());
+            Game.Print("MissileToDestroy " + args.MissileToDestroy.ToString());
+            Game.Print("SpellCastID " + args.SpellCastID.ToString());
+            Game.Print("SpellStopCancelled " + args.SpellStopCancelled.ToString());
         }
         private static void OnLevelUp(AIHeroClient sender, AIHeroClientLevelUpEventArgs args)
         {

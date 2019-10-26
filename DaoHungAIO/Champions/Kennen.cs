@@ -172,7 +172,7 @@ namespace DaoHungAIO.Champions
                 if (moveTo == null)
                 {
                     Orbwalker.MovementState = false;
-                    player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
+                    player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                 }
                 else
                 {
@@ -247,7 +247,7 @@ namespace DaoHungAIO.Champions
                 return;
             }
             if (config["Combo"].GetValue<MenuBool>("usee") && player.HasBuff("KennenLightningRush") &&
-                player.Health > target.Health && !target.IsUnderEnemyTurret() && target.Distance(Game.CursorPosRaw) < 250f)
+                player.Health > target.Health && !target.IsUnderEnemyTurret() && target.Distance(Game.CursorPos) < 250f)
             {
                 Orbwalker.MovementState = false;
                 player.IssueOrder(GameObjectOrder.MoveTo, target);

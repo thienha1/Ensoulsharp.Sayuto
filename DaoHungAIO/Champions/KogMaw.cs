@@ -88,7 +88,7 @@ namespace DaoHungAIO.Champions
 
             Program.Config = Config;
 
-            Game.OnTick += Game_OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             Orbwalker.OnAction += OnActionDelegate;
             Gapcloser.OnGapcloser += OnGapcloserEvent;

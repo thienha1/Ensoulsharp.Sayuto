@@ -75,7 +75,7 @@ namespace DaoHungAIO.Champions
             _r.SetSkillshot(0.25f, 0f, float.MaxValue, false, false, SkillshotType.Line);
 
             CreateMenu();
-            Game.OnTick += OnTick;
+            EnsoulSharp.SDK.Events.Tick.OnTick += OnTick;
             AIBaseClient.OnDoCast += OnDoCast;
             Gapcloser.OnGapcloser += OnGapcloser;
         }
@@ -249,7 +249,7 @@ namespace DaoHungAIO.Champions
         }
         private static void DoCombo()
         {
-            //Chat.Print("combo");
+            //Game.Print("combo");
             var t = TargetSelector.GetTarget(_q.Range);
             var etarget = TargetSelector.GetTarget(2000f);
             if (etarget != null)

@@ -147,7 +147,7 @@ namespace DaoHungAIO.Evade
                     {
                         TryToEvade(
                             IsSafe(ally.Position.ToVector2())
-                                .SkillshotList, Game.CursorPosCenter.ToVector2());
+                                .SkillshotList, Game.CursorPos.ToVector2());
                     }
                 }
             }
@@ -677,8 +677,7 @@ namespace DaoHungAIO.Evade
                             for (var j = -s; j <= s; j++)
                             {
                                 var candidate = originalCandidate + j * 20 * direction;
-                                var pathToPoint = ally.GetPath(candidate.ToVector3())
-                                    .To2DList();
+                                var pathToPoint = ally.GetPath(candidate.ToVector3()).ToVector2();
 
                                 if (IsSafePath(pathToPoint, 250, speed, delay).IsSafe)
                                 {

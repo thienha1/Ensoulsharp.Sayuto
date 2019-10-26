@@ -35,7 +35,7 @@ namespace DaoHungAIO.Champions
                 Orbwalker.AttackState = false;
                 if (Orbwalker.ActiveMode != OrbwalkerMode.None)
                 {
-                    player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
+                    player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                 }
             }
             else

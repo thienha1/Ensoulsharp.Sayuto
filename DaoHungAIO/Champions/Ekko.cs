@@ -150,7 +150,7 @@ namespace DaoHungAIO.Champions
             Config.SubMenu("Drawings").AddItem(new MenuBool("DrawOrbwalkTarget", "Draw Orbwalk target").SetValue(true));
 
             Config.Attach();
-            Game.OnTick += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             AIBaseClient.OnProcessSpellCast += AIBaseClient_OnProcessSpellCast;
             Gapcloser.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;

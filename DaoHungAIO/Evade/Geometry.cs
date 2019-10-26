@@ -575,7 +575,7 @@ namespace DaoHungAIO.Evade
         {
             if (value == null)
             {
-                v.Z = Game.CursorPosCenter.Z;
+                v.Z = Game.CursorPos.Z;
             }
             else
             {

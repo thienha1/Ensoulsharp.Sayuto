@@ -172,7 +172,7 @@ namespace DaoHungAIO.Champions
         {
             if (sender is AITurretClient && args.Target.IsMe && E.IsReady() && Menu["Misc"].GetValue<MenuBool>("UseETower"))
             {
-                E.Cast(Game.CursorPosRaw);
+                E.Cast(Game.CursorPos);
             }
 
             if (!sender.IsMe)

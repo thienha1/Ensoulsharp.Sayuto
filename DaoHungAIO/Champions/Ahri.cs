@@ -76,7 +76,7 @@ namespace DaoHungAIO.Champions
 
 
             Drawing.OnDraw += Drawing_OnDraw;
-            Game.OnTick += Game_OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnUpdate;
 
         }
 
@@ -203,7 +203,7 @@ namespace DaoHungAIO.Champions
 
             if (_menu.Item("comboR").GetValue<MenuBool>() && _spellR.IsReady())
                 if (OkToUlt())
-                    _spellR.Cast(Game.CursorPosRaw);
+                    _spellR.Cast(Game.CursorPos);
         }
 
         List<SpellSlot> GetSpellCombo()
@@ -233,7 +233,7 @@ namespace DaoHungAIO.Champions
             if (Ahri.HelperAhri.EnemyTeam.Any(x => x.Distance(ObjectManager.Player) < 500)) //any enemies around me?
                 return true;
 
-            Vector3 mousePos = Game.CursorPosRaw;
+            Vector3 mousePos = Game.CursorPos;
 
             var enemiesNearMouse = Ahri.HelperAhri.EnemyTeam.Where(x => x.Distance(ObjectManager.Player) < _spellR.Range && x.Distance(mousePos) < 650);
 

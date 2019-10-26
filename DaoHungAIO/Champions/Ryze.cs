@@ -114,10 +114,10 @@ namespace DaoHungAIO.Champions
             //AIHeroClient.OnProcessSpellCast += AIBaseClientProcessSpellCast;
             Gapcloser.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
 
-            Chat.Print("<font color=\"#FF9900\"><b>DH.Ryze</b></font> Author Sayuto");
-            Chat.Print("<font color=\"#FF9900\"><b>Feedback send to facebook yts.1996 </b></font>");
+            Game.Print("<font color=\"#FF9900\"><b>DH.Ryze</b></font> Author Sayuto");
+            Game.Print("<font color=\"#FF9900\"><b>Feedback send to facebook yts.1996 </b></font>");
         }
-        private static void Game_OnWndProc(WndEventArgs args)
+        private static void Game_OnWndProc(GameWndProcEventArgs args)
         {
             if (args.Msg != 520)
                 return;
@@ -133,8 +133,8 @@ namespace DaoHungAIO.Champions
         //    }
         //    if(s == Player)
         //    {
-        //        Chat.Print("Total Time" + a.TotalTime);
-        //        Chat.Print("msspeed" + a.SData.MissileSpeed);
+        //        Game.Print("Total Time" + a.TotalTime);
+        //        Game.Print("msspeed" + a.SData.MissileSpeed);
         //    }
         //}
 

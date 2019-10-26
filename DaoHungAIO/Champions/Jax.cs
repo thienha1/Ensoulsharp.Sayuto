@@ -116,7 +116,7 @@ namespace DaoHungAIO.Champions
             //    //{
             //    //    E.Cast();
             //    //}
-            //    Chat.Print((data / player.Health * 100));
+            //    Game.Print((data / player.Health * 100));
             //    if (player.HealthPercent - (data/player.Health * 100) >= config["Msettings"].GetValue<MenuSlider>("Emindam").Value)
             //    {
             //        E.Cast();
@@ -143,13 +143,13 @@ namespace DaoHungAIO.Champions
         }
         private void WardJump()
         {
-            Orbwalker.Move(Game.CursorPosRaw);
+            Orbwalker.Move(Game.CursorPos);
             if (!Q.IsReady())
             {
                 return;
             }
             var wardSlot = player.GetWardSlot();
-            var pos = Game.CursorPosRaw;
+            var pos = Game.CursorPos;
             if (pos.Distance(player.Position) > 600)
             {
                 pos = player.Position.Extend(pos, 600);
@@ -162,7 +162,7 @@ namespace DaoHungAIO.Champions
             }
             else
             {
-                if (wardSlot != null && wardSlot.CanUseItem() &&
+                if (wardSlot != null && player.CanUseItem(wardSlot.ItemID) &&
                     (player.Spellbook.CanUseSpell(wardSlot.SpellSlot) == SpellState.Ready || wardSlot.CountInSlot != 0) &&
                     !justWJ)
                 {

@@ -71,7 +71,7 @@ namespace DaoHungAIO.Champions
             Pounce.SetSkillshot(0.50f, 400f, 1500f, false, false, SkillshotType.Cone);
 
 
-            Game.OnTick += NidaleeOnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += NidaleeOnUpdate;
             Drawing.OnDraw += NidaleeOnDraw;
             //AIBaseClient.OnProcessSpellCast += AIBaseClientProcessSpellCast;
             // AntiGapcloer Event
@@ -235,8 +235,8 @@ namespace DaoHungAIO.Champions
 
 
             _mainMenu.Attach();
-            Chat.Print("<font color=\"#FF9900\"><b>DH.Nidalee:</b></font> Anything feedback send to facebook yts.1996 Sayuto");
-            Chat.Print("<font color=\"#FF9900\"><b>Credits: Kurisu</b></font>");
+            Game.Print("<font color=\"#FF9900\"><b>DH.Nidalee:</b></font> Anything feedback send to facebook yts.1996 Sayuto");
+            Game.Print("<font color=\"#FF9900\"><b>Credits: Kurisu</b></font>");
         }
 
         #endregion
@@ -398,14 +398,14 @@ namespace DaoHungAIO.Champions
         //    // requires you to be close to the specified wall. Therefore we set the move
         //    // point to be that specific piont. People will need to get used to it,
         //    // but this is how it works.
-        //    var wallCheck = GetFirstWallPoint(Me.Position, Game.CursorPosRaw);
+        //    var wallCheck = GetFirstWallPoint(Me.Position, Game.CursorPos);
 
         //    // Be more precise
         //    if (wallCheck != null)
-        //        wallCheck = GetFirstWallPoint((Vector3)wallCheck, Game.CursorPosRaw, 5);
+        //        wallCheck = GetFirstWallPoint((Vector3)wallCheck, Game.CursorPos, 5);
 
         //    // Define more position point
-        //    var movePosition = wallCheck != null ? (Vector3)wallCheck : Game.CursorPosRaw;
+        //    var movePosition = wallCheck != null ? (Vector3)wallCheck : Game.CursorPos;
 
         //    // Update fleeTargetPosition
         //    var tempGrid = NavMesh.WorldToGrid(movePosition.X, movePosition.Y);
@@ -424,7 +424,7 @@ namespace DaoHungAIO.Champions
         //        var wallPosition = movePosition;
 
         //        // Check 300 units to the cursor position in a 160 degree cone for a valid non-wall spot
-        //        Vector2 direction = (Game.CursorPosRaw.To2D() - wallPosition.To2D()).Normalized();
+        //        Vector2 direction = (Game.CursorPos.To2D() - wallPosition.To2D()).Normalized();
         //        float maxAngle = 80;
         //        float step = maxAngle / 20;
         //        float currentAngle = 0;
@@ -496,7 +496,7 @@ namespace DaoHungAIO.Champions
 
         //                    else
         //                    {
-        //                        Render.Circle.DrawCircle(Game.CursorPosRaw, 35, Color.Red, 2);
+        //                        Render.Circle.DrawCircle(Game.CursorPos, 35, Color.Red, 2);
         //                    }
         //                }
         //            }
@@ -504,15 +504,15 @@ namespace DaoHungAIO.Champions
 
         //        // Check if the loop triggered the jump, if not just orbwalk
         //        if (!jumpTriggered)
-        //            Orbwalking.Orbwalk(target, Game.CursorPosRaw, 90f, 0f, false, false);
+        //            Orbwalking.Orbwalk(target, Game.CursorPos, 90f, 0f, false, false);
         //    }
 
         //    // Either no wall or W on cooldown, just move towards to wall then
         //    else
         //    {
-        //        Orbwalking.Orbwalk(target, Game.CursorPosRawRaw, 90f, 0f, false, false);
+        //        Orbwalking.Orbwalk(target, Game.CursorPosRaw, 90f, 0f, false, false);
         //        if (_cougarForm && (CW == 0 || Pounce.IsReady()))
-        //            Pounce.Cast(Game.CursorPosRawRaw);
+        //            Pounce.Cast(Game.CursorPosRaw);
         //    }
         //}
 
@@ -823,7 +823,7 @@ namespace DaoHungAIO.Champions
 
                 if (!Pounce.IsReady() && !Takedown.IsReady() && !Primalsurge.IsReady())
                 {
-                    //Chat.Print("Will heal");
+                    //Game.Print("Will heal");
                     if ((HQ == 0 || HE == 0 && Me.Health / Me.MaxHealth * 100 <=
                          _mainMenu["hengine"].GetValue<MenuSlider>("healpct" + Me.CharacterName).Value &&
                          _mainMenu["jungleclear"].GetValue<MenuBool>("jgheal")) && Aspectofcougar.IsReady() &&
@@ -1150,7 +1150,7 @@ namespace DaoHungAIO.Champions
         //            : ObjectManager.Get<AIHeroClient>().Where(o => o.IsValidTarget(Orbwalking.GetRealAutoAttackRange(o)));
 
         //    var apexPoint = Me.Position.To2D() +
-        //        (Me.Position.To2D() - Game.CursorPosRaw.To2D()).Normalized() *
+        //        (Me.Position.To2D() - Game.CursorPos.To2D()).Normalized() *
         //            Orbwalking.GetRealAutoAttackRange(Me);
 
         //    return

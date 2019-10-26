@@ -31,10 +31,10 @@ namespace DaoHungAIO.Champions
         private static Spellbook sBook = Player.Spellbook;
 
 
-        private static SpellDataInstClient Qdata = sBook.GetSpell(SpellSlot.Q);
-        private static SpellDataInstClient Wdata = sBook.GetSpell(SpellSlot.W);
-        private static SpellDataInstClient Edata = sBook.GetSpell(SpellSlot.E);
-        private static SpellDataInstClient Rdata = sBook.GetSpell(SpellSlot.R);
+        private static SpellDataInst Qdata = sBook.GetSpell(SpellSlot.Q);
+        private static SpellDataInst Wdata = sBook.GetSpell(SpellSlot.W);
+        private static SpellDataInst Edata = sBook.GetSpell(SpellSlot.E);
+        private static SpellDataInst Rdata = sBook.GetSpell(SpellSlot.R);
         private static Spell Q1 = new Spell(SpellSlot.Q, 1050);//Emp 1470
         private static Spell QEmp1 = new Spell(SpellSlot.Q, 1600);//Emp 1470
         private static Spell W1 = new Spell(SpellSlot.W, 0);
@@ -122,7 +122,7 @@ namespace DaoHungAIO.Champions
                 Drawing.OnDraw += onDraw;
                 Drawing.OnEndScene += OnEndScene;
 
-                Game.OnTick += OnGameUpdate;
+                EnsoulSharp.SDK.Events.Tick.OnTick += OnGameUpdate;
 
                 GameObject.OnCreate += onCreate;
                 GameObject.OnDelete += onDelete;
@@ -134,14 +134,14 @@ namespace DaoHungAIO.Champions
                 Interrupter.OnInterrupterSpell += InterrupterSpellHandler;
                 //SmoothMouse.start();
 
-                Chat.Print("<font color=\"#05FAAC\"><b>DH.Jayce:</b></font> Feedback send to facebook yts.1996 Sayuto");
-                Chat.Print("<font color=\"#FF9900\"><b>Credits: Detuks</b></font>");
-                Chat.Print("<font color=\"#FA053D\"><b>Notice: This script not include Farm/JungClear</b></font>");
+                Game.Print("<font color=\"#05FAAC\"><b>DH.Jayce:</b></font> Feedback send to facebook yts.1996 Sayuto");
+                Game.Print("<font color=\"#FF9900\"><b>Credits: Detuks</b></font>");
+                Game.Print("<font color=\"#FA053D\"><b>Notice: This script not include Farm/JungClear</b></font>");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                Chat.Print("Oops. Something went wrong with DH.Jayce");
+                Game.Print("Oops. Something went wrong with DH.Jayce");
             }
 
         }
@@ -218,7 +218,7 @@ namespace DaoHungAIO.Champions
             processCDs();
             if (Config["extra"].GetValue<MenuKeyBind>("shoot").Active)
             {
-                shootQE(Game.CursorPosRaw, true);
+                shootQE(Game.CursorPos, true);
             }
             if (myCastedQ != null && (Config["combo"].GetValue<MenuKeyBind>("fullDMG").Active || Orbwalker.ActiveMode == OrbwalkerMode.Combo))
             {

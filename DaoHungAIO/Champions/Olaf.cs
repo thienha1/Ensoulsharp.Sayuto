@@ -387,11 +387,11 @@ namespace DaoHungAIO.Champions
             new Helper();
 
             Drawing.OnDraw += Drawing_OnDraw;
-            Game.OnTick += Game_OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnUpdate;
             GameObject.OnCreate += GameObject_OnCreate;
             GameObject.OnDelete += GameObject_OnDelete;
             Orbwalker.OnAction += OrbwalkerBeforeAttack;
-            Chat.Print("<font color='#FFFFFF'>Olaf is Back V2</font> <font color='#70DBDB'> Loaded!</font>");
+            Game.Print("<font color='#FFFFFF'>Olaf is Back V2</font> <font color='#70DBDB'> Loaded!</font>");
         }
 
         internal class EnemyHeros
@@ -415,7 +415,7 @@ namespace DaoHungAIO.Champions
 
                 EnemyInfo = HeroManager.Enemies.Select(e => new EnemyHeros(e)).ToList();
 
-                Game.OnTick += Game_OnGameUpdate;
+                EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             }
 
             private void Game_OnGameUpdate(EventArgs args)
@@ -867,7 +867,7 @@ namespace DaoHungAIO.Champions
 
             if (mobs.Count <= 0)
             {
-                Chat.Print("Will check for cast");
+                Game.Print("Will check for cast");
                 return;
             }
 
@@ -949,7 +949,7 @@ namespace DaoHungAIO.Champions
 
         private static void Flee()
         {
-            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
+            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
             if (Config.Item("Flee.UseQ").GetValue<MenuBool>())
                 if (Q.IsReady())
                 {
@@ -1053,7 +1053,7 @@ namespace DaoHungAIO.Champions
             }
 
             SetFlatSlot();
-            Game.OnTick += Game_OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnUpdate;
         }
 
         private static void Game_OnUpdate(EventArgs args)
@@ -1300,7 +1300,7 @@ namespace DaoHungAIO.Champions
        
             Olaf.MenuMisc.AddSubMenu(LocalMenu);
 
-            Game.OnTick += Game_OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnUpdate;
 
         }
 

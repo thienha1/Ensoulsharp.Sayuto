@@ -204,14 +204,14 @@ namespace DaoHungAIO.Champions
                 || catchOption == "Always")
             {
 
-                //Chat.Print(QReticles.Count());
+                //Game.Print(QReticles.Count());
                 var bestReticle =
                     QReticles.Where(
                         x =>
-                        x.Object.Position.Distance(Game.CursorPosRaw)
+                        x.Object.Position.Distance(Game.CursorPos)
                         < Menu["axeSetting"].GetValue<MenuSlider>("CatchAxeRange").Value)
                         .OrderBy(x => x.Position.Distance(Player.Position))
-                        .ThenBy(x => x.Position.Distance(Game.CursorPosRaw))
+                        .ThenBy(x => x.Position.Distance(Game.CursorPos))
                         .ThenBy(x => x.ExpireTime)
                         .FirstOrDefault();
 
@@ -236,7 +236,7 @@ namespace DaoHungAIO.Champions
                         }
                         //else if (!bestReticle.Position.IsUnderEnemyTurret())
                         //{
-                        //    Chat.Print("Catch2");
+                        //    Game.Print("Catch2");
                         //    Orbwalker.SetOrbwalkerPosition(bestReticle.Position);
                         //}
                     }
@@ -247,12 +247,12 @@ namespace DaoHungAIO.Champions
                 }
                 else
                 {
-                    Orbwalker.SetOrbwalkerPosition(Game.CursorPosRaw);
+                    Orbwalker.SetOrbwalkerPosition(Game.CursorPos);
                 }
             }
             else
             {
-                Orbwalker.SetOrbwalkerPosition(Game.CursorPosRaw);
+                Orbwalker.SetOrbwalkerPosition(Game.CursorPos);
             }
         }
 
@@ -403,9 +403,9 @@ namespace DaoHungAIO.Champions
                 var bestAxe =
                     QReticles.Where(
                         x =>
-                        x.Position.Distance(Game.CursorPosRaw) < Menu["axeSetting"].GetValue<MenuSlider>("CatchAxeRange").Value)
+                        x.Position.Distance(Game.CursorPos) < Menu["axeSetting"].GetValue<MenuSlider>("CatchAxeRange").Value)
                         .OrderBy(x => x.Position.Distance(Player.Position))
-                        .ThenBy(x => x.Position.Distance(Game.CursorPosRaw))
+                        .ThenBy(x => x.Position.Distance(Game.CursorPos))
                         .FirstOrDefault();
 
                 if (bestAxe != null)
@@ -423,7 +423,7 @@ namespace DaoHungAIO.Champions
             if (drawAxeRange)
             {
                 Render.Circle.DrawCircle(
-                    Game.CursorPosRaw,
+                    Game.CursorPos,
                     Menu["axeSetting"].GetValue<MenuSlider>("CatchAxeRange").Value,
                      System.Drawing.Color.DodgerBlue);
             }
@@ -436,7 +436,7 @@ namespace DaoHungAIO.Champions
         /// <param name="args">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void GameObjectOnOnCreate(GameObject sender, EventArgs args)
         {
-            //Chat.Print(sender.Name);
+            //Game.Print(sender.Name);
             if (!sender.Name.Contains("Q_reticle_self"))
             {
                 return;

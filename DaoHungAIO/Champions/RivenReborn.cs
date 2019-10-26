@@ -87,7 +87,7 @@ namespace DaoHungAIO.Champions
 
             Drawing.OnDraw += OnDraw;
 
-            Game.OnTick += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Orbwalker.OnAction += OnActionDelegate;
             AIBaseClient.OnProcessSpellCast += oncast;
             AIBaseClient.OnPlayAnimation += AIBaseClient_OnPlayAnimation;
@@ -254,34 +254,34 @@ namespace DaoHungAIO.Champions
             if (!sender.IsMe)
                 return;
 
-            //Chat.Print(args.Animation);
+            //Game.Print(args.Animation);
             if (args.Animation.Contains("1a"))
             {
-                //Chat.Print("Cancel Q1");
+                //Game.Print("Cancel Q1");
                 //if (Orbwalker.ActiveMode != OrbwalkerMode.None)
                 //{
-                //Utility.DelayAction.Add(200 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
-                //Utility.DelayAction.Add(240 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
-                Utility.DelayAction.Add(280 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
+                //Utility.DelayAction.Add(200 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPos, Player.Distance(Game.CursorPos) + 10)));
+                //Utility.DelayAction.Add(240 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPos, Player.Distance(Game.CursorPos) + 10)));
+                Utility.DelayAction.Add(280 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPos, Player.Distance(Game.CursorPos) + 10)));
                 //}
                 Qstate = 2;
             }
             else if (args.Animation.Contains("1b"))
             {
-                //Chat.Print("Cancel Q2");
+                //Game.Print("Cancel Q2");
                 //if (Orbwalker.ActiveMode != OrbwalkerMode.None)
-                //Utility.DelayAction.Add(220 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
-                //Utility.DelayAction.Add(260 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
-                Utility.DelayAction.Add(300 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
+                //Utility.DelayAction.Add(220 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPos, Player.Distance(Game.CursorPos) + 10)));
+                //Utility.DelayAction.Add(260 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPos, Player.Distance(Game.CursorPos) + 10)));
+                Utility.DelayAction.Add(300 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPos, Player.Distance(Game.CursorPos) + 10)));
                 Qstate = 3;
             }
             else if (args.Animation.Contains("1c"))
             {
-                //Chat.Print("Cancel Q3");
+                //Game.Print("Cancel Q3");
                 //if (Orbwalker.ActiveMode != OrbwalkerMode.None)
-                //Utility.DelayAction.Add(300 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
-                //Utility.DelayAction.Add(340 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
-                Utility.DelayAction.Add(380 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10)));
+                //Utility.DelayAction.Add(300 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPos, Player.Distance(Game.CursorPos) + 10)));
+                //Utility.DelayAction.Add(340 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPos, Player.Distance(Game.CursorPos) + 10)));
+                Utility.DelayAction.Add(380 - Game.Ping, () => Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPos, Player.Distance(Game.CursorPos) + 10)));
                 Qstate = 1;
             }
 
@@ -330,7 +330,7 @@ namespace DaoHungAIO.Champions
         {
             if (Player.IsDead) return;
             var target = TargetSelector.SelectedTarget;
-            if (target != null && target.IsValidTarget() && !target.IsZombie)
+            if (target != null && target.IsValidTarget() && !target.IsDead)
                 Render.Circle.DrawCircle(target.Position, 150, Color.AliceBlue, 15);
             if (Menu["Draw"].GetValue<MenuBool>("Drawdmgtext"))
                 foreach (var hero in GameObjects.EnemyHeroes)
@@ -354,7 +354,7 @@ namespace DaoHungAIO.Champions
     Interrupter.InterruptSpellArgs args
 )
         {
-            if (sender.IsEnemy && W.IsReady() && sender.IsValidTarget() && !sender.IsZombie && Winterrupt)
+            if (sender.IsEnemy && W.IsReady() && sender.IsValidTarget() && !sender.IsDead && Winterrupt)
             {
                 if (sender.IsValidTarget(125 + Player.BoundingRadius + sender.BoundingRadius)) W.Cast();
             }
@@ -365,7 +365,7 @@ namespace DaoHungAIO.Champions
 )
         {
             var target = sender;
-            if (target.IsEnemy && W.IsReady() && target.IsValidTarget() && !target.IsZombie && Wgapcloser)
+            if (target.IsEnemy && W.IsReady() && target.IsValidTarget() && !target.IsDead && Wgapcloser)
             {
                 if (target.IsValidTarget(125 + Player.BoundingRadius + target.BoundingRadius)) W.Cast();
             }
@@ -444,8 +444,8 @@ namespace DaoHungAIO.Champions
         }
         private static void Cancel()
         {
-            Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 500));
-            if (Qstrangecancel) Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPosRaw, Player.Distance(Game.CursorPosRaw) + 10));
+            Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPos, Player.Distance(Game.CursorPos) + 500));
+            if (Qstrangecancel) Player.IssueOrder(GameObjectOrder.MoveTo, Player.Position.Extend(Game.CursorPos, Player.Distance(Game.CursorPos) + 10));
         }
         private static void OnAttack(AttackableUnit unit, AttackableUnit target)
         {
@@ -455,7 +455,7 @@ namespace DaoHungAIO.Champions
         private static void Burst()
         {
             var target = TargetSelector.SelectedTarget;
-            if (target != null && target.IsValidTarget() && !target.IsZombie)
+            if (target != null && target.IsValidTarget() && !target.IsDead)
             {
                 if (target.InAutoAttackRange() && Orbwalker.CanMove() && (!R.IsReady() || (R.IsReady() && R.Instance.Name == R1name)))
                 {
@@ -509,13 +509,13 @@ namespace DaoHungAIO.Champions
                 if (!Player.IsDashing() && Variables.GameTimeTickCount - cQ >= 1000 && target.IsValidTarget())
                 {
                     if (Prediction.GetFastUnitPosition(Player, 100).Distance(target.Position) <= Player.Distance(target.Position))
-                        Q.Cast(Game.CursorPosRaw);
+                        Q.Cast(Game.CursorPos);
                     return;
                 }
             }
             if (W.IsReady() && Orbwalker.CanMove())
             {
-                var targets = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget() && !x.IsZombie && InWRange(x));
+                var targets = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget() && !x.IsDead && InWRange(x));
                 if (targets.Any())
                 {
                     W.Cast();
@@ -525,7 +525,7 @@ namespace DaoHungAIO.Champions
             if (E.IsReady() && Orbwalker.CanMove() && Ecombo)
             {
                 var target = TargetSelector.GetTarget(325 + Player.AttackRange + 70);
-                if (target.IsValidTarget() && !target.IsZombie)
+                if (target.IsValidTarget() && !target.IsDead)
                 {
                     E.Cast(target.Position);
                     return;
@@ -538,7 +538,7 @@ namespace DaoHungAIO.Champions
                     if (Rcomboalways)
                     {
                         var target = TargetSelector.GetTarget(325 + Player.AttackRange + 70);
-                        if (target.IsValidTarget() && !target.IsZombie && E.IsReady())
+                        if (target.IsValidTarget() && !target.IsDead && E.IsReady())
                         {
                             R.Cast();
                             return;
@@ -546,7 +546,7 @@ namespace DaoHungAIO.Champions
                         else
                         {
                             var targetR = TargetSelector.GetTarget(200 + Player.BoundingRadius + 70);
-                            if (targetR.IsValidTarget() && !targetR.IsZombie)
+                            if (targetR.IsValidTarget() && !targetR.IsDead)
                             {
                                 R.Cast();
                                 return;
@@ -557,12 +557,12 @@ namespace DaoHungAIO.Champions
                     if (RcomboKillable)
                     {
                         var targetR = TargetSelector.GetTarget(200 + Player.BoundingRadius + 70);
-                        if (targetR.IsValidTarget() && !targetR.IsZombie && basicdmg(targetR) <= targetR.Health && totaldame(targetR) >= targetR.Health)
+                        if (targetR.IsValidTarget() && !targetR.IsDead && basicdmg(targetR) <= targetR.Health && totaldame(targetR) >= targetR.Health)
                         {
                             R.Cast();
                             return;
                         }
-                        if (targetR.IsValidTarget() && !targetR.IsZombie && Player.CountEnemyHeroesInRange(800) >= 2)
+                        if (targetR.IsValidTarget() && !targetR.IsDead && Player.CountEnemyHeroesInRange(800) >= 2)
                         {
                             R.Cast();
                             return;
@@ -573,7 +573,7 @@ namespace DaoHungAIO.Champions
                 {
                     if (R2comboKS)
                     {
-                        var targets = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget(R.Range) && !x.IsZombie);
+                        var targets = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget(R.Range) && !x.IsDead);
                         foreach (var target in targets)
                         {
                             if (target.Health < Rdame(target, target.Health))
@@ -583,7 +583,7 @@ namespace DaoHungAIO.Champions
                     }
                     if (R2comboMaxdmg)
                     {
-                        var targets = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget(R.Range) && !x.IsZombie);
+                        var targets = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget(R.Range) && !x.IsDead);
                         foreach (var target in targets)
                         {
                             if (target.Health / target.MaxHealth <= 0.25)
@@ -594,14 +594,14 @@ namespace DaoHungAIO.Champions
                     //if (R2BadaoStyle && !Q.IsReady())
                     //{
                     //    var target = TargetSelector.GetTarget(R.Range);
-                    //    if (target.IsValidTarget() && !target.IsZombie)
+                    //    if (target.IsValidTarget() && !target.IsDead)
                     //    {
                     //        R.Cast(target);
                     //        return;
                     //    }
                     //}
                     var targethits = TargetSelector.GetTarget(R.Range);
-                    if (targethits.IsValidTarget() && !targethits.IsZombie)
+                    if (targethits.IsValidTarget() && !targethits.IsDead)
                         R.CastIfWillHit(targethits, 4);
                     return;
 
@@ -637,7 +637,7 @@ namespace DaoHungAIO.Champions
         {
             if (W.IsReady() && Orbwalker.CanMove())
             {
-                var targets = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget() && !x.IsZombie && InWRange(x));
+                var targets = GameObjects.EnemyHeroes.Where(x => x.IsValidTarget() && !x.IsDead && InWRange(x));
                 if (targets.Any())
                 {
                     W.Cast();
@@ -647,7 +647,7 @@ namespace DaoHungAIO.Champions
             if (E.IsReady() && Orbwalker.CanMove())
             {
                 var target = TargetSelector.GetTarget(325 + Player.AttackRange + 70);
-                if (target.IsValidTarget() && !target.IsZombie)
+                if (target.IsValidTarget() && !target.IsDead)
                 {
                     E.Cast(target.Position);
                     return;
@@ -667,7 +667,7 @@ namespace DaoHungAIO.Champions
                         Q.Cast(Prediction.GetFastUnitPosition((AIBaseClient)TTTar, 300));
                     else
                     {
-                        Q.Cast(Game.CursorPosRaw);
+                        Q.Cast(Game.CursorPos);
                     }
                         
                     return;
@@ -678,7 +678,7 @@ namespace DaoHungAIO.Champions
                         Q.Cast(Prediction.GetFastUnitPosition((AIBaseClient)TTTar, 300));
                     else
                     {
-                        Q.Cast(Game.CursorPosRaw);
+                        Q.Cast(Game.CursorPos);
                     }
                     return;
                 }
@@ -694,7 +694,7 @@ namespace DaoHungAIO.Champions
             }
             if (Q.IsReady() && UseQBeforeExpiry && !Player.IsRecalling())
             {
-                if (Qstate != 1 && Variables.GameTimeTickCount - cQ <= 3800 - Game.Ping / 2 && Variables.GameTimeTickCount - cQ >= 3300 - Game.Ping / 2) { Q.Cast(Game.CursorPosRaw);
+                if (Qstate != 1 && Variables.GameTimeTickCount - cQ <= 3800 - Game.Ping / 2 && Variables.GameTimeTickCount - cQ >= 3300 - Game.Ping / 2) { Q.Cast(Game.CursorPos);
                     return;
                 }
             }
@@ -770,7 +770,7 @@ namespace DaoHungAIO.Champions
             {
                 temp += (buff.Name + "(" + buff.Count + ")" + "(" + buff.Type.ToString() + ")" + ", ");
             }
-            Chat.Print(temp);
+            Game.Print(temp);
         }
         public static double basicdmg(AIBaseClient target)
         {
@@ -844,7 +844,7 @@ namespace DaoHungAIO.Champions
                 //var pluspercent = missinghealth * (8 / 3);
                 //var rawdmg = new double[] { 80, 150, 160 }[R.Level - 1] + 0.6 * Player.FlatPhysicalDamageMod;
                 
-                //Chat.Print(R.GetDamage(target));
+                //Game.Print(R.GetDamage(target));
                 return R.GetDamage(target);
             }
             else return 0;
@@ -852,17 +852,17 @@ namespace DaoHungAIO.Champions
 
         public static void walljump()
         {
-            var x = Player.Position.Extend(Game.CursorPosRaw, 100);
-            var y = Player.Position.Extend(Game.CursorPosRaw, 30);
+            var x = Player.Position.Extend(Game.CursorPos, 100);
+            var y = Player.Position.Extend(Game.CursorPos, 30);
             if (!x.IsWall() && !y.IsWall()) Player.IssueOrder(GameObjectOrder.MoveTo, x);
             if (x.IsWall() && !y.IsWall()) Player.IssueOrder(GameObjectOrder.MoveTo, y);
-            if (Prediction.GetFastUnitPosition(Player, 500).Distance(Player.Position) <= 10) { Q.Cast(Game.CursorPosRaw); }
+            if (Prediction.GetFastUnitPosition(Player, 500).Distance(Player.Position) <= 10) { Q.Cast(Game.CursorPos); }
         }
         public static void flee()
         {
-            Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPosRaw);
-            var x = Player.Position.Extend(Game.CursorPosRaw, 300);
-            if (Q.IsReady() && !Player.IsDashing()) Q.Cast(Game.CursorPosRaw);
+            Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+            var x = Player.Position.Extend(Game.CursorPos, 300);
+            if (Q.IsReady() && !Player.IsDashing()) Q.Cast(Game.CursorPos);
             if (E.IsReady() && !Player.IsDashing()) E.Cast(x);
         }
     }

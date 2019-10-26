@@ -56,34 +56,34 @@ namespace DaoHungAIO
                 //pred = new Menu("spred", "Prediction settings");
                 //SPrediction.Prediction.Initialize(pred);
                 SPredictionMenu = SPrediction.Prediction.Initialize(); //new Menu("SPREDX", "SPrediction");
-                Chat.Print("<font color=\"#05FAAC\"><b>XDreamms is just a kid stealing, disrespecting the source owner</b></font>");
-                Chat.Print("<font color=\"#f54242\"><b>HappyMajor is son of bitch trying destroy discord ensoul</b></font>");
+                Game.Print("<font color=\"#05FAAC\"><b>XDreamms is just a kid stealing, disrespecting the source owner</b></font>");
+                Game.Print("<font color=\"#f54242\"><b>HappyMajor is son of bitch trying destroy discord ensoul</b></font>");
                 //SPredictionMenu.Attach();
                 //set default to common prediction
                 //var type = Type.GetType("DaoHungAIO.Champions." + player.CharacterName);
-                //Chat.Print("Loading1");
+                //Game.Print("Loading1");
                 //if (type != null)
                 //{
-                //    Chat.Print("Loading");
+                //    Game.Print("Loading");
                 //    Helpers.DynamicInitializer.NewInstance(type);
                 //}
                 //else
                 //{
-                //    Chat.Print("Loading2");
+                //    Game.Print("Loading2");
                 //    var common = Type.GetType("DaoHungAIO.Champions." + "Other");
                 //    if (common != null)
                 //    {
-                //        Chat.Print("Loading3");
+                //        Game.Print("Loading3");
                 //        Helpers.DynamicInitializer.NewInstance(common);
                 //    }
                 //}
                 //IncDamages = new IncomingDamage();
 
-                Game.OnTick += DelayTime;
+                EnsoulSharp.SDK.Events.Tick.OnTick += DelayTime;
 
                 //AIBaseClient.OnDoCast += OnProcessSpell;
                 //Game.OnUpdate += TrashTalk;
-                Chat.Print(player.CharacterName);
+                Game.Print(player.CharacterName);
                 switch (player.CharacterName)
                 {
                     case "Ahri":
@@ -205,7 +205,7 @@ namespace DaoHungAIO
         private static void OnProcessSpell(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)
         {
             if(sender.IsMe)
-            Chat.Print(args.SData.Name);
+            Game.Print(args.SData.Name);
         }
 
         private static void DelayTime(EventArgs args)
@@ -223,7 +223,7 @@ namespace DaoHungAIO
         {
             GameObjects.Player.Buffs.ForEach(buff =>
             {
-                Chat.Print(buff.Name);
+                Game.Print(buff.Name);
             });
         }
     }

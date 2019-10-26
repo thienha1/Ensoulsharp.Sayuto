@@ -23,8 +23,8 @@ namespace DaoHungAIO.Champions
             Notifications.Add(new Notification("Dao Hung AIO fuck WWapper", "Khazix credit Seph"));
             Init();
             GenerateMenu(this);
-            Game.OnTick += OnUpdate;
-            Game.OnTick += DoubleJump;
+            EnsoulSharp.SDK.Events.Tick.OnTick += OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += DoubleJump;
             Drawing.OnDraw += OnDraw;
             Spellbook.OnCastSpell += SpellCast;
             Orbwalker.OnAction += BeforeAttack;
@@ -238,7 +238,7 @@ namespace DaoHungAIO.Champions
 
         void Waveclear()
         {
-            List<AIMinionClient> allMinions = ObjectManager.Get<AIMinionClient>().OrderBy(x => x.MaxHealth).Where(x => x.IsValidTarget(W.Range) && !x.IsWard).ToList();
+            List<AIMinionClient> allMinions = ObjectManager.Get<AIMinionClient>().OrderBy(x => x.MaxHealth).Where(x => x.IsValidTarget(W.Range)).ToList();
 
             if (Config.GetBool("Farm", "UseQFarm") && Q.IsReady() && !Orbwalker.CanAttack())
             {
@@ -494,7 +494,7 @@ namespace DaoHungAIO.Champions
             }
 
             AIHeroClient target = HeroList
-                .Where(x => x.IsValidTarget() && x.Distance(Khazix.Position) < 1375f && !x.IsZombie)
+                .Where(x => x.IsValidTarget() && x.Distance(Khazix.Position) < 1375f && !x.IsDead)
                 .MinOrDefault(x => x.Health);
 
             if (target != null)
@@ -820,7 +820,7 @@ namespace DaoHungAIO.Champions
                 return;
             }
 
-            var Targets = HeroList.Where(x => x.IsValidTarget() && !x.IsInvulnerable && !x.IsZombie);
+            var Targets = HeroList.Where(x => x.IsValidTarget() && !x.IsInvulnerable && !x.IsDead);
 
             if (Q.IsReady() && E.IsReady())
             {
@@ -861,22 +861,22 @@ namespace DaoHungAIO.Champions
 
             if (firstjump && Config.GetBool("DoubleJumping", "jcursor"))
             {
-                return Game.CursorPosRaw;
+                return Game.CursorPos;
             }
 
             if (!firstjump && Config.GetBool("DoubleJumping", "jcursor2"))
             {
-                return Game.CursorPosRaw;
+                return Game.CursorPos;
             }
 
             Vector3 Position = new Vector3();
             var jumptarget = IsHealthy
                   ? HeroList
-                      .FirstOrDefault(x => x.IsValidTarget() && !x.IsZombie && x != Qtarget &&
+                      .FirstOrDefault(x => x.IsValidTarget() && !x.IsDead && x != Qtarget &&
                               Vector3.Distance(Khazix.Position, x.Position) < E.Range)
                   :
               HeroList
-                  .FirstOrDefault(x => x.IsAlly && !x.IsZombie && !x.IsDead && !x.IsMe &&
+                  .FirstOrDefault(x => x.IsAlly && !x.IsDead && !x.IsDead && !x.IsMe &&
                           Vector3.Distance(Khazix.Position, x.Position) < E.Range);
 
             if (jumptarget != null)
@@ -1320,7 +1320,7 @@ namespace DaoHungAIO.Champions
         //                if (SpellSlot.E.IsReady())
         //                {
         //                    var posmode = Helper.Config.GetAssinationMode();
-        //                    var point = posmode == KhazixMenu.AssasinationMode.ToOldPos ? PreJumpPos : Game.CursorPosRaw;
+        //                    var point = posmode == KhazixMenu.AssasinationMode.ToOldPos ? PreJumpPos : Game.CursorPos;
         //                    if (point.Distance(ObjectManager.Player.Position) > K6.E.Range)
         //                    {
         //                        PreJumpPos = ObjectManager.Player.Position.Extend(point, K6.E.Range);
@@ -1588,7 +1588,7 @@ namespace DaoHungAIO.Champions
 
         internal static bool IsValidEnemy(this AIBaseClient unit, float range = 50000)
         {
-            if (unit == null || !unit.IsHPBarRendered || unit.IsZombie || unit.Distance(Player) > range || unit.Team == Player.Team || !unit.IsValid || unit.IsDead || !unit.IsVisible || !unit.IsTargetable)
+            if (unit == null || !unit.IsHPBarRendered || unit.IsDead || unit.Distance(Player) > range || unit.Team == Player.Team || !unit.IsValid || unit.IsDead || !unit.IsVisible || !unit.IsTargetable)
             {
                 return false;
             }

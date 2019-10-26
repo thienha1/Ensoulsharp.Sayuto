@@ -198,10 +198,10 @@ namespace DaoHungAIO.Champions
             AIHeroClient.OnProcessSpellCast += AIBaseClientProcessSpellCast;
             Interrupter.OnInterrupterSpell += Interrupter2_OnInterruptableTarget;
 
-            Chat.Print("<font color=\"#FF9900\"><b>DH.Oriana:</b></font> Feedback send to facebook yts.1996 Sayuto");
-            Chat.Print("<font color=\"#FF9900\"><b>Credits: Kortatu and XSalice</b></font>");
+            Game.Print("<font color=\"#FF9900\"><b>DH.Oriana:</b></font> Feedback send to facebook yts.1996 Sayuto");
+            Game.Print("<font color=\"#FF9900\"><b>Credits: Kortatu and XSalice</b></font>");
         }
-        private static void Game_OnWndProc(WndEventArgs args)
+        private static void Game_OnWndProc(GameWndProcEventArgs args)
         {
             if (args.Msg != 520)
                 return;

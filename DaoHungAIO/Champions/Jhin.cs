@@ -120,7 +120,7 @@ namespace DaoHungAIO.Champions
             Config.Add(Farm);
             Config.Attach();
             Drawing.OnDraw += Drawing_OnDraw;
-            Game.OnTick += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Gapcloser.OnGapcloser += AntiGapcloser_OnEnemyGapcloser;
             AIBaseClient.OnProcessSpellCast += AIBaseClient_OnProcessSpellCast;
             Drawing.OnEndScene += Drawing_OnEndScene;
@@ -193,10 +193,10 @@ namespace DaoHungAIO.Champions
 
             if (LagFree(1) && (R.IsReady() || IsCastingR) && Config["RConfig"].GetValue<MenuBool>("autoR"))
                 LogicR();
-            //Chat.Print(")
-            //Chat.Print(R.Instance.Name);
-            //Chat.Print(R.Instance.SData.Name);
-            //Chat.Print(R.Name);
+            //Game.Print(")
+            //Game.Print(R.Instance.Name);
+            //Game.Print(R.Instance.SData.Name);
+            //Game.Print(R.Name);
             if (Config["RConfig"].GetValue<MenuKeyBind>("useR").Active)
             {
                 Orbwalker.MovementState = false;
@@ -258,10 +258,10 @@ namespace DaoHungAIO.Champions
                 {
                     var enemies = GameObjects.EnemyHeroes.Where(enemy => enemy.IsValidTarget(R.Range)).OrderBy(enemy => enemy.Health);
 
-                    //Chat.Print("Casting:" + enemies.Count());
+                    //Game.Print("Casting:" + enemies.Count());
                     if (t.IsValidTarget(R.Range))
                     {
-                        //Chat.Print("Cast R to Selected");
+                        //Game.Print("Cast R to Selected");
                         R.Cast(t);
                     }
                         
@@ -269,7 +269,7 @@ namespace DaoHungAIO.Champions
                     {
                         foreach (var enemy in enemies)
                         {
-                            //Chat.Print("Cast R on Enemies");
+                            //Game.Print("Cast R on Enemies");
                             R.Cast(t);
                             rPosLast = R.GetPrediction(enemy).CastPosition;
                             rTargetLast = enemy;
@@ -281,7 +281,7 @@ namespace DaoHungAIO.Champions
             {
                 if (!Config["RConfig"].GetValue<MenuBool>("Rvisable") && rTargetLast.IsValidTarget(R.Range))
                 {//InCone(rTargetLast.Position) && InCone(rPosLast))
-                    //Chat.Print("Cast R on Last target");
+                    //Game.Print("Cast R on Last target");
                     R.Cast(rPosLast);
                 }
             }

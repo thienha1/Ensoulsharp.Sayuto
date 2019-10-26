@@ -213,7 +213,7 @@ namespace DaoHungAIO.Champions
 
             Ignite = Player.GetSpellSlot("summonerdot");
 
-            Game.OnTick += OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += OnUpdate;
             Drawing.OnDraw += OnDraw;
             Interrupter.OnInterrupterSpell += OnPossibleToInterrupt;
         }
@@ -288,7 +288,7 @@ namespace DaoHungAIO.Champions
 
         private static bool CastQCir(AIBaseClient target)
         {
-            return target.IsValidTarget(QCirWidthMin - target.BoundingRadius) && Q.Cast(Game.CursorPosRaw, PacketCast);
+            return target.IsValidTarget(QCirWidthMin - target.BoundingRadius) && Q.Cast(Game.CursorPos, PacketCast);
         }
 
         private static void clear()
@@ -575,7 +575,7 @@ namespace DaoHungAIO.Champions
         {
             var pos = target != null
                           ? Prediction.GetFastUnitPosition(target, E.Delay, E.Speed)
-                          : Game.CursorPosRaw.ToVector2();
+                          : Game.CursorPos.ToVector2();
             var obj = new List<AIBaseClient>();
             obj.AddRange(GetMinions(E.Range, MinionManager.MinionTypes.All, MinionTeam.NotAlly));
             obj.AddRange(HeroManager.Enemies.Where(i => i.IsValidTarget(E.Range)));
@@ -834,7 +834,7 @@ namespace DaoHungAIO.Champions
             }
             if (FleeKey.Active)
             {
-                Orbwalker.Orbwalk(null, Game.CursorPosRaw);
+                Orbwalker.Orbwalk(null, Game.CursorPos);
                 flee();
             }
 
@@ -942,7 +942,7 @@ namespace DaoHungAIO.Champions
                 }
                 menu.Add(EvadeSkillshotMenu);
                 DaoHungAIO.Evade.Collision.Init();
-                Game.OnTick += OnUpdateEvade;
+                EnsoulSharp.SDK.Events.Tick.OnTick += OnUpdateEvade;
                 SkillshotDetector.OnDetectSkillshot += OnDetectSkillshot;
                 SkillshotDetector.OnDeleteMissile += OnDeleteMissile;
             }
@@ -1083,7 +1083,7 @@ namespace DaoHungAIO.Champions
 
             private static void OnDetectSkillshot(Skillshot skillshot)
             {
-                Chat.Print("detected:");
+                Game.Print("detected:");
                 var alreadyAdded =
                     EvadeManager.DetectedSkillshots.Any(
                         i =>
@@ -1324,7 +1324,7 @@ namespace DaoHungAIO.Champions
 
             private static void OnUpdateEvade(EventArgs args)
             {
-                //Chat.Print("Evade:" + EvadeManager.DetectedSkillshots.Count());
+                //Game.Print("Evade:" + EvadeManager.DetectedSkillshots.Count());
                 EvadeManager.DetectedSkillshots.RemoveAll(i => !i.IsActive());
                 foreach (var skillshot in EvadeManager.DetectedSkillshots)
                 {
@@ -1342,7 +1342,7 @@ namespace DaoHungAIO.Champions
                 var safePath = IsSafePath(Player.GetWaypoints(), 100);
                 if (!safePath.IsSafe && !safePoint.IsSafe)
                 {
-                    TryToEvade(safePoint.SkillshotList, Game.CursorPosRaw.ToVector2());
+                    TryToEvade(safePoint.SkillshotList, Game.CursorPos.ToVector2());
                 }
             }
 
@@ -1463,7 +1463,7 @@ namespace DaoHungAIO.Champions
                     }
                 }
                 menu.Add(evadeMenu);
-                Game.OnTick += OnUpdateTarget;
+                EnsoulSharp.SDK.Events.Tick.OnTick += OnUpdateTarget;
                 GameObject.OnMissileCreate += ObjSpellMissileOnCreate;
                 GameObject.OnDelete += ObjSpellMissileOnDelete;
                 AIBaseClient.OnDoCast += OnProcessSpellCast;
@@ -1754,7 +1754,7 @@ namespace DaoHungAIO.Champions
                                 && EvadeSkillshot.IsSafePoint(PosAfterE(i).ToVector2()).IsSafe
                                 && (!UnderTower(PosAfterE(i)) || evadeMenu.GetValue<MenuBool>("ETower"))
                                 && GoThroughWall(Player.Position.ToVector2(), PosAfterE(i).ToVector2()))
-                                .OrderBy(i => PosAfterE(i).Distance(Game.CursorPosRaw))
+                                .OrderBy(i => PosAfterE(i).Distance(Game.CursorPos))
                                 .Any(i => E.CastOnUnit(i, PacketCast)))
                         {
                             return;

@@ -75,11 +75,11 @@ namespace DaoHungAIO.Champions
 
                 #region Subscribed Events
 
-                Game.OnTick += Game_OnUpdate;
+                EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnUpdate;
                 Drawing.OnDraw += Drawing_OnDraw;
                 Drawing.OnEndScene += Drawing_OnEndScene;
                 Orbwalker.OnAction += AIBaseClient_OnDoCast;
-                EnsoulSharp.Player.OnIssueOrder += CamilleOnIssueOrder;
+                EnsoulSharp.AIBaseClient.OnIssueOrder += CamilleOnIssueOrder;
                 AIBaseClient.OnDoCast += AIBaseClient_OnProcessSpellCast;
                 GameObject.OnCreate += EffectEmitter_OnCreate;
                 Interrupter.OnInterrupterSpell += Interrupter2_OnInterruptableTarget;
@@ -188,7 +188,7 @@ namespace DaoHungAIO.Champions
             //    foreach (
             //        var enemy in
             //            ObjectManager.Get<AIHeroClient>()
-            //                .Where(ene => ene.IsValidTarget() && !ene.IsZombie))
+            //                .Where(ene => ene.IsValidTarget() && !ene.IsDead))
             //    {
             //        var color = R.IsReady() && EasyKill(enemy)
             //            ? new ColorBGRA(0, 255, 0, 90)
@@ -242,8 +242,12 @@ namespace DaoHungAIO.Champions
                  Player.GetEnemiesInRange(E.Range * 2).Any(ez => RootMenu.Item("whR" + ez.CharacterName).GetValue<MenuBool>());
         }
 
-        private static void CamilleOnIssueOrder(AIBaseClient sender, PlayerIssueOrderEventArgs args)
+        private static void CamilleOnIssueOrder(AIBaseClient sender, AIBaseClientIssueOrderEventArgs args)
         {
+            if (!sender.IsMe)
+            {
+                return;
+            }
             if (OnWall && E.IsReady() && RootMenu.Item("usecombo").GetValue<MenuKeyBind>().Active)
             {
                 var issueOrderPos = args.TargetPosition;
@@ -573,8 +577,8 @@ namespace DaoHungAIO.Champions
 
             if (FleeModeActive)
             {
-                Orbwalker.Orbwalk(null, Game.CursorPosRaw);
-                UseE(Game.CursorPosRaw, false);
+                Orbwalker.Orbwalk(null, Game.CursorPos);
+                UseE(Game.CursorPos, false);
             }
 
             //if (AllowSkinChanger)
@@ -585,7 +589,7 @@ namespace DaoHungAIO.Champions
             if (ForceUltTarget)
             {
                 var rtarget = HeroManager.Enemies.FirstOrDefault(x => x.HasBuff(RBuffName));
-                if (rtarget != null && rtarget.IsValidTarget() && !rtarget.IsZombie)
+                if (rtarget != null && rtarget.IsValidTarget() && !rtarget.IsDead)
                 {
                     if (rtarget.Distance(Player) <= Player.AttackRange + Player.Distance(Player.BBox.Minimum) + 75)
                     {
@@ -780,7 +784,7 @@ namespace DaoHungAIO.Champions
         static void Combo()
         {
             var target = TargetSelector.GetTarget(E.IsReady() ? E.Range * 2 : W.Range);
-            if (target.IsValidTarget() && !target.IsZombie)
+            if (target.IsValidTarget() && !target.IsDead)
             {
                 if (RootMenu.Item("lockwcombo").GetValue<MenuBool>())
                 {
@@ -810,7 +814,7 @@ namespace DaoHungAIO.Champions
         static void Harass()
         {
             var target = TargetSelector.GetTarget(W.Range);
-            if (target.IsValidTarget() && !target.IsZombie)
+            if (target.IsValidTarget() && !target.IsDead)
             {
                 if (RootMenu.Item("lockwharass").GetValue<MenuBool>())
                 {
