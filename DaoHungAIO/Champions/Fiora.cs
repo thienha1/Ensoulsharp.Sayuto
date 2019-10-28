@@ -1579,12 +1579,6 @@ namespace DaoHungAIO.Champions
             Spells.Add(
                 new SpellData
                 {
-                    CharacterName = "Nocturne",
-                    Slot = SpellSlot.R,
-                });
-            Spells.Add(
-                new SpellData
-                {
                     CharacterName = "Rammus",
                     Slot = SpellSlot.Q,
                 });
