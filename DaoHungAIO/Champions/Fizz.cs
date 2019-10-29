@@ -104,7 +104,7 @@ namespace DaoHungAIO.Champions
 
             RRectangle = new Geometry.Rectangle(Player.Position, Player.Position, R.Width);
 
-            Game.OnUpdate += GameOnOnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += GameOnOnUpdate;
             AIBaseClient.OnProcessSpellCast += ObjAiBaseOnOnProcessSpellCast;
             Drawing.OnDraw += DrawingOnOnDraw;
 

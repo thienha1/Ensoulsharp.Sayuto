@@ -38,6 +38,7 @@ namespace DaoHungAIO.Champions
         private static readonly MenuBool R1 = new MenuBool("r1", "Use R1");
         private static readonly MenuBool Blockult = new MenuBool("blockult", "^ Only if Combo Damage > HP target", false);
         //private static readonly MenuSlider Rstart = new MenuSlider("Rstart", "Use R1 to start if Hit X enemies (use 0 to disable)", 3, 0, 5);
+        private static readonly MenuBool R2Instant = new MenuBool("R2Instant", "Use R2 if ready", false);
         private static readonly MenuBool R2kill = new MenuBool("R2kill", "Use R2 if enemy is killable");
         private static readonly MenuBool R2 = new MenuBool("R2", "Use R2 if Time is running out (Thanks for memsenpai)");
 
@@ -69,7 +70,7 @@ namespace DaoHungAIO.Champions
             _e2 = new Spell(SpellSlot.E, 2000f);
             _r = new Spell(SpellSlot.R, 575f);
             _q.SetSkillshot(0.25f, 70f, 1200f, false, false, SkillshotType.Cone);
-            _q.MinHitChance = HitChance.Medium;
+            _q.MinHitChance = HitChance.Low;
             _w.SetSkillshot(0.25f, 70f, 1200f, true, false, SkillshotType.Circle);
             _e.SetSkillshot(0.25f, 70f, 1200f, true, false, SkillshotType.Line);
             _r.SetSkillshot(0.25f, 0f, float.MaxValue, false, false, SkillshotType.Line);
@@ -153,6 +154,7 @@ namespace DaoHungAIO.Champions
             _combat.Add(R1);
             _combat.Add(Blockult);
             //_combat.Add(Rstart);
+            _combat.Add(R2Instant);
             _combat.Add(R2kill);
             _combat.Add(R2);
 
@@ -323,6 +325,11 @@ namespace DaoHungAIO.Champions
                         {
                             _r.Cast(t);
                         }
+
+                        if (R2.Enabled && R2Instant.Enabled)
+                        {
+                            _r.Cast(t);
+                        }
                     }
                     break;
                 case 1:
@@ -354,6 +361,11 @@ namespace DaoHungAIO.Champions
                     if (_r.IsReady() && t.IsValidTarget(_r.Range) && ObjectManager.Player.HasBuff("AkaliR"))
                     {
                         if ((R2kill.Enabled && ComboFull(t) >= t.Health || ObjectManager.Player.Buffs.Find(buff => buff.Name == "AkaliR").EndTime - Game.Time <= 1f) && R2.Enabled)
+                        {
+                            _r.Cast(t);
+                        }
+
+                        if (R2.Enabled && R2Instant.Enabled)
                         {
                             _r.Cast(t);
                         }

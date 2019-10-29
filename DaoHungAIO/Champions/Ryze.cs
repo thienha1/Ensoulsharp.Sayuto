@@ -108,7 +108,7 @@ namespace DaoHungAIO.Champions
 
             Config.Attach();
 
-            Game.OnUpdate += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Game.OnWndProc += Game_OnWndProc;
             Drawing.OnDraw += Drawing_OnDraw;
             //AIHeroClient.OnProcessSpellCast += AIBaseClientProcessSpellCast;

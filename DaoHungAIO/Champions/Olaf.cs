@@ -1209,7 +1209,7 @@ namespace DaoHungAIO.Champions
                 .SubMenu("Mana")
                 .AddItem(new MenuSlider("ManaPercent", "MP Trigger Percent").SetValue(new Slider(50)));
 
-            Game.OnUpdate += OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += OnUpdate;
         }
 
         private static void OnUpdate(EventArgs args)

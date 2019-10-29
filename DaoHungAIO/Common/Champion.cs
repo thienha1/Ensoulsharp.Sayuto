@@ -72,7 +72,7 @@ namespace DaoHungAIO.Common
 
         internal virtual void SetEvents()
         {
-            Game.OnUpdate += this.OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += this.OnGameUpdate;
             EnsoulSharp.Drawing.OnDraw += Drawing;
             Orbwalker.OnAction += OnAction;
             Spellbook.OnCastSpell += OnCastSpell;

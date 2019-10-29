@@ -191,7 +191,7 @@ namespace DaoHungAIO.Champions
 
             Config.Attach();
 
-            Game.OnUpdate += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Game.OnWndProc += Game_OnWndProc;
             Drawing.OnDraw += Drawing_OnDraw;
             Spellbook.OnCastSpell += SpellbookCastSpell;
@@ -850,7 +850,7 @@ namespace DaoHungAIO.Champions
 
         static OriannaBallManager()
         {
-            Game.OnUpdate += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             AIHeroClient.OnProcessSpellCast += AIBaseClientProcessSpellCast;
             BallPosition = ObjectManager.Player.Position;
         }

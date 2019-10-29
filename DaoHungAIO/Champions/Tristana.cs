@@ -132,7 +132,7 @@ namespace DaoHungAIO.Champions
 
             Drawing.OnDraw += OnDraw;
             //AIBaseClient.OnLevelUp += TristRange;
-            Game.OnUpdate += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Interrupter.OnInterrupterSpell += Interrupter_OnInterruptableTarget;
             Gapcloser.OnGapcloser += AntiGapCloser_OnEnemyGapcloser;
             GameObject.OnCreate += GameObject_OnCreate;

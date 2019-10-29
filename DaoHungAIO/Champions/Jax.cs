@@ -33,7 +33,7 @@ namespace DaoHungAIO.Champions
             InitMenu();
             //Game.PrintChat("<font color='#9933FF'>Soresu </font><font color='#FFFFFF'>- Jax</font>");
             Drawing.OnDraw += Game_OnDraw;
-            Game.OnUpdate += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             //Helpers.Jungle.setSmiteSlot();
             //HpBarDamageIndicator.DamageToUnit = ComboDamage;
             Dash.OnDash += OnDashEvent;

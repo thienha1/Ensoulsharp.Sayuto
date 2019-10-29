@@ -154,7 +154,7 @@ namespace DaoHungAIO.Champions
             Gapcloser.OnGapcloser += AntiGapcloserOnOnEnemyGapcloser;
             Interrupter.OnInterrupterSpell += Interrupter2OnOnInterruptableTarget;
             Drawing.OnDraw += DrawingOnOnDraw;
-            Game.OnUpdate += GameOnOnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += GameOnOnUpdate;
             //Orbwalker.OnAction += OnActionDelegate;
         }
 

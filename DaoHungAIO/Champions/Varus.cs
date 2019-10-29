@@ -146,7 +146,7 @@ namespace DaoHungAIO.Champions
 
             spells[Spells.Q].SetCharged("VarusQLaunch", "VarusQLaunch", 925, 1600, 2);
             Initialize();
-            Game.OnUpdate += OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
             AIBaseClient.OnDoCast += OnDoCast;
             AIBaseClient.OnBuffGain += AIBaseClientBuffGain;

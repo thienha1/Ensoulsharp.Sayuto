@@ -24,7 +24,7 @@ namespace DaoHungAIO.Champions
             InitMal();
             InitMenu();
             //Game.PrintChat("<font color='#9933FF'>Soresu </font><font color='#FFFFFF'>- Garen</font>");
-            Game.OnUpdate += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Orbwalker.OnAction += AfterAttack;
             Drawing.OnDraw += Game_OnDraw;
             //Jungle.setSmiteSlot();

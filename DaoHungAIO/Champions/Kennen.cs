@@ -26,7 +26,7 @@ namespace DaoHungAIO.Champions
         {
             InitKennen();
             InitMenu();
-            Game.OnUpdate += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Drawing.OnDraw += Game_OnDraw;
             Orbwalker.OnAction += Orbwalker_OnAttack;
         }

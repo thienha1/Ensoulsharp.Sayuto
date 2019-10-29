@@ -330,7 +330,7 @@ namespace DaoHungAIO.Champions
 
             EnemyInfo = EnemyTeam.Select(x => new EnemyInfo(x)).ToList();
 
-            Game.OnUpdate += Game_OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnUpdate;
         }
 
         void Game_OnUpdate(EventArgs args)

@@ -89,6 +89,7 @@ namespace DaoHungAIO.Champions
                 Config = new Menu("Jayce", "DH.Jayce", true);
                 //Combo
                 var combo = new Menu("combo", "Combo Sharp");
+                combo.Add(new MenuSlider("HitChanceQ", "Q hitchance", 2, 1, 4));
                 combo.Add(new MenuBool("comboItems", "Use Items"));
                 combo.Add(new MenuBool("hammerKill", "Hammer if killable"));
                 combo.Add(new MenuBool("parlelE", "use pralel gate"));
@@ -216,6 +217,10 @@ namespace DaoHungAIO.Champions
 
             checkForm();
             processCDs();
+            if(Config.Item("HitChanceQ").GetValue<MenuSlider>().Value != (int)Q1.MinHitChance)
+            {
+                Q1.MinHitChance = (HitChance)Config.Item("HitChanceQ").GetValue<MenuSlider>().Value;
+            }
             if (Config["extra"].GetValue<MenuKeyBind>("shoot").Active)
             {
                 shootQE(Game.CursorPos, true);

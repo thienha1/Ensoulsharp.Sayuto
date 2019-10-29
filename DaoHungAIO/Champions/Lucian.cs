@@ -67,7 +67,7 @@ namespace DaoHungAIO.Champions
             R.SetSkillshot(0.2f, 110f, 2500, true, false, SkillshotType.Line);
 
             Spellbook.OnCastSpell += Spellbook_OnCastSpell;
-            Game.OnUpdate += Game_OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnUpdate;
             //Drawing.OnEndScene += Drawing_OnEndScene;
             AIBaseClient.OnDoCast += OnDoCast;
             Drawing.OnDraw += OnDraw;

@@ -34,7 +34,7 @@ namespace DaoHungAIO.Champions
 
             Game.Print("<font color=\"#05FAAC\"><b>DH.Renekton:</b></font> Feedback send to facebook yts.1996 Sayuto");
             Game.Print("<font color=\"#FF9900\"><b>Credits: Soresu and Exory</b></font>");
-            Game.OnUpdate += Game_OnGameUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += Game_OnGameUpdate;
             Orbwalker.OnAction += OnActionDelegate;
             Drawing.OnDraw += Game_OnDraw;
             //Jungle.setSmiteSlot();
