@@ -21,6 +21,7 @@ namespace DaoHungAIO
         public static Menu Config;
         public static AIHeroClient player;
         public static string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        private static readonly MenuSlider tickpersecond = new MenuSlider("tickpersecond", "How many Tick per second(ms)", 50, 1, 1000);
         //public static IncomingDamage IncDamages;
         public static Menu SPredictionMenu;
 
@@ -80,7 +81,12 @@ namespace DaoHungAIO
                 //IncDamages = new IncomingDamage();
 
                 EnsoulSharp.SDK.Events.Tick.OnTick += DelayTime;
-
+                Menu tick = new Menu("tick", "Tick Per Second", true);
+                tickpersecond.ValueChanged += onTickChange;
+                tick.Add(tickpersecond);
+                tick.Add(new Menu("notice", "Decrease it will make script work better but you also has high chance get disconnect issues"));
+                tick.Add(new Menu("notice2", "It should is higher than 30, increase it if you get disconnect issues"));
+                tick.Attach();
                 //AIBaseClient.OnDoCast += OnProcessSpell;
                 //Game.OnUpdate += TrashTalk;
                 Game.Print(player.CharacterName);
@@ -200,6 +206,11 @@ namespace DaoHungAIO
             {
                 Console.WriteLine("Failed To load: " + e);
             }
+        }
+
+        private static void onTickChange(object sender, EventArgs e)
+        {
+            EnsoulSharp.SDK.Events.Tick.TickPreSecond = tickpersecond.Value;
         }
 
         private static void OnProcessSpell(AIBaseClient sender, AIBaseClientProcessSpellCastEventArgs args)

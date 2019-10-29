@@ -848,71 +848,39 @@ namespace DaoHungAIO.Champions
 
         public void OnTick(EventArgs args)
         {
-
-
-
-            //Render.Circle.DrawCircle(Player.Position, 470, System.Drawing.Color.Red);
-            //GameObjects.AllGameObjects.Where(o => o.CountEnemyHeroesInRange(500) <= 350 && o is GrassObject ).ForEach(o => {
-            //    _w.Cast(o.Position);
-            //    Render.Circle.DrawCircle(o.Position, 20, System.Drawing.Color.Red, 10);
-            //});
-            //ObjectManager.Get<GrassObject>().Where(g => g.DistanceToCursor() <= 350).ForEach(o =>
-            //{
-            //    //    _w.Cast(o.Position);
-            //    Render.Circle.DrawCircle(o.Position, 20, System.Drawing.Color.Red, 10);
-            //});
-            //ObjectManager.Player.Buffs.ForEach(b => {
-            //    Game.Print(b.Name);
-            //});
-            //if (IsGrass())
-            //{
-            //    Game.Print("Is Grass");
-            //}
-            //if (IsRock())
-            //{
-            //    Game.Print("Is Rock");
-            //}
-            //if (IsWater())
-            //{
-            //    Game.Print("Is Water");
-            //}
-            //TargetSelector.SelectedTarget.Buffs.ForEach(b => Game.Print(b.Name));
-            //"qiyanapassivecd_base"
-
-            ////var abc = Render.Add(new Polygon());
-            //var target = TargetSelector.GetTarget(1000);
-            ////Game.Print(target.Position.Distance(ObjectManager.Player.Position));
-
-            //Render.D target.Position.Extend(target.Position, knoclback_distance);
-            //Game.Print(Player.Position.ToVector2());
-            if (IsEnchanced())
+            try
             {
-                _q.Range = 710f;
-            } else
-            {
-                _q.Range = 470f;
+                if (IsEnchanced())
+                {
+                    _q.Range = 710f;
+                }
+                else
+                {
+                    _q.Range = 470f;
+                }
+                switch (Orbwalker.ActiveMode)
+                {
+                    case (OrbwalkerMode.Combo):
+                        DoCombo();
+                        break;
+                    case OrbwalkerMode.Harass:
+                        DoHarass();
+                        break;
+                    case OrbwalkerMode.LaneClear:
+                        DoClear();
+                        DoJungleClear();
+                        break;
+                    case OrbwalkerMode.LastHit:
+                        DoFarm();
+                        break;
+
+                }
             }
-            switch (Orbwalker.ActiveMode)
+            catch (Exception  e)
             {
-                case (OrbwalkerMode.Combo):
-                    //ObjectManager.Get<GrassObject>().Where(g => g.DistanceToCursor() <= 350).ForEach(o => {
-                    //    _w.CastOnUnit(o);
-                    //    Render.Circle.DrawCircle(o.Position, 20, System.Drawing.Color.HotPink, 10);
-                    //});
-                    //Game.Print(NavMesh.GetCollisionFlags(Game.CursorPos).ToString());
-                    DoCombo();
-                    break;
-                case OrbwalkerMode.Harass:
-                    DoHarass();
-                    break;
-                case OrbwalkerMode.LaneClear:
-                    DoClear();
-                    DoJungleClear();
-                    break;
-                case OrbwalkerMode.LastHit:
-                    DoFarm();
-                    break;
+                Game.Print(e.Message, false);
 
+                Game.Print(e.StackTrace, false);
             }
         }
 
@@ -948,6 +916,28 @@ namespace DaoHungAIO.Champions
             {
                 if (_e.CanCast(etarget) && _q.IsReady() && Ecombo.Enabled)
                     _e.Cast(etarget);
+                if (Qcombo.Enabled && _q.IsReady())
+                {
+                    var col = _q.GetCollision(Player.Position.ToVector2(), new List<Vector2>() { etarget.Position.ToVector2() });
+                    if (col.Count > 0)
+                    {
+                        _q.Range = 240f + col.OrderBy(o => o.DistanceToPlayer()).FirstOrDefault().DistanceToPlayer();
+                    }
+                    if (etarget.IsValidTarget(_q.Range))
+                    {
+                        _q.Cast(etarget);
+                    }
+                }
+
+                if (((Wsave.Enabled && !_q.IsReady()) || !Wsave.Enabled) && Wcombo.Enabled && _w.IsReady() && (etarget.IsValidTarget(_q.Range) && ((!Qcombo.Enabled || !Player.Spellbook.GetSpell(SpellSlot.Q).IsLearned) || _q.CooldownTime > 1.5)))
+                {
+                    CastW(etarget);
+                }
+
+                if (Rcombo.Enabled && _r.IsReady())
+                {
+                    CastR(etarget);
+                }
             }
             else
             {
@@ -965,28 +955,7 @@ namespace DaoHungAIO.Champions
                     }
                 }
             }
-            if (Qcombo.Enabled && _q.IsReady())
-            {
-                var col = _q.GetCollision(Player.Position.ToVector2(), new List<Vector2>() { etarget.Position.ToVector2() });
-                if(col.Count > 0)
-                {
-                    _q.Range = 240f + col.OrderBy(o => o.DistanceToPlayer()).FirstOrDefault().DistanceToPlayer();
-                }
-                if (etarget.IsValidTarget(_q.Range))
-                {
-                    _q.Cast(etarget);
-                }
-            }
-
-            if (((Wsave.Enabled && !_q.IsReady()) || !Wsave.Enabled) && Wcombo.Enabled && _w.IsReady() && (etarget.IsValidTarget(_q.Range) && ((!Qcombo.Enabled || !Player.Spellbook.GetSpell(SpellSlot.Q).IsLearned) || _q.CooldownTime > 1.5)))
-            {
-                CastW(etarget);
-            }
-
-            if(Rcombo.Enabled && _r.IsReady())
-            {
-                CastR(etarget);
-            }
+           
         }
 
 

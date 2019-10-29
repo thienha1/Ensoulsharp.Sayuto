@@ -73,6 +73,7 @@ namespace DaoHungAIO.Champions
             _q.MinHitChance = HitChance.Low;
             _w.SetSkillshot(0.25f, 70f, 1200f, true, false, SkillshotType.Circle);
             _e.SetSkillshot(0.25f, 70f, 1200f, true, false, SkillshotType.Line);
+            _e.MinHitChance = HitChance.Low;
             _r.SetSkillshot(0.25f, 0f, float.MaxValue, false, false, SkillshotType.Line);
 
             CreateMenu();
@@ -110,7 +111,7 @@ namespace DaoHungAIO.Champions
                 )
                )
             {
-                if (Player.HealthPercent <= WcomboHp.Value && Player.IsVisibleOnScreen)
+                if (Player.HealthPercent <= WcomboHp.Value && Player.IsVisibleOnScreen && args.End.DistanceToPlayer() <= 200 && sender.DistanceToPlayer() <= 200)
                 {
                     if (Player.CanUseItem(Stopwatch.Id))
                     {
