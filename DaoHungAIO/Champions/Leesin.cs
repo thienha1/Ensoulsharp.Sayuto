@@ -537,7 +537,7 @@ namespace DaoHungAIO.Champions
             var prediction = _q.GetPrediction(target);
 
             if (prediction.Hitchance != HitChance.None && prediction.Hitchance != HitChance.OutOfRange
-                && prediction.Hitchance != HitChance.Collision && prediction.Hitchance >= HitChance.High)
+                && prediction.Hitchance != HitChance.Collision && prediction.Hitchance >= HitChance.Medium)
             {
                 _q.Cast(target);
             }
