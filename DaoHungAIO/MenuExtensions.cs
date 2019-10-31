@@ -222,6 +222,25 @@ namespace DaoHungAIO
             return (unit.HasBuff("BlindMonkQOne") || unit.HasBuff("blindmonkqonechaos"));
         }
 
+        public static bool IsValidTarget(this AIHeroClient u)
+        {
+            if (u == null || u.HasBuff("zhonyasringshield"))
+            {
+                return false;
+            }
+            return (u as AttackableUnit).IsValidTarget();
+
+        }
+        public static bool IsValidTarget(this AIHeroClient u, float range)
+        {
+            if (u == null || u.HasBuff("zhonyasringshield"))
+            {
+                return false;
+            }
+            return (u as AttackableUnit).IsValidTarget(range);
+
+        }
+
 
         public static bool UnderAllyTurret(this AIBaseClient player)
         {

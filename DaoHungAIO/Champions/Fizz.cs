@@ -107,9 +107,17 @@ namespace DaoHungAIO.Champions
             EnsoulSharp.SDK.Events.Tick.OnTick += GameOnOnUpdate;
             AIBaseClient.OnProcessSpellCast += ObjAiBaseOnOnProcessSpellCast;
             Drawing.OnDraw += DrawingOnOnDraw;
+            //AIBaseClient.OnBuffGain += BufGain;
 
         }
 
+        //private void BufGain(AIBaseClient sender, AIBaseClientBuffGainEventArgs args)
+        //{
+        //    if (sender.IsMe)
+        //    {
+        //        Game.Print(args.Buff.Name);
+        //    }
+        //}
 
         private static void DrawingOnOnDraw(EventArgs args)
         {
@@ -252,6 +260,7 @@ namespace DaoHungAIO.Champions
             {
                 return;
             }
+            
 
             if (Menu["Combo"].GetValue<MenuBool>("UseREGapclose") && CanKillWithUltCombo(target) && Q.IsReady() && W.IsReady() &&
                 E.IsReady() && R.IsReady() && (Player.Distance(target) < Q.Range + E.Range * 2))
