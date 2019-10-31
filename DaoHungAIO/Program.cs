@@ -137,6 +137,9 @@ namespace DaoHungAIO
                     case "KogMaw":
                         new KogMaw();
                         break;
+                    case "LeeSin":
+                        new Leesin();
+                        break;
                     case "Lucian":
                         new Lucian();
                         break;

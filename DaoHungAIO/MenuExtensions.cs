@@ -211,10 +211,16 @@ namespace DaoHungAIO
             } else
             {
                 return player.IsUnderAllyTurret();
-            }
-            
+            }            
         }
-
+        public static double GetItemDamage(this AIHeroClient player, AIBaseClient target, string itemname)
+        {
+            return player.GetSpellDamage(target, player.GetSpellSlot(itemname));
+        }
+        public static bool HasQBuff(this AIBaseClient unit)
+        {
+            return (unit.HasBuff("BlindMonkQOne") || unit.HasBuff("blindmonkqonechaos"));
+        }
 
 
         public static bool UnderAllyTurret(this AIBaseClient player)
