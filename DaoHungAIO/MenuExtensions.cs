@@ -224,7 +224,7 @@ namespace DaoHungAIO
 
         public static bool IsValidTarget(this AIHeroClient u)
         {
-            if (u == null || u.HasBuff("zhonyasringshield"))
+            if (u == null || u.HasBuff("zhonyasringshield") || !u.IsVisibleOnScreen)
             {
                 return false;
             }
@@ -233,7 +233,7 @@ namespace DaoHungAIO
         }
         public static bool IsValidTarget(this AIHeroClient u, float range)
         {
-            if (u == null || u.HasBuff("zhonyasringshield"))
+            if (u == null || u.HasBuff("zhonyasringshield") || !u.IsVisibleOnScreen)
             {
                 return false;
             }

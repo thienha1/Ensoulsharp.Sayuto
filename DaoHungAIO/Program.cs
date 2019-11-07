@@ -88,7 +88,8 @@ namespace DaoHungAIO
                 tick.Add(new Menu("notice2", "It should is higher than 30, increase it if you get disconnect issues"));
                 tick.Attach();
                 //AIBaseClient.OnDoCast += OnProcessSpell;
-                //Game.OnUpdate += TrashTalk;
+                //AIBaseClient.OnBuffGain += BuffGain;
+                //EnsoulSharp.SDK.Events.Tick.OnTick += TrashTalk;
                 Game.Print(player.CharacterName);
                 switch (player.CharacterName)
                 {
@@ -211,6 +212,14 @@ namespace DaoHungAIO
             }
         }
 
+        private static void BuffGain(AIBaseClient sender, AIBaseClientBuffGainEventArgs args)
+        {
+            if (sender.IsMe)
+            {
+                Game.Print(args.Buff.Name);
+            }
+        }
+
         private static void onTickChange(object sender, EventArgs e)
         {
             EnsoulSharp.SDK.Events.Tick.TickPreSecond = tickpersecond.Value;
@@ -235,10 +244,10 @@ namespace DaoHungAIO
         }
         private static void TrashTalk(EventArgs args)
         {
-            GameObjects.Player.Buffs.ForEach(buff =>
+            if (ObjectManager.Player.HasBuff("SionR"))
             {
-                Game.Print(buff.Name);
-            });
+                Game.SendPing(PingCategory.Normal, Game.CursorPos);
+            }
         }
     }
 

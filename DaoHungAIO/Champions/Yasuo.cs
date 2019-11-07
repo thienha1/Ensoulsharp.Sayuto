@@ -907,37 +907,49 @@ namespace DaoHungAIO.Champions
                     {
                         foreach (var spell in EvadeSpellDatabase.Spells)
                         {
-                            var sub = new Menu("ESSS_" + spell.Name, spell.Name + " (" + spell.Slot + ")");
+                            try
                             {
-                                if (spell.Name == "YasuoDashWrapper")
+                                var sub = new Menu("ESSS_" + spell.Name, spell.Name + " (" + spell.Slot + ")");
                                 {
-                                    sub.Add(new MenuBool("ETower", "Under Tower", false));
+                                    if (spell.Name == "YasuoDashWrapper")
+                                    {
+                                        sub.Add(new MenuBool("ETower", "Under Tower", false));
+                                    }
+                                    else if (spell.Name == "YasuoWMovingWall")
+                                    {
+                                        sub.Add(new MenuSlider("WDelay", "Extra Delay", 100, 0, 150));
+                                    }
+                                    sub.Add(new MenuSlider("DangerLevel", "If Danger Level >=", spell.DangerLevel, 1, 5));
+                                    sub.Add(new MenuBool("Enabled", "Enabled", false));
+                                    evadeSpells.Add(sub);
                                 }
-                                else if (spell.Name == "YasuoWMovingWall")
-                                {
-                                    sub.Add(new MenuSlider("WDelay", "Extra Delay", 100, 0, 150));
-                                }
-                                sub.Add(new MenuSlider("DangerLevel", "If Danger Level >=", spell.DangerLevel, 1, 5));
-                                sub.Add(new MenuBool("Enabled", "Enabled", false));
-                                evadeSpells.Add(sub);
                             }
+                            catch { }
                         }
                         EvadeSkillshotMenu.Add(evadeSpells);
                     }
                     foreach (var hero in
                         HeroManager.Enemies.Where(i => SpellDatabase.Spells.Any(a => a.ChampionName == i.CharacterName)))
                     {
-                        EvadeSkillshotMenu.Add(new Menu("EvadeSS_" + hero.CharacterName, "-> " + hero.CharacterName));
+                        try
+                        {
+                            EvadeSkillshotMenu.Add(new Menu("EvadeSS_" + hero.CharacterName, "-> " + hero.CharacterName));
+                        }
+                        catch { }
                     }
                     foreach (var spell in
                         SpellDatabase.Spells.Where(i => HeroManager.Enemies.Any(a => a.CharacterName == i.ChampionName)))
                     {
-                        var sub = new Menu("ESS_" + spell.MenuItemName, spell.SpellName + " (" + spell.Slot + ")");
+                        try
                         {
-                            sub.Add(new MenuSlider("DangerLevel", "Danger Level", spell.DangerValue, 1, 5));
-                            sub.Add(new MenuBool("Enabled", "Enabled", !spell.DisabledByDefault));
-                            ((Menu)EvadeSkillshotMenu["EvadeSS_" + spell.ChampionName]).Add(sub);
+                            var sub = new Menu("ESS_" + spell.MenuItemName, spell.SpellName + " (" + spell.Slot + ")");
+                            {
+                                sub.Add(new MenuSlider("DangerLevel", "Danger Level", spell.DangerValue, 1, 5));
+                                sub.Add(new MenuBool("Enabled", "Enabled", !spell.DisabledByDefault));
+                                ((Menu)EvadeSkillshotMenu["EvadeSS_" + spell.ChampionName]).Add(sub);
+                            }
                         }
+                        catch { }
                     }
                 }
                 menu.Add(EvadeSkillshotMenu);
