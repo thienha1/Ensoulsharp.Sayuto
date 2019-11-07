@@ -44,13 +44,13 @@ namespace DaoHungAIO.Champions
         private static readonly List<BuffType> CCList = new List<BuffType>() { BuffType.Blind, BuffType.Fear, BuffType.Knockback, BuffType.Knockup, BuffType.Sleep, BuffType.Stun, BuffType.Taunt, BuffType.Suppression , BuffType.Slow };
         #endregion
         public Mordekaiser() {
-            q = new Spell(SpellSlot.Q, 615);
+            q = new Spell(SpellSlot.Q, 620);
             w = new Spell(SpellSlot.W, 0);
-            e = new Spell(SpellSlot.E, 700);
+            e = new Spell(SpellSlot.E, 675);
             r = new Spell(SpellSlot.R, 650);
 
             q.SetSkillshot(.5f, 160, 1200, false, SkillshotType.Line);
-            e.SetSkillshot(.25f, 200, 3000, false, SkillshotType.Line);
+            e.SetSkillshot(.25f, 200, 1200, false, SkillshotType.Line);
             r.SetTargetted(0, float.MaxValue);
 
             menu = new Menu("Mordekaiser", "DH.Mordekaiser", true);
