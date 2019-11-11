@@ -13,6 +13,7 @@ using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI;
 using EnsoulSharp.SDK.MenuUI.Values;
 using Activator = DaoHungAIO.Plugins.Activator;
+using Developer = DaoHungAIO.Plugins.Developer;
 
 namespace DaoHungAIO
 {
@@ -90,6 +91,7 @@ namespace DaoHungAIO
                 //AIBaseClient.OnDoCast += OnProcessSpell;
                 //AIBaseClient.OnBuffGain += BuffGain;
                 //EnsoulSharp.SDK.Events.Tick.OnTick += TrashTalk;
+                new Developer();
                 Game.Print(player.CharacterName);
                 switch (player.CharacterName)
                 {
@@ -146,6 +148,9 @@ namespace DaoHungAIO
                         break;
                     case "Malphite":
                         new Malphite();
+                        break;
+                    case "Nautilus":
+                        new Nautilus();
                         break;
                     case "Nidalee":
                         new Nidalee();
