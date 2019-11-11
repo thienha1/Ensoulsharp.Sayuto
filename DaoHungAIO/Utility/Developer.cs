@@ -44,7 +44,7 @@ namespace DaoHungAIO.Plugins
 
         private static void InitMenu()
         {
-            Config = new Menu("developersharp", "Developer#", true);
+            Config = new Menu("developersharp", "Developer# (imsosharp)", true);
             Config.Add(new MenuBool("enable", "Enable(need reload)", false));
             Config.Add(new MenuSlider("range", "Max object dist from cursor").SetValue(new Slider(400, 100, 1000)));
             Config.Attach();
