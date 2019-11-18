@@ -52,6 +52,10 @@ namespace DaoHungAIO.Evade
 
         private static void OnCreate(GameObject sender,EventArgs args)
         {
+            if(sender == null)
+            {
+                return;
+            }
             var spellData = SpellDatabase.GetBySourceObjectName(sender.Name);
 
             if (spellData == null)

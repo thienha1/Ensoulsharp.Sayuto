@@ -955,7 +955,7 @@ namespace DaoHungAIO.Champions
             {
                 CastE1();
             }
-            if (EStage == ECastStage.Second && ((Environment.TickCount > casttime + 200 && !Passive()) || Environment.TickCount > ecasttime + 2700))
+            if (EStage == ECastStage.Second && ((!Passive()) || Environment.TickCount > ecasttime + 2700))
                 _e.Cast();
         }
         private static void CastE1()
@@ -1074,9 +1074,9 @@ namespace DaoHungAIO.Champions
             var useEl = _config.Item("UseEL").GetValue<MenuBool>();
             if (allMinionsQ.Count == 0)
                 return;
-            if (EStage == ECastStage.Second && ((Environment.TickCount > casttime + 200 && !Passive()) || Environment.TickCount > ecasttime + 2700))
+            if (EStage == ECastStage.Second && ((!Passive()) || Environment.TickCount > ecasttime + 2700))
                 _e.Cast();
-            if (QStage == QCastStage.Second && (Environment.TickCount > qcasttime + 2700 || Environment.TickCount > casttime + 200 && !Passive()))
+            if (QStage == QCastStage.Second && (Environment.TickCount > qcasttime + 2700 || !Passive()))
                 _q.Cast();
 
             foreach (var minion in allMinionsQ)
@@ -1148,17 +1148,17 @@ namespace DaoHungAIO.Champions
                 {
                     _hydra.Cast();
                 }
-                if (QStage == QCastStage.Second && (mob.Health < _q.GetDamage(mob) && ((mob.HasBuff("BlindMonkQOne") || mob.HasBuff("blindmonkqonechaos"))) || Environment.TickCount > qcasttime + 2700 || ((Environment.TickCount > casttime + 200 && !Passive()))))
+                if (QStage == QCastStage.Second && (mob.Health < _q.GetDamage(mob) && ((mob.HasBuff("BlindMonkQOne") || mob.HasBuff("blindmonkqonechaos"))) || Environment.TickCount > qcasttime + 2700 || ((!Passive()))))
                     _q.Cast();
-                if (WStage == WCastStage.Second && ((Environment.TickCount > casttime + 200 && !Passive()) || Environment.TickCount > wcasttime + 2700))
+                if (WStage == WCastStage.Second && ((!Passive()) || Environment.TickCount > wcasttime + 2700))
                     _w.Cast();
-                if (EStage == ECastStage.Second && ((Environment.TickCount > casttime + 200 && !Passive()) || Environment.TickCount > ecasttime + 2700))
+                if (EStage == ECastStage.Second && ((!Passive()) || Environment.TickCount > ecasttime + 2700))
                     _e.Cast();
-                if (!Passive() && useQ && _q.IsReady() && Environment.TickCount > casttime + 200 || mob.Health < _q.GetDamage(mob) * 2)
+                if (!Passive() && useQ && _q.IsReady() || mob.Health < _q.GetDamage(mob) * 2)
                     CastQ1(mob);
-                else if (!Passive() && _config.Item("PriW").GetValue<MenuBool>() && useW && _w.IsReady() && Environment.TickCount > casttime + 200)
+                else if (!Passive() && _config.Item("PriW").GetValue<MenuBool>() && useW && _w.IsReady())
                     CastSelfW();
-                else if (!Passive() && useE && _e.IsReady() && mob.Distance(_player.Position) < _e.Range && Environment.TickCount > casttime + 200 || mob.Health < _e.GetDamage(mob))
+                else if (!Passive() && useE && _e.IsReady() && mob.Distance(_player.Position) < _e.Range || mob.Health < _e.GetDamage(mob))
                     CastE1();
 
             }

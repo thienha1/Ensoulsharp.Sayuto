@@ -231,6 +231,7 @@ namespace DaoHungAIO
             return (u as AttackableUnit).IsValidTarget();
 
         }
+
         public static bool IsValidTarget(this AIHeroClient u, float range)
         {
             if (u == null || u.HasBuff("zhonyasringshield") || !u.IsVisibleOnScreen)
@@ -239,6 +240,23 @@ namespace DaoHungAIO
             }
             return (u as AttackableUnit).IsValidTarget(range);
 
+        }
+        public static InventorySlot GetWardSlot(this AIHeroClient player)
+        {
+            var ward = GameObjects.Player.InventoryItems.Where(x => x.Id == ItemId.Warding_Totem && player.CanUseItem((int)x.Id)).FirstOrDefault();
+            if (ward != null)
+            {
+                return ward;
+            }
+            var wardIds = new[] { ItemId.Control_Ward,
+                ItemId.Nomads_Medallion, ItemId.Remnant_of_the_Ascended,
+                ItemId.Targons_Brace, ItemId.Remnant_of_the_Aspect,
+                ItemId.Frostfang, ItemId.Remnant_of_the_Watchers,
+                ItemId.Warding_Totem, ItemId.Farsight_Alteration };
+            return (from wardId in wardIds
+                    where player.CanUseItem((int)wardId)
+                    select GameObjects.Player.InventoryItems.FirstOrDefault(slot => slot.Id == wardId))
+                .FirstOrDefault();
         }
 
 

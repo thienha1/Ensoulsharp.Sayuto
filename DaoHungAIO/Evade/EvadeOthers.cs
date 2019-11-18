@@ -59,7 +59,7 @@
 
             evadeMenu.Add(Menu);
 
-            Game.OnUpdate += OnUpdate;
+            EnsoulSharp.SDK.Events.Tick.OnTick += OnUpdate;
             AIBaseClient.OnProcessSpellCast += OnProcessSpellCast;
             AIBaseClient.OnPlayAnimation += OnPlayAnimation;
             Dash.OnDash += OnDash;
