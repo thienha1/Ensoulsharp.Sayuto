@@ -89,6 +89,7 @@
     <Compile Include="Champions\Ekko.cs" />
     <Compile Include="Champions\Fiora.cs" />
     <Compile Include="Champions\Fizz.cs" />
+    <Compile Include="Champions\Gragas.cs" />
     <Compile Include="Champions\Jax.cs" />
     <Compile Include="Champions\Jayce.cs" />
     <Compile Include="Champions\Jhin.cs" />

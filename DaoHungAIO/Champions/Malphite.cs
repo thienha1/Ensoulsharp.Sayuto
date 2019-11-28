@@ -37,12 +37,40 @@ namespace DaoHungAIO.Champions
                 case OrbwalkerMode.Combo:
                     Combo();
                     break;
+                case OrbwalkerMode.Harass:
+                    Harass();
+                    break;
                 default:
                     break;
             }
         }
 
+        private void Harass()
+        {
+            AIHeroClient target = TargetSelector.SelectedTarget;
+            if (target == null || !target.IsValidTarget(1100))
+                if (R.IsReady() && !target.IsValidTarget(1100))
+                {
+                    target = TargetSelector.GetTarget(1100);
+                }
 
+                else if (!target.IsValidTarget(625))
+                {
+                    target = TargetSelector.GetTarget(625);
+                }
+            if (target == null)
+            {
+                return;
+            }
+            if (Q.IsReady() && target.IsValidTarget(Q.Range))
+            {
+                Q.Cast(target);
+            }
+            if (E.IsReady() && target.IsValidTarget(E.Range))
+            {
+                E.Cast(target);
+            }
+        }
 
         private void AfterAttack(Object sender, OrbwalkerActionArgs args)
         {
@@ -62,7 +90,7 @@ namespace DaoHungAIO.Champions
         private void Combo()
         {
             AIHeroClient target = TargetSelector.SelectedTarget;
-            if(target == null)
+            if(target == null || !target.IsValidTarget(1100))
                 if(R.IsReady() && !target.IsValidTarget(1100)){
                     target = TargetSelector.GetTarget(1100);
                 }
@@ -79,17 +107,14 @@ namespace DaoHungAIO.Champions
             if (R.IsReady() && target.IsValidTarget(R.Range))
             {
                 R.Cast(target);
-                return;
             }
             if (Q.IsReady() && target.IsValidTarget(Q.Range))
             {
                 Q.Cast(target);
-                return;
             }
             if (E.IsReady() && target.IsValidTarget(E.Range))
             {
                 E.Cast(target);
-                return;
             }
         }
 
@@ -102,7 +127,16 @@ namespace DaoHungAIO.Champions
                         Render.Circle.DrawCircle(e.Position, 157, System.Drawing.Color.Gold, 12);
                     }
                 }
+            if (Q.IsReady())
+            {
+                Render.Circle.DrawCircle(player.Position, Q.Range, System.Drawing.Color.Gray, 1);
+            }
+            if (R.IsReady())
+            {
+                Render.Circle.DrawCircle(player.Position, R.Range, System.Drawing.Color.Gray, 1);
+            }
             
+
         }
 
         private float ComboDamage(AIHeroClient hero)

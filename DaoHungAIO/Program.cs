@@ -122,6 +122,9 @@ namespace DaoHungAIO
                     case "Garen":
                         new Garen();
                         break;
+                    case "Gragas":
+                        new Gragas();
+                        break;
                     case "Jax":
                         new Jax();
                         break;
