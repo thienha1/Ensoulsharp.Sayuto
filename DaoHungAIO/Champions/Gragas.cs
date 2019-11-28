@@ -487,7 +487,10 @@ namespace DaoHungAIO.Champions
         {
             var target = TargetSelector.GetTarget(R.Range);
 
-
+            if(target == null)
+            {
+                return;
+            }
 
             var prediction = Q.GetPrediction(target);
 
@@ -510,7 +513,10 @@ namespace DaoHungAIO.Champions
         private static void eLogic()
         {
             var target = TargetSelector.GetTarget(R.Range);
-
+            if(target == null)
+            {
+                return;
+            }
             var prediction = E.GetPrediction(target);
             if (E.IsReady() && target.IsValidTarget(player.GetRealAutoAttackRange()))
                 E.Cast(target);
@@ -531,7 +537,10 @@ namespace DaoHungAIO.Champions
         private static void Overkill()
         {
             var target = TargetSelector.GetTarget(R.Range);
-
+            if(target == null)
+            {
+                return;
+            }
             if (R.IsReady() && Config.Item("UseR").GetValue<MenuBool>() && target.IsValidTarget(R.Range) &&
                      R.GetDamage(target) >= target.Health && overkill(target) <= target.Health)
 
@@ -543,6 +552,10 @@ namespace DaoHungAIO.Champions
 
             var harassmana = Config.Item("harassmana").GetValue<MenuSlider>().Value;
             var t = TargetSelector.GetTarget(Q.Range);
+            if(t == null)
+            {
+                return;
+            }
             var qpred = Q.GetPrediction(t);
             var epred = E.GetPrediction(t);
             if (E.IsReady() && Config.Item("harassE").GetValue<MenuBool>() && t.IsValidTarget(E.Range) &&
@@ -563,7 +576,10 @@ namespace DaoHungAIO.Champions
             var jungleE = GameObjects.GetJungles(ObjectManager.Player.Position, E.Range + E.Width);
             var laneE = GameObjects.GetMinions(ObjectManager.Player.Position, E.Range + E.Width);
             var laneQ = GameObjects.GetMinions(ObjectManager.Player.Position, Q.Range + Q.Width);
-
+            if(jungleE.Count() == 0 && jungleQ.Count() == 0 && laneE.Count() == 0 && laneQ.Count() == 0)
+            {
+                return;
+            }
             var Qjunglepos = Q.GetCircularFarmLocation(jungleQ, Q.Width);
             var Ejunglepos = E.GetLineFarmLocation(jungleE, E.Width);
 
