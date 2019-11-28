@@ -274,7 +274,7 @@ namespace DaoHungAIO.Champions
         {
                 switch (Orbwalker.ActiveMode)
                 {
-                    case (OrbwalkerMode.Combo):
+                    case OrbwalkerMode.Combo:
                         DoCombo();
                         break;
                     case OrbwalkerMode.Harass:
