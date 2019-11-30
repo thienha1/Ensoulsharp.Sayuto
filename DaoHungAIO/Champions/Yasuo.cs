@@ -90,7 +90,7 @@ namespace DaoHungAIO.Champions
 
 
         private static Menu Flee = new Menu("Flee", "Flee");
-        private static MenuKeyBind FleeKey = new MenuKeyBind("FleeKey", "Flee Key", System.Windows.Forms.Keys.Z, KeyBindType.Press);
+        private static MenuKeyBind FleeKey = new MenuKeyBind("FleeKey", "Flee Key", System.Windows.Forms.Keys.E, KeyBindType.Press);
         private static MenuBool EF = new MenuBool("E", "Use E");
         private static MenuBool EStackQ = new MenuBool("EStackQ", "-> Stack Q While Dashing");
 
