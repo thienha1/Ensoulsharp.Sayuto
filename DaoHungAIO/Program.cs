@@ -22,7 +22,7 @@ namespace DaoHungAIO
         public static Menu Config;
         public static AIHeroClient player;
         public static string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-        private static readonly MenuSlider tickpersecond = new MenuSlider("tickpersecond", "How many Tick per second(ms)", 50, 1, 1000);
+        private static readonly MenuSlider tickpersecond = new MenuSlider("tickpersecond", "How many Tick per second(ms)", 1, 1, 1000);
         //public static IncomingDamage IncDamages;
         public static Menu SPredictionMenu;
 
