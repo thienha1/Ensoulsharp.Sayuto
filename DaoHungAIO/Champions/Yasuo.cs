@@ -213,7 +213,7 @@ namespace DaoHungAIO.Champions
 
             Ignite = Player.GetSpellSlot("summonerdot");
 
-            EnsoulSharp.SDK.Events.Tick.OnTick += OnUpdate;
+            Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += OnDraw;
             Interrupter.OnInterrupterSpell += OnPossibleToInterrupt;
         }
